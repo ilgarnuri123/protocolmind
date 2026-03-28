@@ -1,272 +1,323 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>ProtocolMind</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<title>ProtocolMind</title>
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 30px 20px 40px;
-    }
+<style>
 
-    h1 {
-      text-align: center;
-      margin-bottom: 8px;
-    }
+body{
+font-family:Arial, sans-serif;
+background:#0f172a;
+color:white;
+margin:0;
+padding:0;
+}
 
-    .subtitle {
-      text-align: center;
-      color: #cbd5e1;
-      margin-bottom: 10px;
-    }
+.container{
+max-width:960px;
+margin:0 auto;
+padding:30px 20px 40px;
+}
 
-    .credits {
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-      margin-bottom: 24px;
-    }
+h1{
+text-align:center;
+margin-bottom:8px;
+}
 
-    .modes {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
+.subtitle{
+text-align:center;
+color:#cbd5e1;
+margin-bottom:6px;
+}
 
-    .mode-btn {
-      padding: 10px 16px;
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
+.credits{
+text-align:center;
+color:#94a3b8;
+font-size:13px;
+margin-bottom:24px;
+}
 
-    .mode-btn.active {
-      background: #22c55e;
-      border-color: #22c55e;
-    }
+.modes{
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:16px;
+}
 
-    .mode-label {
-      text-align: center;
-      color: #facc15;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
+.mode-btn{
+padding:10px 16px;
+border:1px solid #334155;
+background:#1e293b;
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-size:14px;
+}
 
-    .chat-box {
-      background: #111827;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      padding: 20px;
-      min-height: 420px;
-      max-height: 520px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+.mode-btn.active{
+background:#22c55e;
+border-color:#22c55e;
+}
 
-    .message {
-      max-width: 80%;
-      padding: 14px 16px;
-      border-radius: 14px;
-      white-space: pre-wrap;
-      line-height: 1.6;
-      font-size: 15px;
-    }
+.mode-label{
+text-align:center;
+color:#facc15;
+font-size:14px;
+margin-bottom:20px;
+}
 
-    .user {
-      align-self: flex-end;
-      background: #2563eb;
-      color: white;
-    }
+.chat-box{
+background:#111827;
+border:1px solid #334155;
+border-radius:16px;
+padding:20px;
+min-height:420px;
+max-height:520px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
 
-    .assistant {
-      align-self: flex-start;
-      background: #1f2937;
-      color: #e5e7eb;
-      border: 1px solid #374151;
-    }
+.message{
+max-width:80%;
+padding:14px 16px;
+border-radius:14px;
+white-space:pre-wrap;
+line-height:1.6;
+font-size:15px;
+}
 
-    .input-row {
-      margin-top: 18px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.user{
+align-self:flex-end;
+background:#2563eb;
+color:white;
+}
 
-    input {
-      flex: 1;
-      min-width: 260px;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-    }
+.assistant{
+align-self:flex-start;
+background:#1f2937;
+color:#e5e7eb;
+border:1px solid #374151;
+}
 
-    .ask-btn, .clear-btn {
-      padding: 14px 20px;
-      font-size: 15px;
-      border: none;
-      color: white;
-      cursor: pointer;
-      border-radius: 12px;
-    }
+.input-row{
+margin-top:18px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
 
-    .ask-btn {
-      background: #22c55e;
-    }
+input{
+flex:1;
+min-width:260px;
+padding:14px;
+font-size:16px;
+border-radius:12px;
+border:none;
+outline:none;
+}
 
-    .clear-btn {
-      background: #475569;
-    }
+.ask-btn, .clear-btn{
+padding:14px 20px;
+font-size:15px;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:12px;
+}
 
-    .examples {
-      margin-top: 16px;
-      color: #94a3b8;
-      font-size: 14px;
-      line-height: 1.8;
-    }
+.ask-btn{
+background:#22c55e;
+}
 
-    .loading {
-      color: #93c5fd;
-      font-style: italic;
-    }
+.clear-btn{
+background:#475569;
+}
 
-    .footer-note {
-      margin-top: 18px;
-      text-align: center;
-      color: #64748b;
-      font-size: 12px;
-    }
-  </style>
+.examples{
+margin-top:16px;
+color:#94a3b8;
+font-size:14px;
+line-height:1.8;
+}
+
+.loading{
+color:#93c5fd;
+font-style:italic;
+}
+
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>ProtocolMind</h1>
-    <div class="subtitle">AI Diplomatic Protocol Assistant</div>
-    <div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
 
-    <div class="modes">
-      <button class="mode-btn active" onclick="setMode('advice', this)">Protocol Advice</button>
-      <button class="mode-btn" onclick="setMode('seating', this)">Seating Plan</button>
-      <button class="mode-btn" onclick="setMode('checklist', this)">Checklist</button>
-    </div>
+<div class="container">
 
-    <div class="mode-label" id="modeLabel">Current mode: Protocol Advice</div>
+<h1>ProtocolMind</h1>
+<div class="subtitle">AI Diplomatic Protocol Assistant</div>
+<div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
 
-    <div class="chat-box" id="chatBox">
-      <div class="message assistant">Welcome to ProtocolMind. Ask about diplomatic protocol, seating, flags, precedence, official visits, or request a practical checklist.</div>
-    </div>
+<div class="modes">
+<button class="mode-btn active" onclick="setMode('advice', this)">Protocol Advice</button>
+<button class="mode-btn" onclick="setMode('seating', this)">Seating Plan</button>
+<button class="mode-btn" onclick="setMode('checklist', this)">Checklist</button>
+</div>
 
-    <div class="input-row">
-      <input id="question" placeholder="Ask about diplomatic protocol..." />
-      <button class="ask-btn" onclick="ask()">Ask</button>
-      <button class="clear-btn" onclick="clearChat()">Clear</button>
-    </div>
+<div class="mode-label" id="modeLabel">Current mode: Protocol Advice</div>
 
-    <div class="examples">
-      Examples:<br>
-      • How should heads of delegation be seated at a bilateral meeting?<br>
-      • Protocol for receiving a parliamentary delegation<br>
-      • Checklist for organizing an official visit
-    </div>
+<div class="chat-box" id="chatBox">
+<div class="message assistant">
+Welcome to ProtocolMind.  
+Ask about diplomatic protocol, seating arrangements, official visits, flags, or request a protocol checklist.
+</div>
+</div>
 
-    <div class="footer-note">ProtocolMind MVP</div>
-  </div>
+<div class="input-row">
+<input id="question" placeholder="Ask about diplomatic protocol...">
+<button class="ask-btn" onclick="ask()">Ask</button>
+<button class="clear-btn" onclick="clearChat()">Clear</button>
+</div>
 
-  <script>
-    let currentMode = "advice";
+<div class="examples">
+Examples:<br>
+• How should heads of delegation be seated at a bilateral meeting?<br>
+• Protocol for receiving a parliamentary delegation<br>
+• Checklist for organizing an official visit
+</div>
 
-    function setMode(mode, el) {
-      currentMode = mode;
+</div>
 
-      document.querySelectorAll(".mode-btn").forEach(btn => {
-        btn.classList.remove("active");
-      });
+<script>
 
-      el.classList.add("active");
+let currentMode="advice";
+let conversationHistory=[];
 
-      const labels = {
-        advice: "Current mode: Protocol Advice",
-        seating: "Current mode: Seating Plan",
-        checklist: "Current mode: Checklist"
-      };
+function setMode(mode,el){
 
-      document.getElementById("modeLabel").innerText = labels[mode];
-    }
+currentMode=mode;
 
-    function addMessage(role, text, extraClass = "") {
-      const chatBox = document.getElementById("chatBox");
-      const div = document.createElement("div");
-      div.className = `message ${role} ${extraClass}`.trim();
-      div.innerText = text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      return div;
-    }
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+btn.classList.remove("active");
+});
 
-    function clearChat() {
-      const chatBox = document.getElementById("chatBox");
-      chatBox.innerHTML = `<div class="message assistant">Chat cleared. Ask a new protocol question.</div>`;
-    }
+el.classList.add("active");
 
-    async function ask() {
-      const input = document.getElementById("question");
-      const question = input.value.trim();
+const labels={
+advice:"Current mode: Protocol Advice",
+seating:"Current mode: Seating Plan",
+checklist:"Current mode: Checklist"
+};
 
-      if (!question) return;
+document.getElementById("modeLabel").innerText=labels[mode];
 
-      addMessage("user", question);
-      input.value = "";
+}
 
-      const loadingEl = addMessage("assistant", "Thinking...", "loading");
+function addMessage(role,text,extraClass=""){
 
-      try {
-        const response = await fetch("/api/ask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            question,
-            mode: currentMode
-          })
-        });
+const chatBox=document.getElementById("chatBox");
 
-        const data = await response.json();
+const div=document.createElement("div");
 
-        if (!response.ok) {
-          loadingEl.innerText = "Error: " + (data.details || data.error || "Unknown error");
-          loadingEl.classList.remove("loading");
-          return;
-        }
+div.className=`message ${role} ${extraClass}`.trim();
 
-        loadingEl.innerText = data.answer || "No answer returned.";
-        loadingEl.classList.remove("loading");
-      } catch (err) {
-        loadingEl.innerText = "Request failed: " + err.message;
-        loadingEl.classList.remove("loading");
-      }
-    }
+div.innerText=text;
 
-    document.getElementById("question").addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        ask();
-      }
-    });
-  </script>
+chatBox.appendChild(div);
+
+chatBox.scrollTop=chatBox.scrollHeight;
+
+return div;
+
+}
+
+function clearChat(){
+
+conversationHistory=[];
+
+const chatBox=document.getElementById("chatBox");
+
+chatBox.innerHTML=`<div class="message assistant">Chat cleared. Ask a new protocol question.</div>`;
+
+}
+
+async function ask(){
+
+const input=document.getElementById("question");
+
+const question=input.value.trim();
+
+if(!question)return;
+
+addMessage("user",question);
+
+conversationHistory.push({
+role:"user",
+content:question
+});
+
+input.value="";
+
+const loadingEl=addMessage("assistant","Thinking...","loading");
+
+try{
+
+const response=await fetch("/api/ask",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+question,
+mode:currentMode,
+history:conversationHistory.slice(-10)
+})
+});
+
+const data=await response.json();
+
+if(!response.ok){
+
+loadingEl.innerText="Error: "+(data.details||data.error||"Unknown error");
+
+loadingEl.classList.remove("loading");
+
+return;
+
+}
+
+const answer=data.answer||"No answer returned.";
+
+loadingEl.innerText=answer;
+
+loadingEl.classList.remove("loading");
+
+conversationHistory.push({
+role:"assistant",
+content:answer
+});
+
+}catch(err){
+
+loadingEl.innerText="Request failed: "+err.message;
+
+loadingEl.classList.remove("loading");
+
+}
+
+}
+
+document.getElementById("question").addEventListener("keydown",function(event){
+
+if(event.key==="Enter"){
+ask();
+}
+
+});
+
+</script>
+
 </body>
 </html>
