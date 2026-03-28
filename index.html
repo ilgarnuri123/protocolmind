@@ -244,11 +244,46 @@ document.getElementById("modeLabel").innerText=labels[mode];
 }
 
 function addMessage(role,text){
+
 const chatBox=document.getElementById("chatBox");
-const div=document.createElement("div");
-div.className="message "+role;
-div.innerText=text;
-chatBox.appendChild(div);
+
+const wrapper=document.createElement("div");
+wrapper.style.display="flex";
+wrapper.style.flexDirection="column";
+wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
+
+const message=document.createElement("div");
+message.className="message "+role;
+message.innerText=text;
+
+wrapper.appendChild(message);
+
+if(role==="assistant"){
+
+const copyBtn=document.createElement("button");
+
+copyBtn.innerText="Copy";
+copyBtn.style.marginTop="6px";
+copyBtn.style.fontSize="12px";
+copyBtn.style.padding="4px 8px";
+copyBtn.style.borderRadius="6px";
+copyBtn.style.border="1px solid #334155";
+copyBtn.style.background="#1e293b";
+copyBtn.style.color="white";
+copyBtn.style.cursor="pointer";
+
+copyBtn.onclick=function(){
+navigator.clipboard.writeText(text);
+copyBtn.innerText="Copied";
+setTimeout(()=>{
+copyBtn.innerText="Copy";
+},1500);
+};
+
+wrapper.appendChild(copyBtn);
+}
+
+chatBox.appendChild(wrapper);
 chatBox.scrollTop=chatBox.scrollHeight;
 }
 
