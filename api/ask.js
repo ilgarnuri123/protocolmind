@@ -25,23 +25,26 @@ function checkRateLimit(ip) {
     return false;
   }
 
-  entry.count++;
+  entry.count += 1;
   return true;
 }
 
 function loadKnowledgeFiles() {
   try {
     const knowledgeDir = path.join(process.cwd(), "knowledge");
-    const files = fs.readdirSync(knowledgeDir);
 
+    if (!fs.existsSync(knowledgeDir)) {
+      return "";
+    }
+
+    const files = fs.readdirSync(knowledgeDir);
     let content = "";
 
     for (const file of files) {
       if (file.endsWith(".txt")) {
         const filePath = path.join(knowledgeDir, file);
         const text = fs.readFileSync(filePath, "utf8");
-
-        content += "\n\n" + text;
+        content += `\n\nFILE: ${file}\n${text}`;
       }
     }
 
@@ -52,23 +55,74 @@ function loadKnowledgeFiles() {
   }
 }
 
-function extractRelevantKnowledge(question, knowledgeText) {
-  const q = question.toLowerCase();
-  const paragraphs = knowledgeText.split("\n");
+function splitIntoChunks(text, chunkSize = 700) {
+  const cleaned = text.replace(/\r/g, "").trim();
 
-  const matches = [];
+  if (!cleaned) return [];
 
-  for (const p of paragraphs) {
-    const line = p.toLowerCase();
+  const paragraphs = cleaned.split(/\n\s*\n/);
+  const chunks = [];
+  let current = "";
 
-    if (line.includes("protocol") && q.includes("protocol")) matches.push(p);
-    if (line.includes("seat") && q.includes("seat")) matches.push(p);
-    if (line.includes("visit") && q.includes("visit")) matches.push(p);
-    if (line.includes("flag") && q.includes("flag")) matches.push(p);
-    if (line.includes("title") && q.includes("title")) matches.push(p);
+  for (const paragraph of paragraphs) {
+    if ((current + "\n\n" + paragraph).length > chunkSize) {
+      if (current.trim()) chunks.push(current.trim());
+      current = paragraph;
+    } else {
+      current += (current ? "\n\n" : "") + paragraph;
+    }
   }
 
-  return matches.slice(0, 10).join("\n");
+  if (current.trim()) chunks.push(current.trim());
+
+  return chunks;
+}
+
+function scoreChunk(question, chunk) {
+  const q = question.toLowerCase();
+  const c = chunk.toLowerCase();
+
+  const qWords = q
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .filter(word => word.length > 2);
+
+  let score = 0;
+
+  for (const word of qWords) {
+    if (c.includes(word)) {
+      score += 2;
+    }
+  }
+
+  if (q.includes("seat") && c.includes("seat")) score += 5;
+  if (q.includes("seating") && c.includes("seating")) score += 5;
+  if (q.includes("flag") && c.includes("flag")) score += 5;
+  if (q.includes("visit") && c.includes("visit")) score += 5;
+  if (q.includes("title") && c.includes("title")) score += 5;
+  if (q.includes("precedence") && c.includes("precedence")) score += 5;
+  if (q.includes("delegation") && c.includes("delegation")) score += 3;
+  if (q.includes("parliament") && c.includes("parliament")) score += 4;
+  if (q.includes("speaker") && c.includes("speaker")) score += 4;
+  if (q.includes("protocol") && c.includes("protocol")) score += 2;
+
+  return score;
+}
+
+function getRelevantKnowledge(question, knowledgeText) {
+  const chunks = splitIntoChunks(knowledgeText);
+
+  const ranked = chunks
+    .map(chunk => ({
+      chunk,
+      score: scoreChunk(question, chunk)
+    }))
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map(item => item.chunk);
+
+  return ranked.join("\n\n---\n\n");
 }
 
 export default async function handler(req, res) {
@@ -91,7 +145,7 @@ export default async function handler(req, res) {
     const language = req.body?.language || "English";
     const history = Array.isArray(req.body?.history) ? req.body.history : [];
 
-    if (!question) {
+    if (!question || !question.trim()) {
       return res.status(400).json({ error: "Question required" });
     }
 
@@ -99,37 +153,37 @@ export default async function handler(req, res) {
 
     if (language === "Azərbaycan dili") {
       languageInstruction =
-        "Respond in Azerbaijani language using professional diplomatic tone.";
-    }
-
-    if (language === "Русский") {
+        "Respond in Azerbaijani using a professional and natural diplomatic tone.";
+    } else if (language === "Русский") {
       languageInstruction =
-        "Respond in Russian using professional diplomatic tone.";
-    }
-
-    if (language === "Türkçe") {
+        "Respond in Russian using a professional and natural diplomatic tone.";
+    } else if (language === "Türkçe") {
       languageInstruction =
-        "Respond in Turkish using professional diplomatic tone.";
+        "Respond in Turkish using a professional and natural diplomatic tone.";
     }
 
     let modeInstruction = "";
 
     if (mode === "seating") {
       modeInstruction = `
-Provide seating guidance.
-Include seating logic and delegation placement.
+Provide:
+1. Seating logic
+2. Practical placement guidance
+3. A simple seating structure if relevant
 `;
-    }
-
-    if (mode === "checklist") {
+    } else if (mode === "checklist") {
       modeInstruction = `
-Provide a practical diplomatic protocol checklist.
-Use bullet points.
+Provide the answer as a practical checklist.
+Use short bullet points.
+`;
+    } else {
+      modeInstruction = `
+Provide clear protocol advice with practical recommendations.
 `;
     }
 
     const knowledgeText = loadKnowledgeFiles();
-    const relevantKnowledge = extractRelevantKnowledge(question, knowledgeText);
+    const relevantKnowledge = getRelevantKnowledge(question, knowledgeText);
 
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -137,7 +191,6 @@ Use bullet points.
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-
       messages: [
         {
           role: "system",
@@ -145,30 +198,28 @@ Use bullet points.
 You are ProtocolMind — an AI diplomatic protocol advisor.
 
 Your expertise includes:
+- diplomatic protocol
+- precedence
+- seating arrangements
+- official visits
+- flag protocol
+- diplomatic titles
+- parliamentary protocol
+- official ceremonies
 
-diplomatic protocol
-state visits
-precedence
-seating arrangements
-flag protocol
-diplomatic titles
-official ceremonies
-parliamentary protocol
+Use the knowledge snippets below when relevant.
+If the snippets are insufficient, answer carefully and say when protocol may vary by country or institution.
+Do not invent formal rules.
 
-Use the following protocol documents as knowledge:
-
-${relevantKnowledge}
-
-Always provide professional, practical diplomatic guidance.
+Knowledge snippets:
+${relevantKnowledge || "No relevant knowledge snippets found."}
 
 ${modeInstruction}
 
 ${languageInstruction}
 `,
         },
-
         ...history,
-
         {
           role: "user",
           content: question,
