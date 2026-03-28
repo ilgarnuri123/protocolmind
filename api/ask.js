@@ -125,6 +125,316 @@ function getRelevantKnowledge(question, knowledgeText) {
   return ranked.join("\n\n---\n\n");
 }
 
+function isCapabilitiesQuestion(question) {
+  const q = question.toLowerCase().trim();
+
+  const patterns = [
+    "what can you do",
+    "what do you do",
+    "what are your functions",
+    "what are your capabilities",
+    "how can you help",
+    "что ты умеешь",
+    "что ты можешь",
+    "что ты делаешь",
+    "чем ты можешь помочь",
+    "nə bacarırsan",
+    "nə edə bilirsən",
+    "nə edirsən",
+    "sən nə bacarırsan",
+    "ne yapabilirsin",
+    "neler yapabilirsin",
+    "ne yapıyorsun",
+    "nasıl yardımcı olabilirsin"
+  ];
+
+  return patterns.some(pattern => q.includes(pattern));
+}
+
+function getCapabilitiesAnswer(language) {
+  if (language === "Azərbaycan dili") {
+    return `PROTOCOLMIND CAPABILITIES
+
+1. Diplomatik protokol üzrə məsləhət
+- rəsmi görüşlər
+- ikitərəfli və çoxtərəfli formatlar
+- prioritet və yerləşmə qaydaları
+- bayraq protokolu
+- müraciət formaları və titullar
+
+2. Seating Plan
+- nümayəndə heyətlərinin yerləşdirilməsi
+- masa arxasında simmetriya və paritet
+- seating guidance
+- sadə seating diagram
+
+3. Checklist hazırlığı
+- rəsmi səfər üçün checklist
+- görüşə hazırlıq
+- protokol addımlarının siyahısı
+
+4. Visit Program
+- rəsmi səfər proqramı
+- saatlarla strukturlaşdırılmış proqram
+- protokol qeydləri ilə birlikdə
+
+5. Official Letter
+- rəsmi dəvət məktubu
+- təşəkkür məktubu
+- diplomatik üslubda məktub layihəsi
+
+6. Sənəd şablonları
+- Invitation Letter
+- Thank You Letter
+- Note Verbale
+- Briefing Note
+- Meeting Scenario
+
+7. Protocol Pack
+- bir sorğu ilə tam paket:
+  • briefing note
+  • visit program
+  • seating guidance
+  • protocol checklist
+
+8. Çoxdilli cavab
+- English
+- Azərbaycan dili
+- Русский
+- Türkçe
+
+9. Bilik bazası ilə cavab
+- knowledge qovluğundakı mətn faylları üzrə cavab verir
+- protokol sənədlərindən istifadə edir
+
+10. Export funksiyaları
+- Copy
+- TXT
+- DOC
+
+11. Chat memory
+- söhbət daxilində əvvəlki sualları nəzərə ala bilir
+
+ProtocolMind xüsusilə aşağıdakılar üçün faydalıdır:
+- parlament protokolu
+- dövlət və rəsmi səfərlər
+- nümayəndə heyətlərinin qəbulu
+- rəsmi yazışmalar
+- diplomatik və institusional tədbirlər`;
+  }
+
+  if (language === "Русский") {
+    return `ВОЗМОЖНОСТИ PROTOCOLMIND
+
+1. Консультации по дипломатическому протоколу
+- официальные встречи
+- двусторонние и многосторонние форматы
+- порядок старшинства и рассадка
+- флаговый протокол
+- формы обращения и титулы
+
+2. Seating Plan
+- рассадка делегаций
+- симметрия и паритет за столом
+- рекомендации по размещению
+- простая схема рассадки
+
+3. Подготовка checklist
+- checklist для официального визита
+- подготовка к встрече
+- список протокольных шагов
+
+4. Visit Program
+- программа официального визита
+- структурированный график по времени
+- с протокольными примечаниями
+
+5. Official Letter
+- официальное письмо-приглашение
+- письмо-благодарность
+- проект письма в дипломатическом стиле
+
+6. Шаблоны документов
+- Invitation Letter
+- Thank You Letter
+- Note Verbale
+- Briefing Note
+- Meeting Scenario
+
+7. Protocol Pack
+- полный пакет по одному запросу:
+  • briefing note
+  • visit program
+  • seating guidance
+  • protocol checklist
+
+8. Многоязычная работа
+- English
+- Azərbaycan dili
+- Русский
+- Türkçe
+
+9. Ответы на основе базы знаний
+- использует текстовые файлы из папки knowledge
+- применяет протокольные материалы и документы
+
+10. Экспорт
+- Copy
+- TXT
+- DOC
+
+11. Память диалога
+- учитывает предыдущие сообщения в рамках беседы
+
+ProtocolMind особенно полезен для:
+- парламентского протокола
+- государственных и официальных визитов
+- приёма делегаций
+- официальной переписки
+- дипломатических и институциональных мероприятий`;
+  }
+
+  if (language === "Türkçe") {
+    return `PROTOCOLMIND YETENEKLERİ
+
+1. Diplomatik protokol danışmanlığı
+- resmî görüşmeler
+- ikili ve çok taraflı formatlar
+- protokol sıralaması ve oturma düzeni
+- bayrak protokolü
+- hitap şekilleri ve unvanlar
+
+2. Seating Plan
+- heyetlerin oturma düzeni
+- masa başında simetri ve denge
+- yerleşim önerileri
+- basit seating diagram
+
+3. Checklist hazırlama
+- resmî ziyaret checklist
+- toplantı hazırlığı
+- protokol adımlarının listesi
+
+4. Visit Program
+- resmî ziyaret programı
+- saat bazlı yapılandırılmış program
+- protokol notlarıyla birlikte
+
+5. Official Letter
+- resmî davet mektubu
+- teşekkür mektubu
+- diplomatik üslupta resmî taslak
+
+6. Belge şablonları
+- Invitation Letter
+- Thank You Letter
+- Note Verbale
+- Briefing Note
+- Meeting Scenario
+
+7. Protocol Pack
+- tek soruda tam paket:
+  • briefing note
+  • visit program
+  • seating guidance
+  • protocol checklist
+
+8. Çok dilli yanıt
+- English
+- Azərbaycan dili
+- Русский
+- Türkçe
+
+9. Bilgi tabanına dayalı yanıt
+- knowledge klasöründeki metin dosyalarını kullanır
+- protokol belgelerine dayanır
+
+10. Dışa aktarma
+- Copy
+- TXT
+- DOC
+
+11. Sohbet hafızası
+- aynı konuşmadaki önceki mesajları dikkate alır
+
+ProtocolMind özellikle şunlar için uygundur:
+- parlamento protokolü
+- devlet ve resmî ziyaretler
+- heyet kabulü
+- resmî yazışmalar
+- diplomatik ve kurumsal etkinlikler`;
+  }
+
+  return `PROTOCOLMIND CAPABILITIES
+
+1. Diplomatic protocol advice
+- official meetings
+- bilateral and multilateral formats
+- order of precedence
+- flag protocol
+- forms of address and titles
+
+2. Seating Plan
+- delegation seating guidance
+- symmetry and parity
+- table placement logic
+- simple seating diagrams
+
+3. Checklist generation
+- official visit checklist
+- meeting preparation checklist
+- protocol action lists
+
+4. Visit Program
+- structured official visit programs
+- time-based schedules
+- protocol notes and sequencing
+
+5. Official Letter
+- formal invitation letters
+- thank you letters
+- diplomatic-style official drafts
+
+6. Document templates
+- Invitation Letter
+- Thank You Letter
+- Note Verbale
+- Briefing Note
+- Meeting Scenario
+
+7. Protocol Pack
+- full package in one request:
+  • briefing note
+  • visit program
+  • seating guidance
+  • protocol checklist
+
+8. Multilingual support
+- English
+- Azerbaijani
+- Russian
+- Turkish
+
+9. Knowledge-based answers
+- uses text files from the knowledge folder
+- answers from protocol materials and internal knowledge documents
+
+10. Export functions
+- Copy
+- TXT
+- DOC
+
+11. Chat memory
+- can use previous messages in the same conversation
+
+ProtocolMind is especially useful for:
+- parliamentary protocol
+- state and official visits
+- receiving delegations
+- official correspondence
+- diplomatic and institutional events`;
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
@@ -148,6 +458,12 @@ export default async function handler(req, res) {
 
     if (!question || !question.trim()) {
       return res.status(400).json({ error: "Question required" });
+    }
+
+    if (isCapabilitiesQuestion(question)) {
+      return res.status(200).json({
+        answer: getCapabilitiesAnswer(language)
+      });
     }
 
     let languageInstruction = "Respond in English.";
