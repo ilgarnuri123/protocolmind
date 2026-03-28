@@ -5,7 +5,6 @@
 <title>ProtocolMind</title>
 
 <style>
-
 body{
 font-family:Arial,sans-serif;
 background:#0f172a;
@@ -100,6 +99,7 @@ max-width:80%;
 padding:12px;
 border-radius:10px;
 white-space:pre-wrap;
+line-height:1.6;
 }
 
 .user{
@@ -133,6 +133,7 @@ border:none;
 padding:14px 18px;
 border-radius:10px;
 cursor:pointer;
+color:white;
 }
 
 .clear-btn{
@@ -141,6 +142,7 @@ border:none;
 padding:14px 18px;
 border-radius:10px;
 cursor:pointer;
+color:white;
 }
 
 .diagram{
@@ -169,7 +171,6 @@ border-radius:8px;
 background:#111827;
 margin:10px;
 }
-
 </style>
 </head>
 
@@ -182,20 +183,20 @@ margin:10px;
 <div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
 
 <div class="controls">
-
 <select id="languageSelect" class="language-select">
 <option value="English">English</option>
 <option value="Azərbaycan dili">Azərbaycan dili</option>
 <option value="Русский">Русский</option>
 <option value="Türkçe">Türkçe</option>
 </select>
-
 </div>
 
 <div class="modes">
 <button class="mode-btn active" onclick="setMode('advice',this)">Protocol Advice</button>
 <button class="mode-btn" onclick="setMode('seating',this)">Seating Plan</button>
 <button class="mode-btn" onclick="setMode('checklist',this)">Checklist</button>
+<button class="mode-btn" onclick="setMode('visit_program',this)">Visit Program</button>
+<button class="mode-btn" onclick="setMode('official_letter',this)">Official Letter</button>
 </div>
 
 <div class="mode-label" id="modeLabel">
@@ -205,214 +206,157 @@ Current mode: Protocol Advice
 <div id="diagramContainer" class="diagram"></div>
 
 <div class="chat-box" id="chatBox">
-
 <div class="message assistant">
-Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans or protocol checklists.
+Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, or official letters.
 </div>
-
 </div>
 
 <div class="input-row">
-
 <input id="question" placeholder="Ask about diplomatic protocol...">
-
 <button class="ask-btn" onclick="ask()">Ask</button>
-
 <button class="clear-btn" onclick="clearChat()">Clear</button>
-
 </div>
 
 </div>
 
 <script>
-
-let currentMode="advice"
-let conversationHistory=[]
+let currentMode="advice";
+let conversationHistory=[];
 
 function setMode(mode,el){
-
-currentMode=mode
+currentMode=mode;
 
 document.querySelectorAll(".mode-btn").forEach(btn=>{
-btn.classList.remove("active")
-})
+btn.classList.remove("active");
+});
 
-el.classList.add("active")
+el.classList.add("active");
 
 const labels={
 advice:"Current mode: Protocol Advice",
 seating:"Current mode: Seating Plan",
-checklist:"Current mode: Checklist"
-}
+checklist:"Current mode: Checklist",
+visit_program:"Current mode: Visit Program",
+official_letter:"Current mode: Official Letter"
+};
 
-document.getElementById("modeLabel").innerText=labels[mode]
-
+document.getElementById("modeLabel").innerText=labels[mode];
 }
 
 function addMessage(role,text){
-
-const chatBox=document.getElementById("chatBox")
-
-const div=document.createElement("div")
-
-div.className="message "+role
-
-div.innerText=text
-
-chatBox.appendChild(div)
-
-chatBox.scrollTop=chatBox.scrollHeight
-
+const chatBox=document.getElementById("chatBox");
+const div=document.createElement("div");
+div.className="message "+role;
+div.innerText=text;
+chatBox.appendChild(div);
+chatBox.scrollTop=chatBox.scrollHeight;
 }
 
 function clearChat(){
-
-conversationHistory=[]
-
+conversationHistory=[];
 document.getElementById("chatBox").innerHTML=
-`<div class="message assistant">Chat cleared.</div>`
-
-document.getElementById("diagramContainer").innerHTML=""
-
+`<div class="message assistant">Chat cleared.</div>`;
+document.getElementById("diagramContainer").innerHTML="";
 }
 
 function drawSeatingDiagram(hostCount,guestCount){
+const container=document.getElementById("diagramContainer");
+container.innerHTML="";
 
-const container=document.getElementById("diagramContainer")
-
-container.innerHTML=""
-
-const hostRow=document.createElement("div")
-hostRow.className="seat-row"
+const hostRow=document.createElement("div");
+hostRow.className="seat-row";
 
 for(let i=1;i<=hostCount;i++){
-
-const seat=document.createElement("div")
-seat.className="seat"
-seat.innerText="H"+i
-
-hostRow.appendChild(seat)
-
+const seat=document.createElement("div");
+seat.className="seat";
+seat.innerText="H"+i;
+hostRow.appendChild(seat);
 }
 
-const table=document.createElement("div")
-table.className="table"
-table.innerText="TABLE"
+const table=document.createElement("div");
+table.className="table";
+table.innerText="TABLE";
 
-const guestRow=document.createElement("div")
-guestRow.className="seat-row"
+const guestRow=document.createElement("div");
+guestRow.className="seat-row";
 
 for(let i=1;i<=guestCount;i++){
-
-const seat=document.createElement("div")
-seat.className="seat"
-seat.innerText="G"+i
-
-guestRow.appendChild(seat)
-
+const seat=document.createElement("div");
+seat.className="seat";
+seat.innerText="G"+i;
+guestRow.appendChild(seat);
 }
 
-container.appendChild(hostRow)
-container.appendChild(table)
-container.appendChild(guestRow)
-
+container.appendChild(hostRow);
+container.appendChild(table);
+container.appendChild(guestRow);
 }
 
 function detectDelegationNumbers(text){
-
-const numbers=text.match(/\d+/g)
-
-if(!numbers)return null
+const numbers=text.match(/\d+/g);
+if(!numbers) return null;
 
 if(numbers.length===1){
-
-return{
+return {
 host:parseInt(numbers[0]),
 guest:parseInt(numbers[0])
+};
 }
 
-}
-
-return{
+return {
 host:parseInt(numbers[0]),
 guest:parseInt(numbers[1])
-}
-
+};
 }
 
 async function ask(){
+const input=document.getElementById("question");
+const question=input.value.trim();
+const language=document.getElementById("languageSelect").value;
 
-const input=document.getElementById("question")
+if(!question) return;
 
-const question=input.value.trim()
-
-const language=document.getElementById("languageSelect").value
-
-if(!question)return
-
-addMessage("user",question)
-
-conversationHistory.push({role:"user",content:question})
-
-input.value=""
+addMessage("user",question);
+conversationHistory.push({role:"user",content:question});
+input.value="";
 
 try{
-
 const response=await fetch("/api/ask",{
-
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 question,
 mode:currentMode,
 language,
 history:conversationHistory.slice(-10)
 })
+});
 
-})
+const data=await response.json();
+const answer=data.answer||"No answer returned.";
 
-const data=await response.json()
-
-const answer=data.answer||"No answer returned."
-
-addMessage("assistant",answer)
-
-conversationHistory.push({role:"assistant",content:answer})
+addMessage("assistant",answer);
+conversationHistory.push({role:"assistant",content:answer});
 
 if(currentMode==="seating"){
-
-const counts=detectDelegationNumbers(question)
-
+const counts=detectDelegationNumbers(question);
 if(counts){
-
-drawSeatingDiagram(counts.host,counts.guest)
-
+drawSeatingDiagram(counts.host,counts.guest);
+}
 }
 
+}catch(err){
+addMessage("assistant","Request failed: "+err.message);
 }
-
-}
-
-catch(err){
-
-addMessage("assistant","Request failed: "+err.message)
-
-}
-
 }
 
 document.getElementById("question").addEventListener("keydown",function(e){
-
 if(e.key==="Enter"){
-ask()
+ask();
 }
-
-})
-
+});
 </script>
 
 </body>
