@@ -107,6 +107,7 @@ function scoreChunk(question, chunk) {
   if (q.includes("official") && c.includes("official")) score += 2;
   if (q.includes("briefing") && c.includes("briefing")) score += 3;
   if (q.includes("scenario") && c.includes("scenario")) score += 3;
+  if (q.includes("pack") && c.includes("protocol")) score += 2;
 
   return score;
 }
@@ -202,6 +203,35 @@ Format requirements:
 - Write as a ready-to-use document
 - Do not add casual commentary
 - Keep it polished, courteous, and official
+`;
+    } else if (mode === "protocol_pack") {
+      modeInstruction = `
+Create a full Protocol Pack.
+
+Required structure:
+
+PROTOCOL PACK
+
+1. BRIEFING NOTE
+- Purpose
+- Participants
+- Core protocol considerations
+- Risks / sensitivities
+
+2. VISIT PROGRAM
+- Title
+- Schedule with time blocks
+- Key ceremonial points
+
+3. SEATING GUIDANCE
+- Seating logic
+- Placement principles
+
+4. PROTOCOL CHECKLIST
+- Short bullet list of actions
+
+The output must look like a structured professional working pack.
+Do not add casual commentary.
 `;
     } else {
       modeInstruction = `
@@ -312,6 +342,7 @@ Your expertise includes:
 - official correspondence
 - briefing formats
 - meeting scenarios
+- protocol working packs
 
 Use the knowledge snippets below when relevant.
 If the snippets are insufficient, answer carefully and note when protocol may vary by country or institution.
