@@ -1,67 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8" />
   <title>ProtocolMind</title>
   <style>
     body {
-      font-family: Arial;
-      background:#0f172a;
-      color:white;
-      text-align:center;
-      padding:40px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 40px;
     }
 
     input {
-      width:60%;
-      padding:12px;
-      font-size:16px;
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
     }
 
     button {
-      padding:12px 20px;
-      font-size:16px;
-      background:#22c55e;
-      border:none;
-      color:white;
-      cursor:pointer;
+      padding: 12px 20px;
+      font-size: 16px;
+      background: #22c55e;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-left: 8px;
     }
 
     #answer {
-      margin-top:30px;
-      font-size:18px;
+      margin-top: 30px;
+      font-size: 18px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
-
 <body>
+  <h1>ProtocolMind</h1>
+  <p>AI Diplomatic Protocol Assistant</p>
 
-<h1>ProtocolMind</h1>
-<p>AI Diplomatic Protocol Assistant</p>
+  <input id="question" placeholder="Ask about diplomatic protocol..." />
+  <button onclick="ask()">Ask</button>
 
-<input id="question" placeholder="Ask about diplomatic protocol..." />
-<button onclick="ask()">Ask</button>
+  <div id="answer"></div>
 
-<div id="answer"></div>
+  <script>
+    async function ask() {
+      const question = document.getElementById("question").value;
+      const answerBox = document.getElementById("answer");
 
-<script>
+      answerBox.innerText = "Loading...";
 
-async function ask(){
+      try {
+        const response = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question })
+        });
 
-const question=document.getElementById("question").value;
+        const data = await response.json();
 
-const response=await fetch("/api/ask",{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body:JSON.stringify({question})
-});
+        if (!response.ok) {
+          answerBox.innerText =
+            "Error: " + (data.details || data.error || "Unknown error");
+          return;
+        }
 
-const data=await response.json();
-
-document.getElementById("answer").innerText=data.answer;
-
-}
-
-</script>
-
+        answerBox.innerText = data.answer || "No answer returned.";
+      } catch (err) {
+        answerBox.innerText = "Request failed: " + err.message;
+      }
+    }
+  </script>
 </body>
 </html>
