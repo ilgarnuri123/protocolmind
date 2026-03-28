@@ -94,6 +94,11 @@ flex-direction:column;
 gap:12px;
 }
 
+.message-wrapper{
+display:flex;
+flex-direction:column;
+}
+
 .message{
 max-width:80%;
 padding:12px;
@@ -111,6 +116,22 @@ background:#2563eb;
 align-self:flex-start;
 background:#1f2937;
 border:1px solid #374151;
+}
+
+.message-actions{
+display:flex;
+gap:6px;
+margin-top:6px;
+}
+
+.action-btn{
+font-size:12px;
+padding:5px 8px;
+border-radius:6px;
+border:1px solid #334155;
+background:#1e293b;
+color:white;
+cursor:pointer;
 }
 
 .input-row{
@@ -243,13 +264,62 @@ official_letter:"Current mode: Official Letter"
 document.getElementById("modeLabel").innerText=labels[mode];
 }
 
+function downloadTxtFile(text, filename="protocolmind.txt"){
+const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function downloadDocFile(text, filename="protocolmind.doc"){
+const html=`
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${filename}</title>
+</head>
+<body>
+<pre style="font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.6;">${escapeHtml(text)}</pre>
+</body>
+</html>
+`;
+const blob=new Blob([html],{type:"application/msword"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function escapeHtml(text){
+return text
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+function buildFilename(prefix){
+const now=new Date();
+const datePart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+return `${prefix}-${datePart}`;
+}
+
 function addMessage(role,text){
 
 const chatBox=document.getElementById("chatBox");
 
 const wrapper=document.createElement("div");
-wrapper.style.display="flex";
-wrapper.style.flexDirection="column";
+wrapper.className="message-wrapper";
 wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
 
 const message=document.createElement("div");
@@ -260,18 +330,12 @@ wrapper.appendChild(message);
 
 if(role==="assistant"){
 
+const actions=document.createElement("div");
+actions.className="message-actions";
+
 const copyBtn=document.createElement("button");
-
+copyBtn.className="action-btn";
 copyBtn.innerText="Copy";
-copyBtn.style.marginTop="6px";
-copyBtn.style.fontSize="12px";
-copyBtn.style.padding="4px 8px";
-copyBtn.style.borderRadius="6px";
-copyBtn.style.border="1px solid #334155";
-copyBtn.style.background="#1e293b";
-copyBtn.style.color="white";
-copyBtn.style.cursor="pointer";
-
 copyBtn.onclick=function(){
 navigator.clipboard.writeText(text);
 copyBtn.innerText="Copied";
@@ -280,7 +344,33 @@ copyBtn.innerText="Copy";
 },1500);
 };
 
-wrapper.appendChild(copyBtn);
+const txtBtn=document.createElement("button");
+txtBtn.className="action-btn";
+txtBtn.innerText="TXT";
+txtBtn.onclick=function(){
+let prefix="protocolmind-answer";
+if(currentMode==="visit_program") prefix="visit-program";
+if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="checklist") prefix="protocol-checklist";
+downloadTxtFile(text,buildFilename(prefix)+".txt");
+};
+
+const docBtn=document.createElement("button");
+docBtn.className="action-btn";
+docBtn.innerText="DOC";
+docBtn.onclick=function(){
+let prefix="protocolmind-answer";
+if(currentMode==="visit_program") prefix="visit-program";
+if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="checklist") prefix="protocol-checklist";
+downloadDocFile(text,buildFilename(prefix)+".doc");
+};
+
+actions.appendChild(copyBtn);
+actions.appendChild(txtBtn);
+actions.appendChild(docBtn);
+
+wrapper.appendChild(actions);
 }
 
 chatBox.appendChild(wrapper);
@@ -370,6 +460,12 @@ history:conversationHistory.slice(-10)
 });
 
 const data=await response.json();
+
+if(!response.ok){
+addMessage("assistant","Error: "+(data.details||data.error||"Unknown error"));
+return;
+}
+
 const answer=data.answer||"No answer returned.";
 
 addMessage("assistant",answer);
