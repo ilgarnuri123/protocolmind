@@ -1,9 +1,54 @@
 import OpenAI from "openai";
 
+const rateLimitMap = new Map();
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 1000; // 1 minute
+  const maxRequests = 10;
+
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry) {
+    rateLimitMap.set(ip, {
+      count: 1,
+      windowStart: now,
+    });
+    return true;
+  }
+
+  if (now - entry.windowStart > windowMs) {
+    rateLimitMap.set(ip, {
+      count: 1,
+      windowStart: now,
+    });
+    return true;
+  }
+
+  if (entry.count >= maxRequests) {
+    return false;
+  }
+
+  entry.count += 1;
+  rateLimitMap.set(ip, entry);
+  return true;
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    const forwarded = req.headers["x-forwarded-for"];
+    const ip = Array.isArray(forwarded)
+      ? forwarded[0]
+      : (forwarded || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
+
+    if (!checkRateLimit(ip)) {
+      return res.status(429).json({
+        error: "Too many requests. Please wait a minute and try again.",
+      });
     }
 
     const question = req.body?.question;
@@ -11,6 +56,12 @@ export default async function handler(req, res) {
 
     if (!question || !question.trim()) {
       return res.status(400).json({ error: "Question is required" });
+    }
+
+    if (question.length > 2000) {
+      return res.status(400).json({
+        error: "Question is too long. Please keep it under 2000 characters.",
+      });
     }
 
     if (!process.env.OPENAI_API_KEY) {
