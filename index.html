@@ -87,7 +87,7 @@ border-radius:14px;
 border:1px solid #334155;
 padding:20px;
 min-height:420px;
-max-height:520px;
+max-height:620px;
 overflow-y:auto;
 display:flex;
 flex-direction:column;
@@ -116,6 +116,28 @@ background:#2563eb;
 align-self:flex-start;
 background:#1f2937;
 border:1px solid #374151;
+}
+
+.document-card{
+align-self:flex-start;
+width:min(92%,800px);
+background:#f8fafc;
+color:#0f172a;
+border:1px solid #cbd5e1;
+border-radius:14px;
+padding:22px;
+box-shadow:0 6px 20px rgba(0,0,0,0.18);
+white-space:pre-wrap;
+line-height:1.7;
+}
+
+.document-title{
+font-size:12px;
+font-weight:700;
+letter-spacing:0.08em;
+text-transform:uppercase;
+color:#475569;
+margin-bottom:12px;
 }
 
 .message-actions{
@@ -273,6 +295,15 @@ official_letter:"Current mode: Official Letter"
 document.getElementById("modeLabel").innerText=labels[mode];
 }
 
+function escapeHtml(text){
+return text
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
 function downloadTxtFile(text, filename="protocolmind.txt"){
 const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
 const url=URL.createObjectURL(blob);
@@ -293,7 +324,7 @@ const html=`
 <title>${filename}</title>
 </head>
 <body>
-<pre style="font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.6;">${escapeHtml(text)}</pre>
+<pre style="font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.7;">${escapeHtml(text)}</pre>
 </body>
 </html>
 `;
@@ -308,19 +339,31 @@ document.body.removeChild(a);
 URL.revokeObjectURL(url);
 }
 
-function escapeHtml(text){
-return text
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-}
-
 function buildFilename(prefix){
 const now=new Date();
 const datePart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
 return `${prefix}-${datePart}`;
+}
+
+function isDocumentOutput(){
+const template=document.getElementById("templateSelect").value;
+return currentMode==="visit_program" ||
+       currentMode==="official_letter" ||
+       template!=="none";
+}
+
+function documentLabel(){
+const template=document.getElementById("templateSelect").value;
+
+if(template==="invitation_letter") return "Invitation Letter";
+if(template==="thank_you_letter") return "Thank You Letter";
+if(template==="note_verbale") return "Note Verbale";
+if(template==="briefing_note") return "Briefing Note";
+if(template==="meeting_scenario") return "Meeting Scenario";
+if(currentMode==="visit_program") return "Visit Program";
+if(currentMode==="official_letter") return "Official Letter";
+if(currentMode==="checklist") return "Checklist";
+return "Document";
 }
 
 function addMessage(role,text){
@@ -330,11 +373,28 @@ const wrapper=document.createElement("div");
 wrapper.className="message-wrapper";
 wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
 
-const message=document.createElement("div");
-message.className="message "+role;
-message.innerText=text;
+let contentBlock;
 
-wrapper.appendChild(message);
+if(role==="assistant" && isDocumentOutput()){
+contentBlock=document.createElement("div");
+contentBlock.className="document-card";
+
+const title=document.createElement("div");
+title.className="document-title";
+title.innerText=documentLabel();
+
+const body=document.createElement("div");
+body.innerText=text;
+
+contentBlock.appendChild(title);
+contentBlock.appendChild(body);
+}else{
+contentBlock=document.createElement("div");
+contentBlock.className="message "+role;
+contentBlock.innerText=text;
+}
+
+wrapper.appendChild(contentBlock);
 
 if(role==="assistant"){
 const actions=document.createElement("div");
@@ -357,6 +417,8 @@ let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
 if(currentMode==="official_letter") prefix="official-letter";
 if(currentMode==="checklist") prefix="protocol-checklist";
+const template=document.getElementById("templateSelect").value;
+if(template!=="none") prefix=template.replaceAll("_","-");
 downloadTxtFile(text,buildFilename(prefix)+".txt");
 };
 
@@ -368,6 +430,8 @@ let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
 if(currentMode==="official_letter") prefix="official-letter";
 if(currentMode==="checklist") prefix="protocol-checklist";
+const template=document.getElementById("templateSelect").value;
+if(template!=="none") prefix=template.replaceAll("_","-");
 downloadDocFile(text,buildFilename(prefix)+".doc");
 };
 
