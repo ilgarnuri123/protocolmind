@@ -89,9 +89,7 @@ function scoreChunk(question, chunk) {
   let score = 0;
 
   for (const word of qWords) {
-    if (c.includes(word)) {
-      score += 2;
-    }
+    if (c.includes(word)) score += 2;
   }
 
   if (q.includes("seat") && c.includes("seat")) score += 5;
@@ -107,6 +105,8 @@ function scoreChunk(question, chunk) {
   if (q.includes("letter") && c.includes("letter")) score += 3;
   if (q.includes("program") && c.includes("program")) score += 3;
   if (q.includes("official") && c.includes("official")) score += 2;
+  if (q.includes("briefing") && c.includes("briefing")) score += 3;
+  if (q.includes("scenario") && c.includes("scenario")) score += 3;
 
   return score;
 }
@@ -115,10 +115,7 @@ function getRelevantKnowledge(question, knowledgeText) {
   const chunks = splitIntoChunks(knowledgeText);
 
   const ranked = chunks
-    .map(chunk => ({
-      chunk,
-      score: scoreChunk(question, chunk)
-    }))
+    .map(chunk => ({ chunk, score: scoreChunk(question, chunk) }))
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
@@ -144,6 +141,7 @@ export default async function handler(req, res) {
 
     const question = req.body?.question;
     const mode = req.body?.mode || "advice";
+    const template = req.body?.template || "none";
     const language = req.body?.language || "English";
     const history = Array.isArray(req.body?.history) ? req.body.history : [];
 
@@ -192,25 +190,7 @@ Format requirements:
 - Use time blocks if possible
 - If exact times are missing, create a realistic diplomatic sample schedule
 - Include protocol notes where relevant
-
-Recommended structure:
-OFFICIAL VISIT PROGRAM
-Date:
-Location:
-Delegation:
-
-PROGRAM
-10:00 – Arrival
-10:15 – Greeting line
-10:30 – Bilateral meeting
-...
-
-PROTOCOL NOTES
-- ...
-- ...
-
-Do not write casual explanations before or after the program.
-Output should look ready to copy into an official draft.
+- Do not add casual commentary before or after the program
 `;
     } else if (mode === "official_letter") {
       modeInstruction = `
@@ -222,21 +202,85 @@ Format requirements:
 - Write as a ready-to-use document
 - Do not add casual commentary
 - Keep it polished, courteous, and official
-
-Recommended structure:
-Subject:
-Dear ...
-Body paragraph 1
-Body paragraph 2
-Closing formula
-Name / title placeholder if needed
-
-The output should look ready to paste into Word or official correspondence.
 `;
     } else {
       modeInstruction = `
 Provide clear protocol advice with practical recommendations.
 Prefer professional structure over casual chat style.
+`;
+    }
+
+    let templateInstruction = "";
+
+    if (template === "invitation_letter") {
+      templateInstruction = `
+Output as a formal invitation letter.
+
+Required structure:
+Subject:
+Dear ...
+Opening courtesy line
+Invitation purpose
+Core details of event/visit/meeting
+Polite closing
+Signature block placeholder
+
+The result must look ready for official use.
+`;
+    } else if (template === "thank_you_letter") {
+      templateInstruction = `
+Output as a formal thank you letter.
+
+Required structure:
+Subject:
+Dear ...
+Expression of appreciation
+Reference to the meeting/visit/event
+Polite concluding line
+Signature block placeholder
+
+The result must look ready for official use.
+`;
+    } else if (template === "note_verbale") {
+      templateInstruction = `
+Output as a diplomatic-style note verbale.
+
+Required style:
+- third-person institutional tone
+- no personal casual expressions
+- formal diplomatic wording
+- concise, polished, official
+
+The result must look like a clean diplomatic draft.
+`;
+    } else if (template === "briefing_note") {
+      templateInstruction = `
+Output as a professional briefing note.
+
+Required structure:
+BRIEFING NOTE
+Purpose
+Participants
+Protocol considerations
+Key risks / sensitivities
+Recommended actions
+
+The result must be concise and operational.
+`;
+    } else if (template === "meeting_scenario") {
+      templateInstruction = `
+Output as a meeting scenario.
+
+Required structure:
+MEETING SCENARIO
+Arrival
+Greeting sequence
+Seating
+Discussion flow
+Media moment if relevant
+Departure
+
+The result must be practical and operational.
 `;
     }
 
@@ -266,6 +310,8 @@ Your expertise includes:
 - official ceremonies
 - protocol drafting
 - official correspondence
+- briefing formats
+- meeting scenarios
 
 Use the knowledge snippets below when relevant.
 If the snippets are insufficient, answer carefully and note when protocol may vary by country or institution.
@@ -277,6 +323,8 @@ Knowledge snippets:
 ${relevantKnowledge || "No relevant knowledge snippets found."}
 
 ${modeInstruction}
+
+${templateInstruction}
 
 ${languageInstruction}
 `,
