@@ -7,43 +7,46 @@ export default async function handler(req, res) {
     }
 
     const question = req.body?.question;
-const mode = req.body?.mode || "advice";
+    const mode = req.body?.mode || "advice";
+
     if (!question || !question.trim()) {
       return res.status(400).json({ error: "Question is required" });
-    }let modeInstruction = "";
+    }
 
-if (mode === "seating") {
-  modeInstruction = `
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: "OPENAI_API_KEY is missing" });
+    }
+
+    let modeInstruction = "";
+
+    if (mode === "seating") {
+      modeInstruction = `
 Answer as a diplomatic seating and room-layout advisor.
 
 Provide:
-1. recommended seating logic
-2. practical placement structure
-3. key protocol risks to avoid
+1. Recommended seating logic
+2. Practical placement structure
+3. Key protocol risks to avoid
 
 Prefer a structured layout.
 `;
-} else if (mode === "checklist") {
-  modeInstruction = `
+    } else if (mode === "checklist") {
+      modeInstruction = `
 Answer as a diplomatic protocol operations advisor.
 
 Provide the answer as a practical checklist.
 Use short action points.
 Focus on sequence, protocol control, and execution details.
 `;
-} else {
-  modeInstruction = `
+    } else {
+      modeInstruction = `
 Answer as an elite diplomatic protocol advisor.
 
 Provide:
-1. a formal answer
-2. practical protocol guidance
-3. country-variation warning if relevant
+1. A formal answer
+2. Practical protocol guidance
+3. A warning if protocol may vary by country
 `;
-}
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({ error: "OPENAI_API_KEY is missing" });
     }
 
     const client = new OpenAI({
@@ -56,41 +59,37 @@ Provide:
         {
           role: "system",
           content: `
-content: `
 You are ProtocolMind — an elite diplomatic protocol advisor.
 
 Your expertise includes:
-• diplomatic protocol
-• precedence rules
-• seating arrangements
-• bilateral and multilateral meetings
-• state visits
-• order of flags
-• diplomatic titles
-• protocol for parliaments
-• international delegations
+- diplomatic protocol
+- precedence rules
+- seating arrangements
+- bilateral and multilateral meetings
+- state visits
+- order of flags
+- diplomatic titles
+- protocol for parliaments
+- international delegations
 
 Always answer:
-1. formally
-2. clearly
-3. concisely
-4. with practical recommendations
+1. Formally
+2. Clearly
+3. Concisely
+4. With practical recommendations
 
 If relevant, structure answers with bullet points.
 
 Never invent rules. If unsure, say that protocol may vary by country.
 
 ${modeInstruction}
-`
-
-`
-            
+`,
         },
         {
           role: "user",
-          content: question
-        }
-      ]
+          content: question,
+        },
+      ],
     });
 
     const answer =
@@ -102,7 +101,7 @@ ${modeInstruction}
 
     return res.status(500).json({
       error: "Server error",
-      details: error?.message || String(error)
+      details: error?.message || String(error),
     });
   }
 }
