@@ -57,7 +57,6 @@ function loadKnowledgeFiles() {
 
 function splitIntoChunks(text, chunkSize = 700) {
   const cleaned = text.replace(/\r/g, "").trim();
-
   if (!cleaned) return [];
 
   const paragraphs = cleaned.split(/\n\s*\n/);
@@ -105,6 +104,8 @@ function scoreChunk(question, chunk) {
   if (q.includes("parliament") && c.includes("parliament")) score += 4;
   if (q.includes("speaker") && c.includes("speaker")) score += 4;
   if (q.includes("protocol") && c.includes("protocol")) score += 2;
+  if (q.includes("letter") && c.includes("letter")) score += 3;
+  if (q.includes("program") && c.includes("program")) score += 3;
 
   return score;
 }
@@ -176,6 +177,31 @@ Provide:
 Provide the answer as a practical checklist.
 Use short bullet points.
 `;
+    } else if (mode === "visit_program") {
+      modeInstruction = `
+Provide a professional official visit program.
+
+Structure it clearly with:
+1. Title
+2. Date / format if inferable
+3. Sequence of events by time blocks
+4. Protocol notes
+5. Media / gift / escort considerations if relevant
+
+If exact times are not given, use a realistic sample official schedule.
+`;
+    } else if (mode === "official_letter") {
+      modeInstruction = `
+Draft a formal official letter or diplomatic-style note.
+
+Structure it with:
+1. Formal opening
+2. Main purpose
+3. Polite and official wording
+4. Formal closing
+
+If details are missing, produce a clean professional draft with placeholders implied naturally.
+`;
     } else {
       modeInstruction = `
 Provide clear protocol advice with practical recommendations.
@@ -206,6 +232,8 @@ Your expertise includes:
 - diplomatic titles
 - parliamentary protocol
 - official ceremonies
+- protocol drafting
+- official correspondence
 
 Use the knowledge snippets below when relevant.
 If the snippets are insufficient, answer carefully and say when protocol may vary by country or institution.
