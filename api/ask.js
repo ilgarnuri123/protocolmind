@@ -12,6 +12,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Question is required" });
     }
 
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: "OPENAI_API_KEY is missing" });
+    }
+
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -31,14 +35,16 @@ export default async function handler(req, res) {
       ]
     });
 
-    return res.status(200).json({
-      answer: completion.choices[0]?.message?.content || "No answer returned."
-    });
+    const answer =
+      completion?.choices?.[0]?.message?.content || "No answer returned.";
+
+    return res.status(200).json({ answer });
   } catch (error) {
-    console.error("API ERROR:", error);
+    console.error("API ERROR FULL:", error);
+
     return res.status(500).json({
       error: "Server error",
-      details: String(error)
+      details: error?.message || String(error)
     });
   }
 }
