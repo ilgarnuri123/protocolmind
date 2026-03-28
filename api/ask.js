@@ -106,6 +106,7 @@ function scoreChunk(question, chunk) {
   if (q.includes("protocol") && c.includes("protocol")) score += 2;
   if (q.includes("letter") && c.includes("letter")) score += 3;
   if (q.includes("program") && c.includes("program")) score += 3;
+  if (q.includes("official") && c.includes("official")) score += 2;
 
   return score;
 }
@@ -154,13 +155,13 @@ export default async function handler(req, res) {
 
     if (language === "Azərbaycan dili") {
       languageInstruction =
-        "Respond in Azerbaijani using a professional and natural diplomatic tone.";
+        "Respond in Azerbaijani using a professional, official, and natural diplomatic tone.";
     } else if (language === "Русский") {
       languageInstruction =
-        "Respond in Russian using a professional and natural diplomatic tone.";
+        "Respond in Russian using a professional, official, and natural diplomatic tone.";
     } else if (language === "Türkçe") {
       languageInstruction =
-        "Respond in Turkish using a professional and natural diplomatic tone.";
+        "Respond in Turkish using a professional, official, and natural diplomatic tone.";
     }
 
     let modeInstruction = "";
@@ -171,40 +172,71 @@ Provide:
 1. Seating logic
 2. Practical placement guidance
 3. A simple seating structure if relevant
+
+Keep the answer operational and protocol-focused.
 `;
     } else if (mode === "checklist") {
       modeInstruction = `
 Provide the answer as a practical checklist.
 Use short bullet points.
+Keep it concise and operational.
 `;
     } else if (mode === "visit_program") {
       modeInstruction = `
-Provide a professional official visit program.
+Create a polished official visit program.
 
-Structure it clearly with:
-1. Title
-2. Date / format if inferable
-3. Sequence of events by time blocks
-4. Protocol notes
-5. Media / gift / escort considerations if relevant
+Format requirements:
+- Use a clean professional title
+- Structure the answer like a real official program
+- Use clearly separated sections
+- Use time blocks if possible
+- If exact times are missing, create a realistic diplomatic sample schedule
+- Include protocol notes where relevant
 
-If exact times are not given, use a realistic sample official schedule.
+Recommended structure:
+OFFICIAL VISIT PROGRAM
+Date:
+Location:
+Delegation:
+
+PROGRAM
+10:00 – Arrival
+10:15 – Greeting line
+10:30 – Bilateral meeting
+...
+
+PROTOCOL NOTES
+- ...
+- ...
+
+Do not write casual explanations before or after the program.
+Output should look ready to copy into an official draft.
 `;
     } else if (mode === "official_letter") {
       modeInstruction = `
-Draft a formal official letter or diplomatic-style note.
+Draft a polished official letter or diplomatic-style formal note.
 
-Structure it with:
-1. Formal opening
-2. Main purpose
-3. Polite and official wording
-4. Formal closing
+Format requirements:
+- Use formal institutional tone
+- Use a clean subject line if relevant
+- Write as a ready-to-use document
+- Do not add casual commentary
+- Keep it polished, courteous, and official
 
-If details are missing, produce a clean professional draft with placeholders implied naturally.
+Recommended structure:
+Subject:
+Dear ...
+Body paragraph 1
+Body paragraph 2
+Closing formula
+Name / title placeholder if needed
+
+The output should look ready to paste into Word or official correspondence.
 `;
     } else {
       modeInstruction = `
 Provide clear protocol advice with practical recommendations.
+Prefer professional structure over casual chat style.
 `;
     }
 
@@ -236,8 +268,10 @@ Your expertise includes:
 - official correspondence
 
 Use the knowledge snippets below when relevant.
-If the snippets are insufficient, answer carefully and say when protocol may vary by country or institution.
+If the snippets are insufficient, answer carefully and note when protocol may vary by country or institution.
 Do not invent formal rules.
+Do not use casual tone.
+Prefer polished professional formatting.
 
 Knowledge snippets:
 ${relevantKnowledge || "No relevant knowledge snippets found."}
