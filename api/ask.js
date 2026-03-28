@@ -3,72 +3,84 @@ import OpenAI from "openai";
 const rateLimitMap = new Map();
 
 function checkRateLimit(ip) {
-  const now = Date.now();
-  const windowMs = 60000;
-  const maxRequests = 10;
 
-  const entry = rateLimitMap.get(ip);
+const now = Date.now();
+const windowMs = 60000;
+const maxRequests = 10;
 
-  if (!entry) {
-    rateLimitMap.set(ip, { count: 1, windowStart: now });
-    return true;
-  }
+const entry = rateLimitMap.get(ip);
 
-  if (now - entry.windowStart > windowMs) {
-    rateLimitMap.set(ip, { count: 1, windowStart: now });
-    return true;
-  }
-
-  if (entry.count >= maxRequests) {
-    return false;
-  }
-
-  entry.count += 1;
-  return true;
+if (!entry) {
+rateLimitMap.set(ip,{count:1,windowStart:now});
+return true;
 }
 
-const protocolKnowledge = [
+if (now-entry.windowStart>windowMs){
+rateLimitMap.set(ip,{count:1,windowStart:now});
+return true;
+}
+
+if(entry.count>=maxRequests){
+return false;
+}
+
+entry.count++;
+return true;
+
+}
+
+const protocolKnowledge=[
+
 {
 topic:"seating",
-keywords:["seating","seat","table","placement","delegation","bilateral","multilateral"],
+keywords:["seating","seat","table","delegation","bilateral","multilateral","rectangular","round"],
 content:`
 Bilateral seating normally follows symmetry.
 Heads of delegation should occupy central mirrored positions.
 Equivalent rank should face equivalent rank.
 Advisers are seated by rank and functional relevance.
-Interpreters should be positioned to hear both sides clearly.
+Interpreters should be positioned where they hear both sides clearly.
 `
 },
+
 {
 topic:"flags",
 keywords:["flag","flags","order of flags"],
 content:`
-Flags must be equal size and height.
-Bilateral events require visual parity.
-Multilateral events often use alphabetical order or host precedence rules.
+Flags should be equal size and height.
+Bilateral events should maintain visual parity.
+Multilateral events often follow alphabetical order or host precedence rules.
 `
 },
+
 {
 topic:"titles",
 keywords:["title","address","excellency","holiness","eminence"],
 content:`
-Official titles must be verified before publication.
+Official titles must always be verified before publication.
 Full titles should be used on first reference.
 Clergy and diplomatic ranks may require institution-specific forms.
 `
 },
+
 {
 topic:"visits",
-keywords:["visit","arrival","greeting line","motorcade"],
+keywords:["visit","arrival","greeting","motorcade","official visit"],
 content:`
-Official visits must have a precise sequence:
-arrival → greeting → movement → meeting → photo → departure.
-Greeting order must follow rank and host protocol.
+Official visits require precise sequence planning:
+arrival
+greeting line
+movement
+meeting
+photo point
+departure
+Greeting order should follow protocol rank.
 `
 },
+
 {
 topic:"checklist",
-keywords:["checklist","prepare","organize","planning"],
+keywords:["checklist","organize","prepare","planning"],
 content:`
 Protocol preparation should confirm:
 participants
@@ -78,14 +90,16 @@ flags
 security
 media positioning
 movement sequence
-briefing for principals
+briefing notes
 `
 }
+
 ];
 
 function getRelevantKnowledge(question){
 
 const q=question.toLowerCase();
+
 const matches=[];
 
 for(const item of protocolKnowledge){
@@ -140,24 +154,53 @@ let modeInstruction="";
 
 if(mode==="seating"){
 modeInstruction=`
-Answer as a diplomatic seating advisor.
-Explain seating logic clearly.
-Provide a suggested seating structure.
+
+You are a diplomatic protocol seating planner.
+
+Provide:
+
+1. Seating logic explanation
+2. A clear seating diagram
+
+Example format:
+
+HOST SIDE
+A1   A2   A3   A4
+
+TABLE
+
+B1   B2   B3   B4
+GUEST SIDE
+
+Where:
+A = host delegation
+B = guest delegation
+
+Always produce a clear seating diagram.
+
 `;
 }
 
 else if(mode==="checklist"){
 modeInstruction=`
-Provide a practical diplomatic protocol checklist.
-Use short actionable bullet points.
+
+Provide a clear diplomatic protocol checklist.
+
+Use short practical bullet points.
+
 `;
 }
 
 else{
+
 modeInstruction=`
+
 Answer as a senior diplomatic protocol advisor.
-Provide clear structured guidance.
+
+Provide structured guidance and practical recommendations.
+
 `;
+
 }
 
 let languageInstruction="Respond in English.";
@@ -189,9 +232,11 @@ messages:[
 {
 role:"system",
 content:`
+
 You are ProtocolMind — an AI diplomatic protocol advisor.
 
-Expertise:
+Your expertise includes:
+
 diplomatic protocol
 precedence rules
 seating arrangements
@@ -199,19 +244,22 @@ state visits
 official delegations
 flag protocol
 forms of address
+international protocol practice
 
 Always answer:
+
 clearly
 professionally
 with practical protocol guidance.
 
-Use this protocol knowledge if relevant:
+Use protocol knowledge if relevant:
 
 ${relevantKnowledge}
 
 ${modeInstruction}
 
 ${languageInstruction}
+
 `
 },
 
