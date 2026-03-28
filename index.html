@@ -120,7 +120,7 @@ border:1px solid #374151;
 
 .document-card{
 align-self:flex-start;
-width:min(92%,800px);
+width:min(92%,860px);
 background:#f8fafc;
 color:#0f172a;
 border:1px solid #cbd5e1;
@@ -249,6 +249,7 @@ margin:10px;
 <button class="mode-btn" onclick="setMode('checklist',this)">Checklist</button>
 <button class="mode-btn" onclick="setMode('visit_program',this)">Visit Program</button>
 <button class="mode-btn" onclick="setMode('official_letter',this)">Official Letter</button>
+<button class="mode-btn" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
 </div>
 
 <div class="mode-label" id="modeLabel">
@@ -259,7 +260,7 @@ Current mode: Protocol Advice
 
 <div class="chat-box" id="chatBox">
 <div class="message assistant">
-Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or use a document template.
+Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
 </div>
 </div>
 
@@ -289,7 +290,8 @@ advice:"Current mode: Protocol Advice",
 seating:"Current mode: Seating Plan",
 checklist:"Current mode: Checklist",
 visit_program:"Current mode: Visit Program",
-official_letter:"Current mode: Official Letter"
+official_letter:"Current mode: Official Letter",
+protocol_pack:"Current mode: Protocol Pack"
 };
 
 document.getElementById("modeLabel").innerText=labels[mode];
@@ -349,6 +351,7 @@ function isDocumentOutput(){
 const template=document.getElementById("templateSelect").value;
 return currentMode==="visit_program" ||
        currentMode==="official_letter" ||
+       currentMode==="protocol_pack" ||
        template!=="none";
 }
 
@@ -362,6 +365,7 @@ if(template==="briefing_note") return "Briefing Note";
 if(template==="meeting_scenario") return "Meeting Scenario";
 if(currentMode==="visit_program") return "Visit Program";
 if(currentMode==="official_letter") return "Official Letter";
+if(currentMode==="protocol_pack") return "Protocol Pack";
 if(currentMode==="checklist") return "Checklist";
 return "Document";
 }
@@ -416,6 +420,7 @@ txtBtn.onclick=function(){
 let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
 if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="protocol_pack") prefix="protocol-pack";
 if(currentMode==="checklist") prefix="protocol-checklist";
 const template=document.getElementById("templateSelect").value;
 if(template!=="none") prefix=template.replaceAll("_","-");
@@ -429,6 +434,7 @@ docBtn.onclick=function(){
 let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
 if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="protocol_pack") prefix="protocol-pack";
 if(currentMode==="checklist") prefix="protocol-checklist";
 const template=document.getElementById("templateSelect").value;
 if(template!=="none") prefix=template.replaceAll("_","-");
