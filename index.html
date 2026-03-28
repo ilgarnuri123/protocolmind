@@ -10,44 +10,149 @@
       color: white;
       text-align: center;
       padding: 40px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #cbd5e1;
+    }
+
+    .modes {
+      margin: 25px 0 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      padding: 10px 16px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .mode-btn.active {
+      background: #22c55e;
+      color: white;
+      border-color: #22c55e;
+    }
+
+    .input-row {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     input {
-      width: 60%;
-      padding: 12px;
+      width: 65%;
+      min-width: 280px;
+      padding: 14px;
       font-size: 16px;
-      border-radius: 8px;
+      border-radius: 10px;
       border: none;
+      outline: none;
     }
 
-    button {
-      padding: 12px 20px;
+    button.ask-btn {
+      padding: 14px 22px;
       font-size: 16px;
       background: #22c55e;
       border: none;
       color: white;
       cursor: pointer;
-      border-radius: 8px;
-      margin-left: 8px;
+      border-radius: 10px;
     }
 
     #answer {
       margin-top: 30px;
       font-size: 18px;
       white-space: pre-wrap;
+      text-align: left;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 20px;
+      min-height: 120px;
+    }
+
+    .examples {
+      margin-top: 18px;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .mode-label {
+      margin-top: 10px;
+      color: #facc15;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <h1>ProtocolMind</h1>
-  <p>AI Diplomatic Protocol Assistant</p>
+  <div class="container">
+    <h1>ProtocolMind</h1>
+    <p>AI Diplomatic Protocol Assistant</p>
 
-  <input id="question" placeholder="Ask about diplomatic protocol..." />
-  <button onclick="ask()">Ask</button>
+    <div class="modes">
+      <button class="mode-btn active" onclick="setMode('advice', this)">Protocol Advice</button>
+      <button class="mode-btn" onclick="setMode('seating', this)">Seating Plan</button>
+      <button class="mode-btn" onclick="setMode('checklist', this)">Checklist</button>
+    </div>
 
-  <div id="answer"></div>
+    <div class="mode-label" id="modeLabel">Current mode: Protocol Advice</div>
+
+    <div class="input-row">
+      <input id="question" placeholder="Ask about diplomatic protocol..." />
+      <button class="ask-btn" onclick="ask()">Ask</button>
+    </div>
+
+    <div class="examples">
+      Examples:<br>
+      • How should heads of delegation be seated at a bilateral meeting?<br>
+      • Protocol for receiving a parliamentary delegation<br>
+      • Checklist for organizing an official visit
+    </div>
+
+    <div id="answer"></div>
+  </div>
 
   <script>
+    let currentMode = "advice";
+
+    function setMode(mode, el) {
+      currentMode = mode;
+
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      el.classList.add("active");
+
+      const labels = {
+        advice: "Current mode: Protocol Advice",
+        seating: "Current mode: Seating Plan",
+        checklist: "Current mode: Checklist"
+      };
+
+      document.getElementById("modeLabel").innerText = labels[mode];
+    }
+
     async function ask() {
       const question = document.getElementById("question").value;
       const answerBox = document.getElementById("answer");
@@ -58,7 +163,10 @@
         const response = await fetch("/api/ask", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question })
+          body: JSON.stringify({
+            question,
+            mode: currentMode
+          })
         });
 
         const data = await response.json();
