@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ProtocolMind App</title>
+<title>ProtocolMind</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
@@ -13,13 +14,13 @@
 
 body{
 margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#0b1220;
+font-family:Arial;
+background:#0f172a;
 color:white;
 }
 
-.app{
-max-width:1000px;
+.container{
+max-width:900px;
 margin:auto;
 padding:20px;
 }
@@ -32,30 +33,25 @@ margin-bottom:20px;
 }
 
 .title{
-font-size:28px;
+font-size:26px;
 font-weight:bold;
 }
 
-.controls{
-display:flex;
-gap:10px;
-}
-
 select{
-padding:8px;
+padding:6px;
 border-radius:6px;
 }
 
 .chat{
-background:#111827;
+background:#1e293b;
 padding:20px;
-border-radius:12px;
-min-height:400px;
-margin-bottom:20px;
+border-radius:10px;
+min-height:350px;
+margin-bottom:15px;
 }
 
 .message{
-margin-bottom:14px;
+margin-bottom:12px;
 }
 
 .user{
@@ -73,17 +69,32 @@ gap:10px;
 
 input{
 flex:1;
-padding:12px;
+padding:10px;
 border-radius:8px;
 border:none;
 }
 
 button{
-padding:12px 18px;
+padding:10px 16px;
 border-radius:8px;
 border:none;
 background:#22c55e;
 color:white;
+cursor:pointer;
+}
+
+.documents{
+margin-top:30px;
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+}
+
+.doc{
+background:#334155;
+padding:10px;
+margin-bottom:8px;
+border-radius:6px;
 cursor:pointer;
 }
 
@@ -93,19 +104,17 @@ cursor:pointer;
 
 <body>
 
-<div class="app">
+<div class="container">
 
 <div class="header">
 
 <div class="title">ProtocolMind</div>
 
-<div class="controls">
-
 <select id="languageSelect" onchange="updateLanguage()">
 
 <option value="English">English</option>
-<option value="Azərbaycan dili">Azərbaycan dili</option>
 <option value="Русский">Русский</option>
+<option value="Azərbaycan dili">Azərbaycan dili</option>
 <option value="Türkçe">Türkçe</option>
 <option value="ქართული">ქართული</option>
 
@@ -113,21 +122,29 @@ cursor:pointer;
 
 </div>
 
-</div>
-
 <div id="chat" class="chat">
 
 <div class="message assistant" id="welcome">
-Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans or protocol packs.
+Welcome to ProtocolMind. Ask about diplomatic protocol.
 </div>
 
 </div>
 
 <div class="inputbox">
 
-<input id="question" placeholder="Ask about diplomatic protocol...">
+<input id="question" placeholder="Ask a protocol question...">
 
 <button onclick="ask()">Ask</button>
+
+<button onclick="saveDocument()">Save</button>
+
+</div>
+
+<div class="documents">
+
+<h3>My Documents</h3>
+
+<div id="docs"></div>
 
 </div>
 
@@ -135,90 +152,163 @@ Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating
 
 <script>
 
-let language="English";
+const SUPABASE_URL = "https://qzpyjgugpisphmajzrnk.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
+  
+const supabase = supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
 
-const translations={
+let lastAnswer = "";
+let userEmail = "";
+
+const translations = {
 
 English:{
-welcome:"Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans or protocol packs.",
+welcome:"Welcome to ProtocolMind. Ask about diplomatic protocol.",
 placeholder:"Ask about diplomatic protocol..."
 },
 
-"Русский":{
-welcome:"Добро пожаловать в ProtocolMind. Спросите о дипломатическом протоколе, официальных визитах и рассадке.",
-placeholder:"Задайте вопрос о протоколе..."
+Русский:{
+welcome:"Добро пожаловать в ProtocolMind. Спросите о дипломатическом протоколе.",
+placeholder:"Задайте вопрос..."
 },
 
 "Azərbaycan dili":{
-welcome:"ProtocolMind-ə xoş gəlmisiniz. Diplomatik protokol və rəsmi səfərlər barədə soruşun.",
+welcome:"ProtocolMind-ə xoş gəlmisiniz. Diplomatik protokol barədə soruşun.",
 placeholder:"Protokol barədə sual verin..."
 },
 
-"Türkçe":{
-welcome:"ProtocolMind'e hoş geldiniz. Diplomatik protokol hakkında soru sorabilirsiniz.",
+Türkçe:{
+welcome:"ProtocolMind'e hoş geldiniz. Diplomatik protokol hakkında sorabilirsiniz.",
 placeholder:"Protokol hakkında sorun..."
 },
 
-"ქართული":{
-welcome:"კეთილი იყოს თქვენი მობრძანება ProtocolMind-ში. ჰკითხეთ დიპლომატიურ პროტოკოლზე.",
-placeholder:"დასვით კითხვა პროტოკოლზე..."
+ქართული:{
+welcome:"კეთილი იყოს თქვენი მობრძანება ProtocolMind-ში.",
+placeholder:"დასვით კითხვა..."
 }
 
 };
 
 function updateLanguage(){
 
-language=document.getElementById("languageSelect").value;
+const lang = document.getElementById("languageSelect").value;
 
-document.getElementById("welcome").innerText=
-translations[language].welcome;
+document.getElementById("welcome").innerText =
+translations[lang].welcome;
 
-document.getElementById("question").placeholder=
-translations[language].placeholder;
+document.getElementById("question").placeholder =
+translations[lang].placeholder;
 
 }
-  async function ask(){
 
-const q=document.getElementById("question").value;
+async function ask(){
+
+const q = document.getElementById("question").value;
 
 if(!q) return;
 
-const chat=document.getElementById("chat");
+const chat = document.getElementById("chat");
 
-chat.innerHTML+=`
-<div class="message user">${q}</div>
-`;
+chat.innerHTML += `<div class="message user">${q}</div>`;
 
 document.getElementById("question").value="";
 
-try{
+const res = await fetch("/api/ask",{
 
-const res=await fetch("/api/ask",{
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({
-question:q,
-language:language
+question:q
 })
+
 });
 
-const data=await res.json();
+const data = await res.json();
 
-chat.innerHTML+=`
-<div class="message assistant">${data.answer}</div>
-`;
+lastAnswer = data.answer;
 
-chat.scrollTop=chat.scrollHeight;
+chat.innerHTML += `<div class="message assistant">${data.answer}</div>`;
 
-}catch(e){
-
-chat.innerHTML+=`
-<div class="message assistant">Error contacting server</div>
-`;
+chat.scrollTop = chat.scrollHeight;
 
 }
+
+async function saveDocument(){
+
+if(!lastAnswer) return alert("No answer to save");
+
+const title = prompt("Document title");
+
+if(!title) return;
+
+await fetch("/api/save-document",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+userEmail:userEmail,
+title:title,
+type:"AI Document",
+content:lastAnswer
+})
+
+});
+
+loadDocuments();
+
+}
+
+async function loadDocuments(){
+
+const res = await fetch("/api/get-documents",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+userEmail:userEmail
+})
+
+});
+
+const data = await res.json();
+
+const docs = document.getElementById("docs");
+
+docs.innerHTML="";
+
+data.documents.forEach(d=>{
+
+const el = document.createElement("div");
+
+el.className="doc";
+
+el.innerText=d.title;
+
+el.onclick=()=>{
+
+document.getElementById("chat").innerHTML +=
+`<div class="message assistant">${d.content}</div>`;
+
+};
+
+docs.appendChild(el);
+
+});
 
 }
 
