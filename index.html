@@ -387,33 +387,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentMode="advice";
 let conversationHistory=[];
 let currentUser=null;
-const DAILY_LIMIT=5;
-
-function getTodayKey(userId){
-const today = new Date();
-return "requests_" + userId + "_" + today.getFullYear()+"_"+today.getMonth()+"_"+today.getDate();
-}
-
-function getRequests(userId){
-let key = getTodayKey(userId || "guest");
-let used = localStorage.getItem(key);
-if(!used){ return 0; }
-return parseInt(used);
-}
-
-function increaseRequests(userId){
-let key = getTodayKey(userId || "guest");
-let used = getRequests(userId);
-localStorage.setItem(key, used + 1);
-}
-
-function showNotice(html, success=false){
-document.getElementById("noticeBox").innerHTML = `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
-}
-
-function clearNotice(){
-document.getElementById("noticeBox").innerHTML = "";
-}
 
 async function signUp(){
 const email = document.getElementById("emailInput").value.trim();
@@ -479,6 +452,14 @@ box.innerText = "Signed in: " + currentUser.email;
 }else{
 box.innerText = "Not signed in";
 }
+}
+
+function showNotice(html, success=false){
+document.getElementById("noticeBox").innerHTML = `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
+}
+
+function clearNotice(){
+document.getElementById("noticeBox").innerHTML = "";
 }
 
 function setMode(mode,el){
@@ -741,14 +722,6 @@ return lower.includes("interpreter") ||
 async function ask(){
 clearNotice();
 
-const userId = currentUser ? currentUser.id : "guest";
-let used = getRequests(userId);
-
-if(used >= DAILY_LIMIT){
-showNotice(`Daily free limit reached (${DAILY_LIMIT} requests). Upgrade to ProtocolMind Pro for unlimited access.`);
-return;
-}
-
 const input=document.getElementById("question");
 const question=input.value.trim();
 const language=document.getElementById("languageSelect").value;
@@ -759,8 +732,6 @@ if(!question) return;
 addMessage("user",question);
 conversationHistory.push({role:"user",content:question});
 input.value="";
-
-increaseRequests(userId);
 
 try{
 const response=await fetch("/api/ask",{
@@ -773,7 +744,8 @@ question,
 mode:currentMode,
 template,
 language,
-history:conversationHistory.slice(-10)
+history:conversationHistory.slice(-10),
+userEmail: currentUser ? currentUser.email : ""
 })
 });
 
