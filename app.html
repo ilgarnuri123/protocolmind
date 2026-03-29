@@ -121,7 +121,6 @@ cursor:pointer;
 </select>
 
 </div>
-
 <div id="chat" class="chat">
 
 <div class="message assistant" id="welcome">
@@ -154,8 +153,8 @@ Welcome to ProtocolMind. Ask about diplomatic protocol.
 
 const SUPABASE_URL = "https://qzpyjgugpisphmajzrnk.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
-  
-const supabase = supabase.createClient(
+
+const supabaseClient = window.supabase.createClient(
 SUPABASE_URL,
 SUPABASE_ANON_KEY
 );
@@ -163,6 +162,19 @@ SUPABASE_ANON_KEY
 let lastAnswer = "";
 let userEmail = "";
 
+async function loadUser(){
+
+const { data } = await supabaseClient.auth.getUser();
+
+if(data?.user){
+
+userEmail = data.user.email;
+
+loadDocuments();
+
+}
+
+}
 const translations = {
 
 English:{
@@ -225,7 +237,8 @@ headers:{
 },
 
 body:JSON.stringify({
-question:q
+question:q,
+userEmail:userEmail
 })
 
 });
@@ -239,10 +252,15 @@ chat.innerHTML += `<div class="message assistant">${data.answer}</div>`;
 chat.scrollTop = chat.scrollHeight;
 
 }
+  async function saveDocument(){
 
-async function saveDocument(){
+if(!lastAnswer){
 
-if(!lastAnswer) return alert("No answer to save");
+alert("Nothing to save");
+
+return;
+
+}
 
 const title = prompt("Document title");
 
@@ -311,6 +329,8 @@ docs.appendChild(el);
 });
 
 }
+
+loadUser();
 
 </script>
 
