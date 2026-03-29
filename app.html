@@ -8,8 +8,7 @@
 
 <title>ProtocolMind</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/auth-ui-js@0.2.7/dist/index.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@supabase/auth-ui-js@0.2.7/dist/style.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
 
@@ -41,17 +40,21 @@ font-weight:bold;
 select{
 padding:6px;
 border-radius:6px;
+background:#1e293b;
+color:white;
+border:none;
 }
   .chat{
 background:#1e293b;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 min-height:350px;
 margin-bottom:15px;
 }
 
 .message{
 margin-bottom:12px;
+line-height:1.5;
 }
 
 .user{
@@ -69,31 +72,84 @@ gap:10px;
 
 input{
 flex:1;
-padding:10px;
-border-radius:8px;
+padding:12px;
+border-radius:10px;
 border:none;
+background:#020617;
+color:white;
 }
 
 button{
-padding:10px 16px;
-border-radius:8px;
+padding:12px 16px;
+border-radius:10px;
 border:none;
 background:#22c55e;
 color:white;
 cursor:pointer;
 }
-  .documents{
-margin-top:30px;
-background:#1e293b;
-padding:15px;
-border-radius:10px;
+
+.auth-card{
+background:#111827;
+padding:30px;
+border-radius:16px;
+max-width:420px;
+margin:20px auto;
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+  .auth-title{
+text-align:center;
+font-size:20px;
+font-weight:600;
 }
 
-.doc{
-background:#334155;
+.auth-input{
+padding:12px;
+border-radius:10px;
+border:1px solid #334155;
+background:#020617;
+color:white;
+font-size:14px;
+}
+
+.auth-btn{
+padding:12px;
+border-radius:10px;
+border:none;
+background:#22c55e;
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+.auth-divider{
+text-align:center;
+color:#64748b;
+font-size:14px;
+}
+
+.auth-social{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.auth-social-btn{
+padding:12px;
+border-radius:10px;
+background:#1e293b;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+.logout-btn{
+margin-top:10px;
+background:#ef4444;
+border:none;
 padding:10px;
-margin-bottom:8px;
-border-radius:6px;
+border-radius:10px;
 cursor:pointer;
 }
 
@@ -104,42 +160,60 @@ cursor:pointer;
 <body>
 
 <div class="container">
-  <div id="auth"></div>
 
 <div class="header">
 
 <div class="title">ProtocolMind</div>
 
-<select id="languageSelect" onchange="updateLanguage()">
+<select id="languageSelect">
 
-<option value="English">English</option>
-<option value="Русский">Русский</option>
-<option value="Azərbaycan dili">Azərbaycan dili</option>
-<option value="Türkçe">Türkçe</option>
-<option value="ქართული">ქართული</option>
+<option>English</option>
+<option>Русский</option>
+<option>Azərbaycan dili</option>
+<option>Türkçe</option>
+<option>ქართული</option>
 
 </select>
 
 </div>
+<div class="auth-card">
 
-  </div>
+<h2 class="auth-title">Sign in to ProtocolMind</h2>
 
-<div class="card">
-  <div class="auth-row">
-    <input id="emailInput" class="auth-input" type="email" placeholder="Email" />
-    <div class="auth-actions">
-      <button class="small-btn" onclick="signUp()">Sign Up</button>
-      <button class="small-btn" onclick="signIn()">Sign In</button>
-      <button class="small-btn" onclick="signOutUser()">Logout</button>
-    </div>
-  </div>
-  <div class="user-status" id="userStatus">Not signed in</div>
+<input 
+id="emailInput"
+class="auth-input"
+type="email"
+placeholder="Enter your email"
+/>
+
+<button class="auth-btn" onclick="signInEmail()">
+Continue with Email
+</button>
+
+<div class="auth-divider">or</div>
+
+<div class="auth-social">
+
+<button class="auth-social-btn" onclick="loginGoogle()">
+Continue with Google
+</button>
+
+<button class="auth-social-btn" onclick="loginMicrosoft()">
+Continue with Microsoft
+</button>
+
+</div>
+
+<button class="logout-btn" onclick="signOutUser()">
+Logout
+</button>
+
 </div>
 
 <div id="chat" class="chat">
-<div id="chat" class="chat">
 
-<div class="message assistant" id="welcome">
+<div class="message assistant">
 Welcome to ProtocolMind. Ask about diplomatic protocol.
 </div>
 
@@ -154,58 +228,75 @@ Welcome to ProtocolMind. Ask about diplomatic protocol.
 <button onclick="saveDocument()">Save</button>
 
 </div>
-
-<div class="documents">
-
-<h3>My Documents</h3>
-
-<div id="docs"></div>
-
-</div>
-
-</div>
-
 <script>
 
-const SUPABASE_URL = "https://qzpyjgugpisphmajzrnk.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
+const SUPABASE_URL="https://qzpyjgugpisphmajzrnk.supabase.co"
+const SUPABASE_KEY="sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW"
 
-const supabaseClient = window.supabase.createClient(
+const supabaseClient=window.supabase.createClient(
 SUPABASE_URL,
-SUPABASE_ANON_KEY
-);
+SUPABASE_KEY
+)
 
-let lastAnswer = "";
-let userEmail = "";
-  async function loadUser(){
+let lastAnswer=""
+let userEmail=""
 
-const { data } = await supabaseClient.auth.getUser();
+async function signInEmail(){
 
-if(data?.user){
+const email=document.getElementById("emailInput").value
 
-userEmail = data.user.email;
+if(!email){
+alert("Enter email")
+return
+}
 
-loadDocuments();
+const {error}=await supabaseClient.auth.signInWithOtp({
+email:email
+})
 
+if(error){
+alert(error.message)
+}else{
+alert("Check your email for login link")
 }
 
 }
 
-async function ask(){
+async function loginGoogle(){
 
-const q = document.getElementById("question").value.trim();
+await supabaseClient.auth.signInWithOAuth({
+provider:"google"
+})
 
-if(!q) return;
+}
 
-const chat = document.getElementById("chat");
+async function loginMicrosoft(){
 
-chat.innerHTML += `<div class="message user">${q}</div>`;
+await supabaseClient.auth.signInWithOAuth({
+provider:"azure"
+})
 
-document.getElementById("question").value = "";
+}
 
-try{
+async function signOutUser(){
 
-const res = await fetch("/api/ask",{
+await supabaseClient.auth.signOut()
+location.reload()
+
+}
+  async function ask(){
+
+const q=document.getElementById("question").value.trim()
+
+if(!q) return
+
+const chat=document.getElementById("chat")
+
+chat.innerHTML+=`<div class="message user">${q}</div>`
+
+document.getElementById("question").value=""
+
+const res=await fetch("/api/ask",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -214,41 +305,30 @@ body:JSON.stringify({
 question:q,
 userEmail:userEmail
 })
-});
+})
 
-const data = await res.json();
+const data=await res.json()
 
-const answer =
-data.answer ||
-data.response ||
-data.result ||
-data.error ||
-data.details ||
-"Server returned no answer";
+const answer=
+data.answer||
+data.response||
+data.result||
+"Server returned no answer"
 
-lastAnswer = answer;
+lastAnswer=answer
 
-chat.innerHTML += `<div class="message assistant">${answer}</div>`;
+chat.innerHTML+=`<div class="message assistant">${answer}</div>`
 
-chat.scrollTop = chat.scrollHeight;
-
-}catch(e){
-
-chat.innerHTML += `<div class="message assistant">Error: ${e.message}</div>`;
+chat.scrollTop=chat.scrollHeight
 
 }
 
-}
-  async function saveDocument(){
+async function saveDocument(){
 
 if(!lastAnswer){
-alert("Nothing to save");
-return;
+alert("Nothing to save")
+return
 }
-
-const title = prompt("Document title");
-
-if(!title) return;
 
 await fetch("/api/save-document",{
 method:"POST",
@@ -257,75 +337,19 @@ headers:{
 },
 body:JSON.stringify({
 userEmail:userEmail,
-title:title,
-type:"AI Document",
+title:"AI document",
+type:"AI",
 content:lastAnswer
 })
-});
-
-loadDocuments();
-
-}
-
-async function loadDocuments(){
-
-const res = await fetch("/api/get-documents",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-userEmail:userEmail
 })
-});
-
-const data = await res.json();
-
-const docs = document.getElementById("docs");
-
-docs.innerHTML="";
-
-data.documents.forEach(d=>{
-
-const el = document.createElement("div");
-
-el.className="doc";
-el.innerText=d.title;
-
-el.onclick=()=>{
-document.getElementById("chat").innerHTML +=
-`<div class="message assistant">${d.content}</div>`;
-};
-
-docs.appendChild(el);
-
-});
 
 }
 
 document.getElementById("question").addEventListener("keydown",function(e){
 if(e.key==="Enter"){
-ask();
+ask()
 }
-});
-
-  const authContainer = document.getElementById("auth");
-
-supabaseClient.auth.getSession().then(({ data }) => {
-
-if(!data.session){
-
-new supabase.AuthUI({
-supabaseClient: supabaseClient
-}).start('#auth',{
-providers: ['email']
-});
-
-}
-
-});
-  
-loadUser();
+})
 
 </script>
 
