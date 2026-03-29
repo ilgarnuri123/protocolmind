@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProtocolMind App</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<style>
+:root{
+  --bg:#0b1220;
+  --bg-soft:#111827;
+  --panel:#0f172a;
+  --panel-2:#172033;
+  --line:#233146;
+  --line-soft:#334155;
+  --text:#e5eefc;
+  --muted:#94a3b8;
+  --accent:#22c55e;
+  --accent-2:#16a34a;
+  --accent-soft:rgba(34,197,94,.14);
+  --danger:#7f1d1d;
+  --danger-soft:#fecaca;
+  --success:#14532d;
+  --success-soft:#dcfce7;
+  --doc-bg:#f8fafc;
+  --doc-text:#0f172a;
+  --shadow:0 10px 30px rgba(0,0,0,.25);
+  --radius:18px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Inter,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(34,197,94,.08), transparent 22%),
+    linear-gradient(180deg, #09111d 0%, #0b1220 100%);
+  color:var(--text);
+}
+
+body{
+  min-height:100vh;
+}
+
+.app-shell{
+  max-width:1000px;
+  margin:0 auto;
+  padding:16px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  background:rgba(15,23,42,.82);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  box-shadow:var(--shadow);
+  margin-bottom:14px;
+}
+
+.brand{
+  min-width:0;
+}
+
+.brand-title{
+  font-size:24px;
+  font-weight:900;
+  letter-spacing:.01em;
+}
+
+.brand-subtitle{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+.topbar-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.top-select{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line-soft);
+  background:#0b1324;
+  color:var(--text);
+}
+
+.top-btn{
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.top-btn.primary{
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:white;
+}
+
+.top-btn.secondary{
+  background:#1e293b;
+  color:white;
+  border:1px solid var(--line-soft);
+}
+
+.auth-card,
+.mode-card,
+.chat-card,
+.quick-card{
+  background:rgba(15,23,42,.92);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.auth-card{
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.auth-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.auth-input{
+  flex:1;
+  min-width:220px;
+  padding:12px 14px;
+  border:none;
+  outline:none;
+  border-radius:12px;
+  background:#0b1324;
+  color:var(--text);
+  border:1px solid var(--line-soft);
+}
+
+.auth-input::placeholder{
+  color:#7f8ea3;
+}
+
+.auth-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.small-btn{
+  padding:12px 14px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  background:#1e293b;
+  color:white;
+  border:1px solid var(--line-soft);
+}
+
+.user-status{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.mode-card{
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.mode-scroll{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+
+.mode-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.mode-btn{
+  flex:0 0 auto;
+  padding:11px 15px;
+  border-radius:999px;
+  border:1px solid var(--line-soft);
+  background:#10192b;
+  color:var(--text);
+  cursor:pointer;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.mode-btn.active{
+  background:var(--accent-soft);
+  color:#dcfce7;
+  border-color:rgba(34,197,94,.40);
+}
+
+.mode-label{
+  margin-top:12px;
+  color:#dbeafe;
+  font-size:14px;
+}
+
+.quick-card{
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.quick-title{
+  font-size:12px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+
+.quick-list{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+
+.quick-list::-webkit-scrollbar{
+  display:none;
+}
+
+.quick-btn{
+  flex:0 0 auto;
+  border:none;
+  border-radius:12px;
+  padding:10px 12px;
+  background:#162238;
+  color:var(--text);
+  cursor:pointer;
+  border:1px solid var(--line-soft);
+  white-space:nowrap;
+}
+
+.diagram-wrap{
+  margin-bottom:14px;
+}
+
+.diagram-shell{
+  padding:14px;
+  border-radius:16px;
+  border:1px dashed var(--line-soft);
+  background:#0c1526;
+}
+
+.seat-section-title{
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin:10px 0 8px;
+  text-align:center;
+}
+
+.seat-row{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0;
+}
+
+.seat{
+  min-width:58px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#172338;
+  border:1px solid var(--line-soft);
+  text-align:center;
+  font-size:12px;
+}
+
+.principal{
+  background:#14532d;
+  border-color:#22c55e;
+  font-weight:800;
+}
+
+.interpreter{
+  background:#3f2a12;
+  border-color:#f59e0b;
+}
+
+.table-box{
+  display:flex;
+  justify-content:center;
+  margin:12px 0;
+}
+
+.table{
+  padding:14px 38px;
+  border-radius:14px;
+  background:#0b1324;
+  border:1px solid #475569;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.chat-card{
+  padding:14px;
+}
+
+.chat-box{
+  min-height:420px;
+  max-height:62vh;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:6px 2px 10px;
+}
+
+.message-wrapper{
+  display:flex;
+  flex-direction:column;
+}
+
+.message{
+  max-width:82%;
+  padding:14px 16px;
+  border-radius:16px;
+  white-space:pre-wrap;
+  line-height:1.7;
+  font-size:15px;
+}
+
+.user{
+  align-self:flex-end;
+  background:linear-gradient(180deg,#2563eb,#1d4ed8);
+  color:white;
+}
+
+.assistant{
+  align-self:flex-start;
+  background:#162033;
+  border:1px solid var(--line-soft);
+  color:#e2e8f0;
+}
+
+.document-card{
+  align-self:flex-start;
+  width:min(92%,860px);
+  background:var(--doc-bg);
+  color:var(--doc-text);
+  border:1px solid #dbe4ef;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  white-space:pre-wrap;
+  line-height:1.75;
+}
+
+.document-title{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#475569;
+  margin-bottom:10px;
+}
+
+.message-actions{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+
+.action-btn{
+  font-size:12px;
+  padding:6px 9px;
+  border-radius:10px;
+  border:1px solid var(--line-soft);
+  background:#162033;
+  color:white;
+  cursor:pointer;
+}
+
+.notice{
+  margin-top:10px;
+}
+
+.limit-warning{
+  background:#4c1118;
+  color:#fee2e2;
+  border:1px solid #7f1d1d;
+  padding:12px 14px;
+  border-radius:14px;
+}
+
+.success-box{
+  background:#0f3a22;
+  color:#dcfce7;
+  border:1px solid #166534;
+  padding:12px 14px;
+  border-radius:14px;
+}
+
+.composer{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.composer-input{
+  flex:1;
+}
+
+#question{
+  width:100%;
+  padding:16px 16px;
+  border:none;
+  outline:none;
+  border-radius:16px;
+  font-size:15px;
+  background:#0b1324;
+  color:var(--text);
+  border:1px solid var(--line-soft);
+}
+
+#question::placeholder{
+  color:#7f8ea3;
+}
+
+.ask-btn,
+.clear-btn{
+  border:none;
+  border-radius:16px;
+  padding:16px 18px;
+  cursor:pointer;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ask-btn{
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:white;
+}
+
+.clear-btn{
+  background:#334155;
+  color:white;
+}
+
+.footer-note{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:14px;
+}
+
+@media (max-width: 760px){
+  .app-shell{
+    padding:12px;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .topbar-actions{
+    width:100%;
+    justify-content:flex-start;
+  }
+
+  .composer{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .message,
+  .document-card{
+    max-width:100%;
+    width:100%;
+  }
+
+  .chat-box{
+    max-height:none;
+    min-height:48vh;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-title" id="brandTitle">ProtocolMind</div>
+      <div class="brand-subtitle" id="subtitleText">AI Diplomatic Protocol Assistant</div>
+    </div>
+
+    <div class="topbar-actions">
+      <select id="languageSelect" class="top-select" onchange="updateInterfaceLanguage()">
+        <option value="English">English</option>
+        <option value="Azərbaycan dili">Azərbaycan dili</option>
+        <option value="Русский">Русский</option>
+        <option value="Türkçe">Türkçe</option>
+      </select>
+
+      <select id="templateSelect" class="top-select">
+        <option value="none">No template</option>
+        <option value="invitation_letter">Invitation Letter</option>
+        <option value="thank_you_letter">Thank You Letter</option>
+        <option value="note_verbale">Note Verbale</option>
+        <option value="briefing_note">Briefing Note</option>
+        <option value="meeting_scenario">Meeting Scenario</option>
+      </select>
+
+      <a href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank" style="text-decoration:none;">
+        <button class="top-btn primary" id="topUpgradeBtn">Upgrade to ProtocolMind Pro</button>
+      </a>
+    </div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-row">
+      <input id="emailInput" class="auth-input" type="email" placeholder="Email">
+      <div class="auth-actions">
+        <button class="small-btn" id="signUpBtn" onclick="signUp()">Sign Up</button>
+        <button class="small-btn" id="signInBtn" onclick="signIn()">Sign In</button>
+        <button class="small-btn" id="logoutBtn" onclick="signOutUser()">Logout</button>
+      </div>
+    </div>
+    <div class="user-status" id="userStatus">Not signed in</div>
+  </div>
+
+  <div class="mode-card">
+    <div class="mode-scroll">
+      <button class="mode-btn active" data-mode="advice" onclick="setMode('advice',this)">Protocol Advice</button>
+      <button class="mode-btn" data-mode="seating" onclick="setMode('seating',this)">Seating Plan</button>
+      <button class="mode-btn" data-mode="checklist" onclick="setMode('checklist',this)">Checklist</button>
+      <button class="mode-btn" data-mode="visit_program" onclick="setMode('visit_program',this)">Visit Program</button>
+      <button class="mode-btn" data-mode="official_letter" onclick="setMode('official_letter',this)">Official Letter</button>
+      <button class="mode-btn" data-mode="protocol_pack" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
+    </div>
+    <div class="mode-label" id="modeLabel">Current mode: Protocol Advice</div>
+  </div>
+
+  <div class="quick-card">
+    <div class="quick-title" id="quickTitle">Quick prompts</div>
+    <div class="quick-list">
+      <button class="quick-btn" id="quick1" onclick="setQuickPrompt(quickPrompts[currentLanguage()].q1)">Draft invitation letter</button>
+      <button class="quick-btn" id="quick2" onclick="setQuickPrompt(quickPrompts[currentLanguage()].q2)">Create visit program</button>
+      <button class="quick-btn" id="quick3" onclick="setQuickPrompt(quickPrompts[currentLanguage()].q3)">Generate protocol pack</button>
+      <button class="quick-btn" id="quick4" onclick="setQuickPrompt(quickPrompts[currentLanguage()].q4)">Generate seating plan</button>
+    </div>
+  </div>
+
+  <div class="diagram-wrap" id="diagramContainer"></div>
+
+  <div class="chat-card">
+    <div class="chat-box" id="chatBox">
+      <div class="message assistant" id="welcomeMessage">
+Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
+      </div>
+    </div>
+
+    <div class="composer">
+      <div class="composer-input">
+        <input id="question" placeholder="Ask about diplomatic protocol...">
+      </div>
+      <button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
+      <button class="clear-btn" id="clearBtn" onclick="clearChat()">Clear</button>
+    </div>
+
+    <div class="notice" id="noticeBox"></div>
+  </div>
+
+  <div class="footer-note" id="footerNote">
+    ProtocolMind is designed for practical protocol work, official drafting, and institutional workflow support.
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://qzpyjgugpisphmajzrnk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentMode="advice";
+let conversationHistory=[];
+let currentUser=null;
+
+const translations = {
+  "English": {
+    subtitle: "AI Diplomatic Protocol Assistant",
+    signUp: "Sign Up",
+    signIn: "Sign In",
+    logout: "Logout",
+    notSignedIn: "Not signed in",
+    signedIn: "Signed in:",
+    upgrade: "Upgrade to ProtocolMind Pro",
+    quickTitle: "Quick prompts",
+    ask: "Ask",
+    clear: "Clear",
+    footer: "ProtocolMind is designed for practical protocol work, official drafting, and institutional workflow support.",
+    welcome: "Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.",
+    placeholders: {
+      email: "Email",
+      advice: "Ask about diplomatic protocol...",
+      seating: "Describe the meeting format, delegation size, table type, and interpreters...",
+      checklist: "Example: checklist for receiving a parliamentary delegation...",
+      visit_program: "Example: one-day official visit program for a parliamentary speaker...",
+      official_letter: "Example: draft an invitation letter for an official visit...",
+      protocol_pack: "Example: protocol pack for an official visit with a 6-member delegation..."
+    },
+    modes: {
+      advice: "Protocol Advice",
+      seating: "Seating Plan",
+      checklist: "Checklist",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack"
+    },
+    currentMode: "Current mode:",
+    templates: {
+      none: "No template",
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario"
+    },
+    actions: {
+      copy: "Copy",
+      copied: "Copied",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    notices: {
+      enterEmail: "Enter your email first.",
+      signLink: "Check your email. Supabase sent you a login link.",
+      signUpError: "Sign up error:",
+      signInError: "Sign in error:",
+      loggedOut: "Logged out.",
+      chatCleared: "Chat cleared."
+    },
+    documentLabels: {
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack",
+      checklist: "Checklist"
+    },
+    diagram: {
+      hostSide: "Host Side",
+      guestSide: "Guest Side",
+      table: "TABLE",
+      hostPrincipal: "HOST PRINCIPAL",
+      guestPrincipal: "GUEST PRINCIPAL",
+      interpreter: "INT"
+    }
+  },
+
+  "Русский": {
+    subtitle: "ИИ-помощник по дипломатическому протоколу",
+    signUp: "Регистрация",
+    signIn: "Войти",
+    logout: "Выйти",
+    notSignedIn: "Вы не вошли",
+    signedIn: "Вошли как:",
+    upgrade: "Перейти на ProtocolMind Pro",
+    quickTitle: "Быстрые запросы",
+    ask: "Спросить",
+    clear: "Очистить",
+    footer: "ProtocolMind создан для практической работы по протоколу, официальных текстов и институциональных рабочих процессов.",
+    welcome: "Добро пожаловать в ProtocolMind. Спрашивайте о дипломатическом протоколе, официальных визитах, рассадке, checklist, программе визита, официальных письмах или запросите полный Protocol Pack.",
+    placeholders: {
+      email: "Email",
+      advice: "Задайте вопрос о дипломатическом протоколе...",
+      seating: "Опишите формат встречи, размер делегации, тип стола и переводчиков...",
+      checklist: "Например: чеклист для приема парламентской делегации...",
+      visit_program: "Например: однодневная программа визита спикера парламента...",
+      official_letter: "Например: подготовьте письмо-приглашение на официальный визит...",
+      protocol_pack: "Например: протокольный пакет для официального визита делегации из 6 человек..."
+    },
+    modes: {
+      advice: "Протокольный совет",
+      seating: "Схема рассадки",
+      checklist: "Чеклист",
+      visit_program: "Программа визита",
+      official_letter: "Официальное письмо",
+      protocol_pack: "Протокольный пакет"
+    },
+    currentMode: "Текущий режим:",
+    templates: {
+      none: "Без шаблона",
+      invitation_letter: "Письмо-приглашение",
+      thank_you_letter: "Благодарственное письмо",
+      note_verbale: "Вербальная нота",
+      briefing_note: "Брифинг-нот",
+      meeting_scenario: "Сценарий встречи"
+    },
+    actions: {
+      copy: "Копировать",
+      copied: "Скопировано",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    notices: {
+      enterEmail: "Сначала введите email.",
+      signLink: "Проверьте почту. Supabase отправил вам ссылку для входа.",
+      signUpError: "Ошибка регистрации:",
+      signInError: "Ошибка входа:",
+      loggedOut: "Вы вышли.",
+      chatCleared: "Чат очищен."
+    },
+    documentLabels: {
+      invitation_letter: "Письмо-приглашение",
+      thank_you_letter: "Благодарственное письмо",
+      note_verbale: "Вербальная нота",
+      briefing_note: "Брифинг-нот",
+      meeting_scenario: "Сценарий встречи",
+      visit_program: "Программа визита",
+      official_letter: "Официальное письмо",
+      protocol_pack: "Протокольный пакет",
+      checklist: "Чеклист"
+    },
+    diagram: {
+      hostSide: "Сторона хозяев",
+      guestSide: "Сторона гостей",
+      table: "СТОЛ",
+      hostPrincipal: "ГЛАВНЫЙ ХОЗЯИН",
+      guestPrincipal: "ГЛАВНЫЙ ГОСТЬ",
+      interpreter: "ПЕРЕВ"
+    }
+  },
+
+  "Azərbaycan dili": {
+    subtitle: "Süni İntellekt Diplomatik Protokol Köməkçisi",
+    signUp: "Qeydiyyat",
+    signIn: "Daxil ol",
+    logout: "Çıxış",
+    notSignedIn: "Daxil olunmayıb",
+    signedIn: "Daxil olub:",
+    upgrade: "ProtocolMind Pro-ya keç",
+    quickTitle: "Sürətli sorğular",
+    ask: "Soruş",
+    clear: "Təmizlə",
+    footer: "ProtocolMind praktik protokol işi, rəsmi mətnlər və institusional iş axınları üçün hazırlanıb.",
+    welcome: "ProtocolMind-ə xoş gəlmisiniz. Diplomatik protokol, rəsmi səfərlər, seating plan, checklist, visit program, official letter və ya tam Protocol Pack barədə soruşun.",
+    placeholders: {
+      email: "Email",
+      advice: "Diplomatik protokol barədə sual verin...",
+      seating: "Görüş formatını, nümayəndə heyətinin sayını, masa növünü və tərcüməçiləri təsvir edin...",
+      checklist: "Məsələn: parlament nümayəndə heyətinin qəbulu üçün checklist...",
+      visit_program: "Məsələn: parlament sədrinin bir günlük səfər proqramı...",
+      official_letter: "Məsələn: rəsmi səfər üçün dəvət məktubu hazırlayın...",
+      protocol_pack: "Məsələn: 6 nəfərlik nümayəndə heyəti üçün tam protokol paketi..."
+    },
+    modes: {
+      advice: "Protokol məsləhəti",
+      seating: "Oturma planı",
+      checklist: "Checklist",
+      visit_program: "Səfər proqramı",
+      official_letter: "Rəsmi məktub",
+      protocol_pack: "Protokol paketi"
+    },
+    currentMode: "Cari rejim:",
+    templates: {
+      none: "Şablon yoxdur",
+      invitation_letter: "Dəvət məktubu",
+      thank_you_letter: "Təşəkkür məktubu",
+      note_verbale: "Nota verbal",
+      briefing_note: "Brifinq qeydi",
+      meeting_scenario: "Görüş ssenarisi"
+    },
+    actions: {
+      copy: "Kopyala",
+      copied: "Kopyalandı",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    notices: {
+      enterEmail: "Əvvəlcə email daxil edin.",
+      signLink: "Emailinizi yoxlayın. Supabase giriş linki göndərdi.",
+      signUpError: "Qeydiyyat xətası:",
+      signInError: "Giriş xətası:",
+      loggedOut: "Çıxış edildi.",
+      chatCleared: "Söhbət təmizləndi."
+    },
+    documentLabels: {
+      invitation_letter: "Dəvət məktubu",
+      thank_you_letter: "Təşəkkür məktubu",
+      note_verbale: "Nota verbal",
+      briefing_note: "Brifinq qeydi",
+      meeting_scenario: "Görüş ssenarisi",
+      visit_program: "Səfər proqramı",
+      official_letter: "Rəsmi məktub",
+      protocol_pack: "Protokol paketi",
+      checklist: "Checklist"
+    },
+    diagram: {
+      hostSide: "Ev sahibi tərəfi",
+      guestSide: "Qonaq tərəfi",
+      table: "MASA",
+      hostPrincipal: "EV SAHİBİ PRİNSİPAL",
+      guestPrincipal: "QONAQ PRİNSİPAL",
+      interpreter: "TƏRC"
+    }
+  },
+
+  "Türkçe": {
+    subtitle: "Yapay Zekâ Diplomatik Protokol Asistanı",
+    signUp: "Kayıt Ol",
+    signIn: "Giriş Yap",
+    logout: "Çıkış",
+    notSignedIn: "Giriş yapılmadı",
+    signedIn: "Giriş yapan:",
+    upgrade: "ProtocolMind Pro'ya geç",
+    quickTitle: "Hızlı istemler",
+    ask: "Sor",
+    clear: "Temizle",
+    footer: "ProtocolMind pratik protokol çalışmaları, resmî metinler ve kurumsal iş akışları için tasarlanmıştır.",
+    welcome: "ProtocolMind'e hoş geldiniz. Diplomatik protokol, resmî ziyaretler, seating plan, checklist, visit program, official letter veya tam Protocol Pack hakkında sorabilirsiniz.",
+    placeholders: {
+      email: "Email",
+      advice: "Diplomatik protokol hakkında soru sorun...",
+      seating: "Toplantı formatını, heyet büyüklüğünü, masa tipini ve tercümanları açıklayın...",
+      checklist: "Örnek: parlamento heyetinin kabulü için checklist...",
+      visit_program: "Örnek: parlamento başkanı için bir günlük ziyaret programı...",
+      official_letter: "Örnek: resmî ziyaret için davet mektubu hazırlayın...",
+      protocol_pack: "Örnek: 6 kişilik heyet için tam protokol paketi..."
+    },
+    modes: {
+      advice: "Protokol danışmanlığı",
+      seating: "Oturma düzeni",
+      checklist: "Kontrol listesi",
+      visit_program: "Ziyaret programı",
+      official_letter: "Resmî mektup",
+      protocol_pack: "Protokol paketi"
+    },
+    currentMode: "Geçerli mod:",
+    templates: {
+      none: "Şablon yok",
+      invitation_letter: "Davet mektubu",
+      thank_you_letter: "Teşekkür mektubu",
+      note_verbale: "Nota verbale",
+      briefing_note: "Brifing notu",
+      meeting_scenario: "Toplantı senaryosu"
+    },
+    actions: {
+      copy: "Kopyala",
+      copied: "Kopyalandı",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    notices: {
+      enterEmail: "Önce email girin.",
+      signLink: "Emailinizi kontrol edin. Supabase giriş bağlantısı gönderdi.",
+      signUpError: "Kayıt hatası:",
+      signInError: "Giriş hatası:",
+      loggedOut: "Çıkış yapıldı.",
+      chatCleared: "Sohbet temizlendi."
+    },
+    documentLabels: {
+      invitation_letter: "Davet mektubu",
+      thank_you_letter: "Teşekkür mektubu",
+      note_verbale: "Nota verbale",
+      briefing_note: "Brifing notu",
+      meeting_scenario: "Toplantı senaryosu",
+      visit_program: "Ziyaret programı",
+      official_letter: "Resmî mektup",
+      protocol_pack: "Protokol paketi",
+      checklist: "Kontrol listesi"
+    },
+    diagram: {
+      hostSide: "Ev sahibi tarafı",
+      guestSide: "Misafir tarafı",
+      table: "MASA",
+      hostPrincipal: "EV SAHİBİ ASIL",
+      guestPrincipal: "MİSAFİR ASIL",
+      interpreter: "TERC"
+    }
+  }
+};
+
+const quickPrompts = {
+  "English": {
+    q1: "Draft an official invitation letter for a parliamentary delegation to visit Baku",
+    q2: "Create a one-day official visit program for a parliamentary speaker arriving at 10:00",
+    q3: "Protocol pack for an official parliamentary visit with a 6-member delegation",
+    q4: "Bilateral meeting between the Speaker and a foreign parliamentary delegation of 6 members, rectangular table, interpreters present"
+  },
+  "Русский": {
+    q1: "Подготовь официальное письмо-приглашение парламентской делегации в Баку",
+    q2: "Составь однодневную программу официального визита спикера парламента с прибытием в 10:00",
+    q3: "Протокольный пакет для официального парламентского визита делегации из 6 человек",
+    q4: "Двусторонняя встреча спикера и иностранной парламентской делегации из 6 человек, прямоугольный стол, присутствуют переводчики"
+  },
+  "Azərbaycan dili": {
+    q1: "Parlament nümayəndə heyətinin Bakıya səfəri üçün rəsmi dəvət məktubu hazırla",
+    q2: "Saat 10:00-da gələn parlament sədri üçün bir günlük rəsmi səfər proqramı hazırla",
+    q3: "6 nəfərlik parlament nümayəndə heyətinin rəsmi səfəri üçün protokol paketi hazırla",
+    q4: "Spiker ilə 6 nəfərlik xarici parlament nümayəndə heyəti arasında ikitərəfli görüş, düzbucaqlı masa, tərcüməçilər iştirak edir"
+  },
+  "Türkçe": {
+    q1: "Bir parlamento heyetinin Bakü ziyareti için resmî davet mektubu hazırla",
+    q2: "Saat 10:00'da gelen bir parlamento başkanı için bir günlük resmî ziyaret programı oluştur",
+    q3: "6 kişilik bir parlamento heyeti için protokol paketi hazırla",
+    q4: "Meclis Başkanı ile 6 kişilik yabancı parlamento heyeti arasında ikili toplantı, dikdörtgen masa, tercümanlar mevcut"
+  }
+};
+
+function currentLanguage(){
+  return localStorage.getItem("protocolmind_lang") || document.getElementById("languageSelect").value || "English";
+}
+
+function t(){
+  return translations[currentLanguage()] || translations["English"];
+}
+
+function setSavedLanguage(lang){
+  localStorage.setItem("protocolmind_lang", lang);
+}
+
+function updateInterfaceLanguage(){
+  const lang = document.getElementById("languageSelect").value;
+  setSavedLanguage(lang);
+
+  document.documentElement.lang = lang === "Русский" ? "ru" : lang === "Azərbaycan dili" ? "az" : lang === "Türkçe" ? "tr" : "en";
+
+  document.getElementById("subtitleText").innerText = t().subtitle;
+  document.getElementById("topUpgradeBtn").innerText = t().upgrade;
+  document.getElementById("signUpBtn").innerText = t().signUp;
+  document.getElementById("signInBtn").innerText = t().signIn;
+  document.getElementById("logoutBtn").innerText = t().logout;
+  document.getElementById("quickTitle").innerText = t().quickTitle;
+  document.getElementById("askBtn").innerText = t().ask;
+  document.getElementById("clearBtn").innerText = t().clear;
+  document.getElementById("footerNote").innerText = t().footer;
+  document.getElementById("welcomeMessage").innerText = t().welcome;
+  document.getElementById("emailInput").placeholder = t().placeholders.email;
+
+  updateTemplateLabels();
+  updateModeButtons();
+  updateModeLabel();
+  updatePlaceholder();
+  updateQuickButtons();
+  updateUserStatus();
+}
+
+function updateTemplateLabels(){
+  const select = document.getElementById("templateSelect");
+  [...select.options].forEach(opt=>{
+    opt.text = t().templates[opt.value];
+  });
+}
+
+function updateModeButtons(){
+  document.querySelectorAll(".mode-btn").forEach(btn=>{
+    const mode = btn.dataset.mode;
+    btn.innerText = t().modes[mode];
+  });
+}
+
+function updateModeLabel(){
+  document.getElementById("modeLabel").innerText = `${t().currentMode} ${t().modes[currentMode]}`;
+}
+
+function updatePlaceholder(){
+  document.getElementById("question").placeholder = t().placeholders[currentMode] || t().placeholders.advice;
+}
+
+function updateQuickButtons(){
+  document.getElementById("quick1").innerText = quickPrompts[currentLanguage()].q1;
+  document.getElementById("quick2").innerText = quickPrompts[currentLanguage()].q2;
+  document.getElementById("quick3").innerText = quickPrompts[currentLanguage()].q3;
+  document.getElementById("quick4").innerText = quickPrompts[currentLanguage()].q4;
+}
+
+async function signUp(){
+  const email = document.getElementById("emailInput").value.trim();
+  if(!email){
+    showNotice(t().notices.enterEmail);
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email: email,
+    options: { shouldCreateUser: true }
+  });
+
+  if(error){
+    showNotice(`${t().notices.signUpError} ${error.message}`);
+    return;
+  }
+
+  showNotice(t().notices.signLink, true);
+}
+
+async function signIn(){
+  const email = document.getElementById("emailInput").value.trim();
+  if(!email){
+    showNotice(t().notices.enterEmail);
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email: email,
+    options: { shouldCreateUser: true }
+  });
+
+  if(error){
+    showNotice(`${t().notices.signInError} ${error.message}`);
+    return;
+  }
+
+  showNotice(t().notices.signLink, true);
+}
+
+async function signOutUser(){
+  await supabaseClient.auth.signOut();
+  currentUser=null;
+  updateUserStatus();
+  showNotice(t().notices.loggedOut, true);
+}
+
+async function loadUser(){
+  const { data } = await supabaseClient.auth.getUser();
+  currentUser = data?.user || null;
+  updateUserStatus();
+}
+
+function updateUserStatus(){
+  const box = document.getElementById("userStatus");
+  if(currentUser){
+    box.innerText = `${t().signedIn} ${currentUser.email}`;
+  }else{
+    box.innerText = t().notSignedIn;
+  }
+}
+
+function showNotice(html, success=false){
+  document.getElementById("noticeBox").innerHTML =
+    `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
+}
+
+function clearNotice(){
+  document.getElementById("noticeBox").innerHTML = "";
+}
+
+function setQuickPrompt(text){
+  document.getElementById("question").value = text;
+  document.getElementById("question").focus();
+}
+
+function setMode(mode,el){
+  currentMode = mode;
+  document.querySelectorAll(".mode-btn").forEach(btn=>btn.classList.remove("active"));
+  el.classList.add("active");
+  updateModeLabel();
+  updatePlaceholder();
+}
+
+function escapeHtml(text){
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function downloadTxtFile(text, filename="protocolmind.txt"){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadDocFile(text, filename="protocolmind.doc"){
+  const html = `
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${filename}</title>
+</head>
+<body>
+<pre style="font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.7;">${escapeHtml(text)}</pre>
+</body>
+</html>`;
+  const blob = new Blob([html], {type:"application/msword"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function buildFilename(prefix){
+  const now = new Date();
+  const datePart = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+  return `${prefix}-${datePart}`;
+}
+
+function isDocumentOutput(){
+  const template = document.getElementById("templateSelect").value;
+  return currentMode==="visit_program" ||
+         currentMode==="official_letter" ||
+         currentMode==="protocol_pack" ||
+         template!=="none";
+}
+
+function documentLabel(){
+  const template = document.getElementById("templateSelect").value;
+
+  if(template!=="none"){
+    return t().documentLabels[template];
+  }
+  if(currentMode==="visit_program") return t().documentLabels.visit_program;
+  if(currentMode==="official_letter") return t().documentLabels.official_letter;
+  if(currentMode==="protocol_pack") return t().documentLabels.protocol_pack;
+  if(currentMode==="checklist") return t().documentLabels.checklist;
+  return "Document";
+}
+
+function addMessage(role,text){
+  const chatBox = document.getElementById("chatBox");
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "message-wrapper";
+  wrapper.style.alignItems = role==="user" ? "flex-end" : "flex-start";
+
+  let contentBlock;
+
+  if(role==="assistant" && isDocumentOutput()){
+    contentBlock = document.createElement("div");
+    contentBlock.className = "document-card";
+
+    const title = document.createElement("div");
+    title.className = "document-title";
+    title.innerText = documentLabel();
+
+    const body = document.createElement("div");
+    body.innerText = text;
+
+    contentBlock.appendChild(title);
+    contentBlock.appendChild(body);
+  } else {
+    contentBlock = document.createElement("div");
+    contentBlock.className = "message " + role;
+    contentBlock.innerText = text;
+  }
+
+  wrapper.appendChild(contentBlock);
+
+  if(role==="assistant"){
+    const actions = document.createElement("div");
+    actions.className = "message-actions";
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "action-btn";
+    copyBtn.innerText = t().actions.copy;
+    copyBtn.onclick = function(){
+      navigator.clipboard.writeText(text);
+      copyBtn.innerText = t().actions.copied;
+      setTimeout(()=>{ copyBtn.innerText = t().actions.copy; },1500);
+    };
+
+    const txtBtn = document.createElement("button");
+    txtBtn.className = "action-btn";
+    txtBtn.innerText = t().actions.txt;
+    txtBtn.onclick = function(){
+      let prefix="protocolmind-answer";
+      if(currentMode==="visit_program") prefix="visit-program";
+      if(currentMode==="official_letter") prefix="official-letter";
+      if(currentMode==="protocol_pack") prefix="protocol-pack";
+      if(currentMode==="checklist") prefix="protocol-checklist";
+      const template = document.getElementById("templateSelect").value;
+      if(template!=="none") prefix = template.replaceAll("_","-");
+      downloadTxtFile(text, buildFilename(prefix)+".txt");
+    };
+
+    const docBtn = document.createElement("button");
+    docBtn.className = "action-btn";
+    docBtn.innerText = t().actions.doc;
+    docBtn.onclick = function(){
+      let prefix="protocolmind-answer";
+      if(currentMode==="visit_program") prefix="visit-program";
+      if(currentMode==="official_letter") prefix="official-letter";
+      if(currentMode==="protocol_pack") prefix="protocol-pack";
+      if(currentMode==="checklist") prefix="protocol-checklist";
+      const template = document.getElementById("templateSelect").value;
+      if(template!=="none") prefix = template.replaceAll("_","-");
+      downloadDocFile(text, buildFilename(prefix)+".doc");
+    };
+
+    actions.appendChild(copyBtn);
+    actions.appendChild(txtBtn);
+    actions.appendChild(docBtn);
+    wrapper.appendChild(actions);
+  }
+
+  chatBox.appendChild(wrapper);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function clearChat(){
+  conversationHistory = [];
+  document.getElementById("chatBox").innerHTML = `<div class="message assistant">${t().notices.chatCleared}</div>`;
+  document.getElementById("diagramContainer").innerHTML = "";
+  clearNotice();
+}
+
+function drawStructuredSeatingDiagram(hostCount, guestCount, hasInterpreters=false){
+  const container = document.getElementById("diagramContainer");
+  container.innerHTML = "";
+
+  const shell = document.createElement("div");
+  shell.className = "diagram-shell";
+
+  const hostTitle = document.createElement("div");
+  hostTitle.className = "seat-section-title";
+  hostTitle.innerText = t().diagram.hostSide;
+
+  const hostRow = document.createElement("div");
+  hostRow.className = "seat-row";
+
+  for(let i=1;i<=hostCount;i++){
+    const seat = document.createElement("div");
+    seat.className = "seat" + (i===Math.ceil(hostCount/2) ? " principal" : "");
+    seat.innerText = i===Math.ceil(hostCount/2) ? t().diagram.hostPrincipal : "H"+i;
+    hostRow.appendChild(seat);
+  }
+
+  shell.appendChild(hostTitle);
+  shell.appendChild(hostRow);
+
+  if(hasInterpreters){
+    const hostInterp = document.createElement("div");
+    hostInterp.className = "seat-row";
+    hostInterp.innerHTML = `<div class="seat interpreter">${t().diagram.interpreter}</div>`;
+    shell.appendChild(hostInterp);
+  }
+
+  const tableWrap = document.createElement("div");
+  tableWrap.className = "table-box";
+  const table = document.createElement("div");
+  table.className = "table";
+  table.innerText = t().diagram.table;
+  tableWrap.appendChild(table);
+
+  const guestTitle = document.createElement("div");
+  guestTitle.className = "seat-section-title";
+  guestTitle.innerText = t().diagram.guestSide;
+
+  const guestRow = document.createElement("div");
+  guestRow.className = "seat-row";
+
+  for(let i=1;i<=guestCount;i++){
+    const seat = document.createElement("div");
+    seat.className = "seat" + (i===Math.ceil(guestCount/2) ? " principal" : "");
+    seat.innerText = i===Math.ceil(guestCount/2) ? t().diagram.guestPrincipal : "G"+i;
+    guestRow.appendChild(seat);
+  }
+
+  shell.appendChild(tableWrap);
+  shell.appendChild(guestTitle);
+  shell.appendChild(guestRow);
+
+  if(hasInterpreters){
+    const guestInterp = document.createElement("div");
+    guestInterp.className = "seat-row";
+    guestInterp.innerHTML = `<div class="seat interpreter">${t().diagram.interpreter}</div>`;
+    shell.appendChild(guestInterp);
+  }
+
+  container.appendChild(shell);
+}
+
+function detectDelegationNumbers(text){
+  const numbers = text.match(/\d+/g);
+  if(!numbers) return null;
+
+  if(numbers.length===1){
+    return {
+      host: parseInt(numbers[0]),
+      guest: parseInt(numbers[0])
+    };
+  }
+
+  return {
+    host: parseInt(numbers[0]),
+    guest: parseInt(numbers[1])
+  };
+}
+
+function detectInterpreters(text){
+  const lower = text.toLowerCase();
+  return lower.includes("interpreter") ||
+         lower.includes("interpreters") ||
+         lower.includes("translation") ||
+         lower.includes("translator") ||
+         lower.includes("перевод") ||
+         lower.includes("переводчик") ||
+         lower.includes("tərcüməçi") ||
+         lower.includes("tercüman");
+}
+
+async function ask(){
+  clearNotice();
+
+  const input = document.getElementById("question");
+  const question = input.value.trim();
+  const language = document.getElementById("languageSelect").value;
+  const template = document.getElementById("templateSelect").value;
+
+  if(!question) return;
+
+  addMessage("user", question);
+  conversationHistory.push({role:"user", content:question});
+  input.value = "";
+
+  try{
+    const response = await fetch("/api/ask", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        question,
+        mode:currentMode,
+        template,
+        language,
+        history:conversationHistory.slice(-10),
+        userEmail: currentUser ? currentUser.email : ""
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      addMessage("assistant", "Error: " + (data.details || data.error || "Unknown error"));
+      return;
+    }
+
+    const answer = data.answer || "No answer returned.";
+
+    addMessage("assistant", answer);
+    conversationHistory.push({role:"assistant", content:answer});
+
+    if(currentMode==="seating"){
+      const counts = detectDelegationNumbers(question);
+      if(counts){
+        drawStructuredSeatingDiagram(counts.host, counts.guest, detectInterpreters(question));
+      }
+    }
+
+  }catch(err){
+    addMessage("assistant", "Request failed: " + err.message);
+  }
+}
+
+document.getElementById("question").addEventListener("keydown", function(e){
+  if(e.key==="Enter"){
+    ask();
+  }
+});
+
+function initializeLanguage(){
+  const saved = localStorage.getItem("protocolmind_lang") || "English";
+  document.getElementById("languageSelect").value = saved;
+  updateInterfaceLanguage();
+}
+
+loadUser();
+initializeLanguage();
+updatePlaceholder();
+</script>
+</body>
+</html>
