@@ -1,0 +1,204 @@
+TITLE: VISIT PROGRAMS AND PROTOCOL CHECKLISTS
+
+SECTION 1. PURPOSE
+
+A visit program is the structured schedule of an official visit.
+It defines:
+- time
+- place
+- participants
+- sequence
+- protocol transitions
+- ceremonial logic
+
+A protocol checklist is the operational control tool that ensures every required element is prepared.
+
+Both are essential.
+
+SECTION 2. VISIT PROGRAM PRINCIPLES
+
+A strong visit program should be:
+- realistic
+- clear
+- timed properly
+- not overloaded
+- protocol-aware
+- logistically workable
+- easy to brief
+
+Programs should include enough detail for execution, but not so much clutter that they become unreadable.
+
+SECTION 3. COMMON VISIT ELEMENTS
+
+Official visits may include:
+- arrival
+- greeting and reception
+- transfer
+- photo moment
+- bilateral meeting
+- expanded delegation meeting
+- signing ceremony
+- official lunch or dinner
+- tour
+- press statement
+- farewell
+- departure
+
+SECTION 4. BASIC PROGRAM STRUCTURE
+
+A clean program usually follows:
+
+TIME
+EVENT
+LOCATION
+PARTICIPANTS
+NOTES
+
+Example:
+10:00 Arrival of Delegation
+10:15 Greeting at Main Entrance
+10:20 Photo Opportunity
+10:30 Bilateral Meeting
+11:15 Expanded Meeting
+12:15 Gift Exchange
+12:30 Official Lunch
+14:00 Departure
+
+SECTION 5. TRANSITION LOGIC
+
+Transitions between segments are critical.
+
+The protocol officer must ensure:
+- room is ready before arrival
+- greeting line is in position
+- transport is ready before exit
+- media is in the correct place before principals appear
+- next room is prepared before the current segment ends
+
+SECTION 6. ONE-DAY OFFICIAL VISIT
+
+A one-day visit should prioritize:
+- principal meeting
+- core political or institutional purpose
+- controlled ceremonial elements
+- enough time for movement and interpretation
+- reasonable end time
+
+Do not overload a one-day visit with too many symbolic events.
+
+SECTION 7. AIRPORT OR ARRIVAL PROTOCOL
+
+If arrival is formal, checklist should include:
+- exact arrival time
+- flight details if relevant
+- who meets the delegation
+- vehicle sequence
+- flag use
+- escort
+- luggage and VIP route
+- media presence if any
+
+SECTION 8. BUILDING ARRIVAL
+
+At building arrival, checklist should include:
+- entrance route
+- receiving line
+- principal waiting position
+- photo point
+- delegation holding position
+- security clearance
+- weather contingency if outdoors
+
+SECTION 9. MEETING CHECKLIST
+
+For the meeting room:
+- seating chart
+- nameplates
+- flags
+- water and glasses
+- briefing folders
+- microphones
+- interpreters
+- pens and notepads
+- room temperature and lighting
+- press access instructions
+
+SECTION 10. OFFICIAL LUNCH OR DINNER CHECKLIST
+
+For meals:
+- seating plan
+- menu
+- dietary restrictions
+- host and guest place cards
+- speech or toast sequence
+- interpreters if needed
+- gift placement if linked to meal
+- timing for transition from meeting to dining room
+
+SECTION 11. PRESS CHECKLIST
+
+Press coordination should confirm:
+- whether press is present
+- where they stand
+- whether handshake photo is planned
+- whether there is a statement
+- whether only opening minutes are covered
+- who escorts media in and out
+
+SECTION 12. GIFT EXCHANGE CHECKLIST
+
+If gifts are exchanged:
+- confirm gift exists physically
+- confirm who carries it
+- confirm timing
+- confirm order of exchange
+- confirm photo moment if needed
+
+SECTION 13. DEPARTURE CHECKLIST
+
+Before departure:
+- vehicles positioned
+- principals guided correctly
+- final handshake sequence clear
+- no staff confusion in corridor or entrance
+- luggage and escort managed where applicable
+
+SECTION 14. CHECKLIST STRUCTURE
+
+A practical checklist should separate categories:
+
+A. PRINCIPALS
+B. DELEGATION
+C. ROOM
+D. FLAGS AND NAMEPLATES
+E. INTERPRETATION
+F. PRESS
+G. GIFTS
+H. TRANSPORT
+I. CATERING
+J. DEPARTURE
+
+SECTION 15. COMMON PROGRAM ERRORS
+
+Typical errors:
+- unrealistic timing
+- too many segments
+- no transition buffer
+- no interpreter timing allowance
+- media conflict with movement
+- room not ready
+- lunch too early or too late
+- travel time underestimated
+- unclear farewell logic
+
+SECTION 16. PROTOCOLMIND OUTPUT STANDARD
+
+When asked to create visit programs or checklists, ProtocolMind should:
+- use realistic timing
+- organize the sequence clearly
+- separate operational and ceremonial elements
+- include protocol notes where useful
+- avoid vague filler
+- produce text that can be used operationally
+
+END OF FILE
