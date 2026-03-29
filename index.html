@@ -3,106 +3,290 @@
 <head>
 <meta charset="UTF-8">
 <title>ProtocolMind</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
-
 body{
-font-family:Arial;
+font-family:Arial,sans-serif;
 background:#0f172a;
 color:white;
 margin:0;
+padding:0;
 }
 
 .container{
-max-width:1000px;
+max-width:1100px;
 margin:auto;
 padding:30px;
 }
 
 h1{
 text-align:center;
+margin-bottom:5px;
 }
 
 .subtitle{
 text-align:center;
 color:#cbd5e1;
+margin-bottom:6px;
 }
 
 .credits{
 text-align:center;
 color:#94a3b8;
+font-size:13px;
 margin-bottom:20px;
+}
+
+.auth-box{
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+.auth-box input{
+padding:10px;
+border-radius:8px;
+border:none;
+min-width:220px;
+}
+
+.auth-btn{
+padding:10px 14px;
+border:none;
+border-radius:8px;
+background:#1e293b;
+color:white;
+cursor:pointer;
+}
+
+.user-status{
+text-align:center;
+margin-bottom:15px;
+color:#cbd5e1;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:15px;
+flex-wrap:wrap;
+}
+
+.language-select,.template-select{
+padding:10px;
+border-radius:8px;
+border:1px solid #334155;
+background:#1e293b;
+color:white;
+}
+
+.upgrade-wrap{
+display:flex;
+justify-content:center;
+margin-bottom:25px;
+}
+
+.upgrade-link{
+text-decoration:none;
+}
+
+.upgrade-btn{
+background:#22c55e;
+border:none;
+padding:14px 20px;
+border-radius:10px;
+cursor:pointer;
+color:white;
+font-size:15px;
+font-weight:700;
+}
+
+.modes{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:10px;
+flex-wrap:wrap;
+}
+
+.mode-btn{
+padding:10px 16px;
+border-radius:10px;
+border:1px solid #334155;
+background:#1e293b;
+color:white;
+cursor:pointer;
+}
+
+.mode-btn.active{
+background:#22c55e;
+border-color:#22c55e;
+}
+
+.mode-label{
+text-align:center;
+color:#facc15;
+margin-bottom:15px;
 }
 
 .chat-box{
 background:#111827;
-border-radius:12px;
+border-radius:14px;
+border:1px solid #334155;
 padding:20px;
 min-height:420px;
-max-height:600px;
+max-height:620px;
 overflow-y:auto;
 display:flex;
 flex-direction:column;
-gap:10px;
-border:1px solid #334155;
+gap:12px;
+}
+
+.message-wrapper{
+display:flex;
+flex-direction:column;
 }
 
 .message{
+max-width:80%;
 padding:12px;
-border-radius:8px;
-max-width:75%;
+border-radius:10px;
+white-space:pre-wrap;
+line-height:1.6;
 }
 
 .user{
-background:#2563eb;
 align-self:flex-end;
+background:#2563eb;
 }
 
 .assistant{
-background:#1f2937;
 align-self:flex-start;
+background:#1f2937;
+border:1px solid #374151;
+}
+
+.document-card{
+align-self:flex-start;
+width:min(92%,860px);
+background:#f8fafc;
+color:#0f172a;
+border:1px solid #cbd5e1;
+border-radius:14px;
+padding:22px;
+box-shadow:0 6px 20px rgba(0,0,0,0.18);
+white-space:pre-wrap;
+line-height:1.7;
+}
+
+.document-title{
+font-size:12px;
+font-weight:700;
+letter-spacing:0.08em;
+text-transform:uppercase;
+color:#475569;
+margin-bottom:12px;
+}
+
+.message-actions{
+display:flex;
+gap:6px;
+margin-top:6px;
+}
+
+.action-btn{
+font-size:12px;
+padding:5px 8px;
+border-radius:6px;
+border:1px solid #334155;
+background:#1e293b;
+color:white;
+cursor:pointer;
 }
 
 .input-row{
+margin-top:15px;
 display:flex;
 gap:10px;
-margin-top:15px;
 }
 
-input{
+input#question{
 flex:1;
 padding:14px;
 border-radius:10px;
 border:none;
-}
-
-button{
-padding:14px 18px;
-border:none;
-border-radius:10px;
-cursor:pointer;
+font-size:15px;
 }
 
 .ask-btn{
 background:#22c55e;
+border:none;
+padding:14px 18px;
+border-radius:10px;
+cursor:pointer;
 color:white;
 }
 
 .clear-btn{
 background:#475569;
+border:none;
+padding:14px 18px;
+border-radius:10px;
+cursor:pointer;
 color:white;
 }
 
-.upgrade{
+.diagram{
+margin-bottom:15px;
 text-align:center;
-margin-bottom:25px;
 }
 
-.upgrade button{
-background:#22c55e;
+.seat-section-title{
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:.08em;
+color:#cbd5e1;
+margin:10px 0 6px;
+}
+
+.seat-row{
+display:flex;
+justify-content:center;
+gap:8px;
+margin:6px 0;
+flex-wrap:wrap;
+}
+
+.seat{
+background:#1f2937;
+border:1px solid #374151;
+padding:8px 10px;
+border-radius:6px;
+min-width:44px;
+}
+
+.principal{
+background:#14532d;
+border:1px solid #22c55e;
 font-weight:700;
-font-size:15px;
-color:white;
+}
+
+.interpreter{
+background:#3f2a12;
+border:1px solid #f59e0b;
+}
+
+.table{
+padding:10px 40px;
+border:1px solid #334155;
+border-radius:8px;
+background:#111827;
+margin:10px;
+display:inline-block;
 }
 
 .limit-warning{
@@ -113,6 +297,13 @@ margin-top:15px;
 text-align:center;
 }
 
+.success-box{
+background:#14532d;
+padding:12px;
+border-radius:10px;
+margin-top:15px;
+text-align:center;
+}
 </style>
 </head>
 
@@ -121,162 +312,502 @@ text-align:center;
 <div class="container">
 
 <h1>ProtocolMind</h1>
+<div class="subtitle" id="subtitleText">AI Diplomatic Protocol Assistant</div>
+<div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
 
-<div class="subtitle">
-AI Diplomatic Protocol Assistant
+<div class="auth-box">
+<input id="emailInput" type="email" placeholder="Email">
+<button class="auth-btn" onclick="signUp()">Sign Up</button>
+<button class="auth-btn" onclick="signIn()">Sign In</button>
+<button class="auth-btn" onclick="signOutUser()">Logout</button>
 </div>
 
-<div class="credits">
-Created and Launched by Ilgar Nuri and Ilkin Mammadov
-</div>
+<div class="user-status" id="userStatus">Not signed in</div>
 
-<div class="upgrade">
-<a href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">
-<button>
-Upgrade to ProtocolMind Pro
-</button>
+<div class="upgrade-wrap">
+<a class="upgrade-link" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">
+<button class="upgrade-btn" id="topUpgradeBtn">Upgrade to ProtocolMind Pro</button>
 </a>
 </div>
 
-<div id="chatBox" class="chat-box">
+<div class="controls">
+<select id="languageSelect" class="language-select">
+<option value="English">English</option>
+<option value="Azərbaycan dili">Azərbaycan dili</option>
+<option value="Русский">Русский</option>
+<option value="Türkçe">Türkçe</option>
+</select>
 
-<div class="message assistant">
-Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
+<select id="templateSelect" class="template-select">
+<option value="none">No template</option>
+<option value="invitation_letter">Invitation Letter</option>
+<option value="thank_you_letter">Thank You Letter</option>
+<option value="note_verbale">Note Verbale</option>
+<option value="briefing_note">Briefing Note</option>
+<option value="meeting_scenario">Meeting Scenario</option>
+</select>
 </div>
 
+<div class="modes">
+<button class="mode-btn active" data-mode="advice" onclick="setMode('advice',this)">Protocol Advice</button>
+<button class="mode-btn" data-mode="seating" onclick="setMode('seating',this)">Seating Plan</button>
+<button class="mode-btn" data-mode="checklist" onclick="setMode('checklist',this)">Checklist</button>
+<button class="mode-btn" data-mode="visit_program" onclick="setMode('visit_program',this)">Visit Program</button>
+<button class="mode-btn" data-mode="official_letter" onclick="setMode('official_letter',this)">Official Letter</button>
+<button class="mode-btn" data-mode="protocol_pack" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
+</div>
+
+<div class="mode-label" id="modeLabel">
+Current mode: Protocol Advice
+</div>
+
+<div id="diagramContainer" class="diagram"></div>
+
+<div class="chat-box" id="chatBox">
+<div class="message assistant" id="welcomeMessage">
+Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
+</div>
 </div>
 
 <div class="input-row">
-
 <input id="question" placeholder="Ask about diplomatic protocol...">
-
-<button class="ask-btn" onclick="ask()">
-Ask
-</button>
-
-<button class="clear-btn" onclick="clearChat()">
-Clear
-</button>
-
+<button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
+<button class="clear-btn" id="clearBtn" onclick="clearChat()">Clear</button>
 </div>
 
-<div id="limitWarning"></div>
+<div id="noticeBox"></div>
 
 </div>
 
 <script>
+const SUPABASE_URL = "https://qzpyjgugpisphmajzrnk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let DAILY_LIMIT = 5
+let currentMode="advice";
+let conversationHistory=[];
+let currentUser=null;
+const DAILY_LIMIT=5;
 
-function getTodayKey(){
-const today = new Date()
-return "requests_" + today.getFullYear()+"_"+today.getMonth()+"_"+today.getDate()
+function getTodayKey(userId){
+const today = new Date();
+return "requests_" + userId + "_" + today.getFullYear()+"_"+today.getMonth()+"_"+today.getDate();
 }
 
-function getRequests(){
-
-let key = getTodayKey()
-
-let used = localStorage.getItem(key)
-
-if(!used){
-return 0
+function getRequests(userId){
+let key = getTodayKey(userId || "guest");
+let used = localStorage.getItem(key);
+if(!used){ return 0; }
+return parseInt(used);
 }
 
-return parseInt(used)
-
+function increaseRequests(userId){
+let key = getTodayKey(userId || "guest");
+let used = getRequests(userId);
+localStorage.setItem(key, used + 1);
 }
 
-function increaseRequests(){
-
-let key = getTodayKey()
-
-let used = getRequests()
-
-localStorage.setItem(key, used + 1)
-
+function showNotice(html, success=false){
+document.getElementById("noticeBox").innerHTML = `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
 }
 
-function ask(){
-
-let used = getRequests()
-
-if(used >= DAILY_LIMIT){
-
-document.getElementById("limitWarning").innerHTML = `
-<div class="limit-warning">
-Daily free limit reached (5 requests). <br><br>
-Upgrade to ProtocolMind Pro for unlimited access.
-</div>
-`
-
-return
-
+function clearNotice(){
+document.getElementById("noticeBox").innerHTML = "";
 }
 
-let input = document.getElementById("question")
-
-let question = input.value.trim()
-
-if(!question){
-return
+async function signUp(){
+const email = document.getElementById("emailInput").value.trim();
+if(!email){
+showNotice("Enter your email first.");
+return;
 }
 
-addMessage("user",question)
+const { error } = await supabaseClient.auth.signInWithOtp({
+email: email,
+options: {
+shouldCreateUser: true
+}
+});
 
-input.value=""
+if(error){
+showNotice("Sign up error: " + error.message);
+return;
+}
 
-increaseRequests()
+showNotice("Check your email. Supabase sent you a login link.", true);
+}
 
-fetch("/api/ask",{
+async function signIn(){
+const email = document.getElementById("emailInput").value.trim();
+if(!email){
+showNotice("Enter your email first.");
+return;
+}
 
-method:"POST",
+const { error } = await supabaseClient.auth.signInWithOtp({
+email: email,
+options: {
+shouldCreateUser: true
+}
+});
 
-headers:{
-"Content-Type":"application/json"
-},
+if(error){
+showNotice("Sign in error: " + error.message);
+return;
+}
 
-body:JSON.stringify({
-question:question
-})
+showNotice("Check your email. Supabase sent you a login link.", true);
+}
 
-})
-.then(res => res.json())
-.then(data => {
+async function signOutUser(){
+await supabaseClient.auth.signOut();
+currentUser=null;
+updateUserStatus();
+showNotice("Logged out.", true);
+}
 
-addMessage("assistant", data.answer || "No response.")
+async function loadUser(){
+const { data } = await supabaseClient.auth.getUser();
+currentUser = data?.user || null;
+updateUserStatus();
+}
 
-})
+function updateUserStatus(){
+const box = document.getElementById("userStatus");
+if(currentUser){
+box.innerText = "Signed in: " + currentUser.email;
+}else{
+box.innerText = "Not signed in";
+}
+}
 
+function setMode(mode,el){
+currentMode=mode;
+
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+btn.classList.remove("active");
+});
+
+el.classList.add("active");
+document.getElementById("modeLabel").innerText = "Current mode: " + el.innerText;
+}
+
+function escapeHtml(text){
+return text
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+function downloadTxtFile(text, filename="protocolmind.txt"){
+const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function downloadDocFile(text, filename="protocolmind.doc"){
+const html=`
+<html>
+<head>
+<meta charset="UTF-8">
+<title>${filename}</title>
+</head>
+<body>
+<pre style="font-family:Arial,sans-serif;white-space:pre-wrap;line-height:1.7;">${escapeHtml(text)}</pre>
+</body>
+</html>
+`;
+const blob=new Blob([html],{type:"application/msword"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+}
+
+function buildFilename(prefix){
+const now=new Date();
+const datePart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+return `${prefix}-${datePart}`;
+}
+
+function isDocumentOutput(){
+const template=document.getElementById("templateSelect").value;
+return currentMode==="visit_program" ||
+       currentMode==="official_letter" ||
+       currentMode==="protocol_pack" ||
+       template!=="none";
+}
+
+function documentLabel(){
+const template=document.getElementById("templateSelect").value;
+
+if(template==="invitation_letter") return "Invitation Letter";
+if(template==="thank_you_letter") return "Thank You Letter";
+if(template==="note_verbale") return "Note Verbale";
+if(template==="briefing_note") return "Briefing Note";
+if(template==="meeting_scenario") return "Meeting Scenario";
+if(currentMode==="visit_program") return "Visit Program";
+if(currentMode==="official_letter") return "Official Letter";
+if(currentMode==="protocol_pack") return "Protocol Pack";
+if(currentMode==="checklist") return "Checklist";
+return "Document";
 }
 
 function addMessage(role,text){
+const chatBox=document.getElementById("chatBox");
 
-let box = document.getElementById("chatBox")
+const wrapper=document.createElement("div");
+wrapper.className="message-wrapper";
+wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
 
-let div = document.createElement("div")
+let contentBlock;
 
-div.className = "message " + role
+if(role==="assistant" && isDocumentOutput()){
+contentBlock=document.createElement("div");
+contentBlock.className="document-card";
 
-div.innerText = text
+const title=document.createElement("div");
+title.className="document-title";
+title.innerText=documentLabel();
 
-box.appendChild(div)
+const body=document.createElement("div");
+body.innerText=text;
 
-box.scrollTop = box.scrollHeight
+contentBlock.appendChild(title);
+contentBlock.appendChild(body);
+}else{
+contentBlock=document.createElement("div");
+contentBlock.className="message "+role;
+contentBlock.innerText=text;
+}
 
+wrapper.appendChild(contentBlock);
+
+if(role==="assistant"){
+const actions=document.createElement("div");
+actions.className="message-actions";
+
+const copyBtn=document.createElement("button");
+copyBtn.className="action-btn";
+copyBtn.innerText="Copy";
+copyBtn.onclick=function(){
+navigator.clipboard.writeText(text);
+copyBtn.innerText="Copied";
+setTimeout(()=>{ copyBtn.innerText="Copy"; },1500);
+};
+
+const txtBtn=document.createElement("button");
+txtBtn.className="action-btn";
+txtBtn.innerText="TXT";
+txtBtn.onclick=function(){
+let prefix="protocolmind-answer";
+if(currentMode==="visit_program") prefix="visit-program";
+if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="protocol_pack") prefix="protocol-pack";
+if(currentMode==="checklist") prefix="protocol-checklist";
+const template=document.getElementById("templateSelect").value;
+if(template!=="none") prefix=template.replaceAll("_","-");
+downloadTxtFile(text,buildFilename(prefix)+".txt");
+};
+
+const docBtn=document.createElement("button");
+docBtn.className="action-btn";
+docBtn.innerText="DOC";
+docBtn.onclick=function(){
+let prefix="protocolmind-answer";
+if(currentMode==="visit_program") prefix="visit-program";
+if(currentMode==="official_letter") prefix="official-letter";
+if(currentMode==="protocol_pack") prefix="protocol-pack";
+if(currentMode==="checklist") prefix="protocol-checklist";
+const template=document.getElementById("templateSelect").value;
+if(template!=="none") prefix=template.replaceAll("_","-");
+downloadDocFile(text,buildFilename(prefix)+".doc");
+};
+
+actions.appendChild(copyBtn);
+actions.appendChild(txtBtn);
+actions.appendChild(docBtn);
+wrapper.appendChild(actions);
+}
+
+chatBox.appendChild(wrapper);
+chatBox.scrollTop=chatBox.scrollHeight;
 }
 
 function clearChat(){
-
-document.getElementById("chatBox").innerHTML =
-`<div class="message assistant">
-Chat cleared.
-</div>`
-
-document.getElementById("limitWarning").innerHTML = ""
-
+conversationHistory=[];
+document.getElementById("chatBox").innerHTML=
+`<div class="message assistant">Chat cleared.</div>`;
+document.getElementById("diagramContainer").innerHTML="";
+clearNotice();
 }
 
+function drawStructuredSeatingDiagram(hostCount,guestCount,hasInterpreters=false){
+const container=document.getElementById("diagramContainer");
+container.innerHTML="";
+
+const hostTitle=document.createElement("div");
+hostTitle.className="seat-section-title";
+hostTitle.innerText="Host Side";
+
+const hostRow=document.createElement("div");
+hostRow.className="seat-row";
+
+for(let i=1;i<=hostCount;i++){
+const seat=document.createElement("div");
+seat.className="seat" + (i===Math.ceil(hostCount/2) ? " principal" : "");
+seat.innerText=i===Math.ceil(hostCount/2) ? "HOST PRINCIPAL" : "H"+i;
+hostRow.appendChild(seat);
+}
+
+if(hasInterpreters){
+const hostInterp=document.createElement("div");
+hostInterp.className="seat-row";
+hostInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
+container.appendChild(hostInterp);
+}
+
+const table=document.createElement("div");
+table.className="table";
+table.innerText="TABLE";
+
+const guestTitle=document.createElement("div");
+guestTitle.className="seat-section-title";
+guestTitle.innerText="Guest Side";
+
+const guestRow=document.createElement("div");
+guestRow.className="seat-row";
+
+for(let i=1;i<=guestCount;i++){
+const seat=document.createElement("div");
+seat.className="seat" + (i===Math.ceil(guestCount/2) ? " principal" : "");
+seat.innerText=i===Math.ceil(guestCount/2) ? "GUEST PRINCIPAL" : "G"+i;
+guestRow.appendChild(seat);
+}
+
+container.appendChild(hostTitle);
+container.appendChild(hostRow);
+container.appendChild(table);
+container.appendChild(guestTitle);
+container.appendChild(guestRow);
+
+if(hasInterpreters){
+const guestInterp=document.createElement("div");
+guestInterp.className="seat-row";
+guestInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
+container.appendChild(guestInterp);
+}
+}
+
+function detectDelegationNumbers(text){
+const numbers=text.match(/\d+/g);
+if(!numbers) return null;
+
+if(numbers.length===1){
+return {
+host:parseInt(numbers[0]),
+guest:parseInt(numbers[0])
+};
+}
+
+return {
+host:parseInt(numbers[0]),
+guest:parseInt(numbers[1])
+};
+}
+
+function detectInterpreters(text){
+const lower=text.toLowerCase();
+return lower.includes("interpreter") ||
+       lower.includes("interpreters") ||
+       lower.includes("translation") ||
+       lower.includes("translator") ||
+       lower.includes("перевод") ||
+       lower.includes("переводчик");
+}
+
+async function ask(){
+clearNotice();
+
+const userId = currentUser ? currentUser.id : "guest";
+let used = getRequests(userId);
+
+if(used >= DAILY_LIMIT){
+showNotice(`Daily free limit reached (${DAILY_LIMIT} requests). Upgrade to ProtocolMind Pro for unlimited access.`);
+return;
+}
+
+const input=document.getElementById("question");
+const question=input.value.trim();
+const language=document.getElementById("languageSelect").value;
+const template=document.getElementById("templateSelect").value;
+
+if(!question) return;
+
+addMessage("user",question);
+conversationHistory.push({role:"user",content:question});
+input.value="";
+
+increaseRequests(userId);
+
+try{
+const response=await fetch("/api/ask",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+question,
+mode:currentMode,
+template,
+language,
+history:conversationHistory.slice(-10)
+})
+});
+
+const data=await response.json();
+
+if(!response.ok){
+addMessage("assistant","Error: "+(data.details||data.error||"Unknown error"));
+return;
+}
+
+const answer=data.answer||"No answer returned.";
+
+addMessage("assistant",answer);
+conversationHistory.push({role:"assistant",content:answer});
+
+if(currentMode==="seating"){
+const counts=detectDelegationNumbers(question);
+if(counts){
+drawStructuredSeatingDiagram(counts.host,counts.guest,detectInterpreters(question));
+}
+}
+
+}catch(err){
+addMessage("assistant","Request failed: "+err.message);
+}
+}
+
+document.getElementById("question").addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+ask();
+}
+});
+
+loadUser();
 </script>
 
 </body>
