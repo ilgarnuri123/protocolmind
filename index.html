@@ -1,382 +1,743 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProtocolMind</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 <style>
+:root{
+  --bg:#0b1220;
+  --bg-soft:#111a2b;
+  --panel:#0f172a;
+  --panel-2:#111827;
+  --line:#243041;
+  --line-soft:#334155;
+  --text:#e5eefc;
+  --muted:#94a3b8;
+  --accent:#22c55e;
+  --accent-2:#16a34a;
+  --accent-soft:rgba(34,197,94,.15);
+  --danger:#7f1d1d;
+  --danger-soft:#fecaca;
+  --warn:#f59e0b;
+  --doc-bg:#f8fafc;
+  --doc-text:#0f172a;
+  --shadow:0 10px 30px rgba(0,0,0,.25);
+  --radius:18px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  background:
+    radial-gradient(circle at top, rgba(34,197,94,.10), transparent 25%),
+    linear-gradient(180deg, #09111d 0%, #0b1220 100%);
+  color:var(--text);
+  font-family: Inter, Arial, sans-serif;
+}
+
 body{
-font-family:Arial,sans-serif;
-background:#0f172a;
-color:white;
-margin:0;
-padding:0;
+  min-height:100vh;
 }
 
-.container{
-max-width:1100px;
-margin:auto;
-padding:30px;
+.page{
+  max-width:1280px;
+  margin:0 auto;
+  padding:24px;
 }
 
-h1{
-text-align:center;
-margin-bottom:5px;
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:18px;
+  padding:16px 18px;
+  border:1px solid var(--line);
+  background:rgba(15,23,42,.78);
+  backdrop-filter: blur(10px);
+  border-radius:20px;
+  box-shadow:var(--shadow);
 }
 
-.subtitle{
-text-align:center;
-color:#cbd5e1;
-margin-bottom:6px;
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-.credits{
-text-align:center;
-color:#94a3b8;
-font-size:13px;
-margin-bottom:20px;
+.brand-title{
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:.02em;
 }
 
-.auth-box{
-display:flex;
-justify-content:center;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:20px;
+.brand-subtitle{
+  color:var(--muted);
+  font-size:14px;
 }
 
-.auth-box input{
-padding:10px;
-border-radius:8px;
-border:none;
-min-width:220px;
+.brand-credits{
+  color:var(--muted);
+  font-size:12px;
 }
 
-.auth-btn{
-padding:10px 14px;
-border:none;
-border-radius:8px;
-background:#1e293b;
-color:white;
-cursor:pointer;
-}
-
-.user-status{
-text-align:center;
-margin-bottom:15px;
-color:#cbd5e1;
-}
-
-.controls{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-bottom:15px;
-flex-wrap:wrap;
-}
-
-.language-select,.template-select{
-padding:10px;
-border-radius:8px;
-border:1px solid #334155;
-background:#1e293b;
-color:white;
-}
-
-.upgrade-wrap{
-display:flex;
-justify-content:center;
-margin-bottom:25px;
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
 
 .upgrade-link{
-text-decoration:none;
+  text-decoration:none;
 }
 
 .upgrade-btn{
-background:#22c55e;
-border:none;
-padding:14px 20px;
-border-radius:10px;
-cursor:pointer;
-color:white;
-font-size:15px;
-font-weight:700;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:white;
+  border:none;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(34,197,94,.25);
+}
+
+.layout{
+  display:grid;
+  grid-template-columns: 320px minmax(0,1fr);
+  gap:20px;
+}
+
+.sidebar, .main{
+  min-width:0;
+}
+
+.card{
+  background:rgba(15,23,42,.92);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.sidebar{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.side-section{
+  padding:18px;
+}
+
+.side-title{
+  font-size:13px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:12px;
+}
+
+.auth-stack{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.input, .select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid var(--line-soft);
+  background:#0b1324;
+  color:var(--text);
+  outline:none;
+}
+
+.input::placeholder{
+  color:#7f8ea3;
+}
+
+.auth-actions{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.small-btn{
+  padding:10px 12px;
+  border:none;
+  border-radius:12px;
+  background:#1e293b;
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.user-pill{
+  padding:10px 12px;
+  border-radius:12px;
+  background:#0b1324;
+  border:1px solid var(--line-soft);
+  color:var(--muted);
+  font-size:14px;
+  word-break:break-word;
+}
+
+.select-stack{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.quick-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.quick-btn{
+  text-align:left;
+  width:100%;
+  border:none;
+  border-radius:12px;
+  padding:12px 14px;
+  background:#121c2f;
+  color:var(--text);
+  cursor:pointer;
+  border:1px solid transparent;
+}
+
+.quick-btn:hover{
+  border-color:var(--line-soft);
+  background:#162238;
+}
+
+.plan-box{
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.04));
+  border:1px solid rgba(34,197,94,.25);
+}
+
+.plan-name{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.plan-text{
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.main{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.modes-wrap{
+  padding:16px;
 }
 
 .modes{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-bottom:10px;
-flex-wrap:wrap;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
 }
 
 .mode-btn{
-padding:10px 16px;
-border-radius:10px;
-border:1px solid #334155;
-background:#1e293b;
-color:white;
-cursor:pointer;
+  padding:11px 15px;
+  border-radius:999px;
+  border:1px solid var(--line-soft);
+  background:#10192b;
+  color:var(--text);
+  cursor:pointer;
+  transition:.2s ease;
+  font-weight:600;
+}
+
+.mode-btn:hover{
+  transform:translateY(-1px);
+  border-color:#4b5563;
 }
 
 .mode-btn.active{
-background:#22c55e;
-border-color:#22c55e;
+  background:var(--accent-soft);
+  color:#dcfce7;
+  border-color:rgba(34,197,94,.45);
 }
 
 .mode-label{
-text-align:center;
-color:#facc15;
-margin-bottom:15px;
-}
-
-.chat-box{
-background:#111827;
-border-radius:14px;
-border:1px solid #334155;
-padding:20px;
-min-height:420px;
-max-height:620px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-.message-wrapper{
-display:flex;
-flex-direction:column;
-}
-
-.message{
-max-width:80%;
-padding:12px;
-border-radius:10px;
-white-space:pre-wrap;
-line-height:1.6;
-}
-
-.user{
-align-self:flex-end;
-background:#2563eb;
-}
-
-.assistant{
-align-self:flex-start;
-background:#1f2937;
-border:1px solid #374151;
-}
-
-.document-card{
-align-self:flex-start;
-width:min(92%,860px);
-background:#f8fafc;
-color:#0f172a;
-border:1px solid #cbd5e1;
-border-radius:14px;
-padding:22px;
-box-shadow:0 6px 20px rgba(0,0,0,0.18);
-white-space:pre-wrap;
-line-height:1.7;
-}
-
-.document-title{
-font-size:12px;
-font-weight:700;
-letter-spacing:0.08em;
-text-transform:uppercase;
-color:#475569;
-margin-bottom:12px;
-}
-
-.message-actions{
-display:flex;
-gap:6px;
-margin-top:6px;
-}
-
-.action-btn{
-font-size:12px;
-padding:5px 8px;
-border-radius:6px;
-border:1px solid #334155;
-background:#1e293b;
-color:white;
-cursor:pointer;
-}
-
-.input-row{
-margin-top:15px;
-display:flex;
-gap:10px;
-}
-
-input#question{
-flex:1;
-padding:14px;
-border-radius:10px;
-border:none;
-font-size:15px;
-}
-
-.ask-btn{
-background:#22c55e;
-border:none;
-padding:14px 18px;
-border-radius:10px;
-cursor:pointer;
-color:white;
-}
-
-.clear-btn{
-background:#475569;
-border:none;
-padding:14px 18px;
-border-radius:10px;
-cursor:pointer;
-color:white;
+  margin-top:12px;
+  color:#dbeafe;
+  font-size:14px;
 }
 
 .diagram{
-margin-bottom:15px;
-text-align:center;
+  padding:0 16px 16px 16px;
+}
+
+.seat-shell{
+  padding:18px;
+  border:1px dashed var(--line-soft);
+  border-radius:16px;
+  background:#0c1526;
 }
 
 .seat-section-title{
-font-size:13px;
-text-transform:uppercase;
-letter-spacing:.08em;
-color:#cbd5e1;
-margin:10px 0 6px;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  margin:10px 0 8px;
 }
 
 .seat-row{
-display:flex;
-justify-content:center;
-gap:8px;
-margin:6px 0;
-flex-wrap:wrap;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0;
 }
 
 .seat{
-background:#1f2937;
-border:1px solid #374151;
-padding:8px 10px;
-border-radius:6px;
-min-width:44px;
+  min-width:56px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#172338;
+  border:1px solid #334155;
+  text-align:center;
+  font-size:12px;
 }
 
 .principal{
-background:#14532d;
-border:1px solid #22c55e;
-font-weight:700;
+  background:#14532d;
+  border-color:#22c55e;
+  font-weight:800;
 }
 
 .interpreter{
-background:#3f2a12;
-border:1px solid #f59e0b;
+  background:#3f2a12;
+  border-color:#f59e0b;
+}
+
+.table-box{
+  display:flex;
+  justify-content:center;
+  margin:14px 0;
 }
 
 .table{
-padding:10px 40px;
-border:1px solid #334155;
-border-radius:8px;
-background:#111827;
-margin:10px;
-display:inline-block;
+  padding:14px 44px;
+  border-radius:16px;
+  border:1px solid #475569;
+  background:#0b1324;
+  font-weight:700;
+  letter-spacing:.08em;
+}
+
+.chat-panel{
+  padding:16px;
+}
+
+.chat-box{
+  background:#0d1628;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  min-height:440px;
+  max-height:640px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.message-wrapper{
+  display:flex;
+  flex-direction:column;
+}
+
+.message{
+  max-width:80%;
+  padding:14px 16px;
+  border-radius:16px;
+  white-space:pre-wrap;
+  line-height:1.7;
+  font-size:15px;
+}
+
+.user{
+  align-self:flex-end;
+  background:linear-gradient(180deg,#2563eb,#1d4ed8);
+  color:white;
+  box-shadow:0 6px 18px rgba(37,99,235,.20);
+}
+
+.assistant{
+  align-self:flex-start;
+  background:#162033;
+  border:1px solid #334155;
+  color:#e2e8f0;
+}
+
+.document-card{
+  align-self:flex-start;
+  width:min(92%,860px);
+  background:var(--doc-bg);
+  color:var(--doc-text);
+  border:1px solid #dbe4ef;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  white-space:pre-wrap;
+  line-height:1.75;
+}
+
+.document-title{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:#475569;
+  margin-bottom:12px;
+}
+
+.message-actions{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+
+.action-btn{
+  font-size:12px;
+  padding:6px 9px;
+  border-radius:10px;
+  border:1px solid var(--line-soft);
+  background:#162033;
+  color:white;
+  cursor:pointer;
+}
+
+.composer{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:10px;
+}
+
+#question{
+  width:100%;
+  padding:15px 16px;
+  border:none;
+  border-radius:14px;
+  font-size:15px;
+  background:#0b1324;
+  color:var(--text);
+  border:1px solid var(--line-soft);
+}
+
+#question::placeholder{
+  color:#7f8ea3;
+}
+
+.ask-btn, .clear-btn{
+  padding:0 18px;
+  border:none;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.ask-btn{
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:white;
+}
+
+.clear-btn{
+  background:#334155;
+  color:white;
+}
+
+.notice{
+  margin-top:12px;
 }
 
 .limit-warning{
-background:#7f1d1d;
-padding:12px;
-border-radius:10px;
-margin-top:15px;
-text-align:center;
+  background:#4c1118;
+  color:#fee2e2;
+  border:1px solid #7f1d1d;
+  padding:12px 14px;
+  border-radius:14px;
 }
 
 .success-box{
-background:#14532d;
-padding:12px;
-border-radius:10px;
-margin-top:15px;
-text-align:center;
+  background:#0f3a22;
+  color:#dcfce7;
+  border:1px solid #166534;
+  padding:12px 14px;
+  border-radius:14px;
+}
+
+.pricing{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:8px;
+}
+
+.plan-card{
+  padding:18px;
+  border-radius:18px;
+  background:#0d1628;
+  border:1px solid var(--line);
+}
+
+.plan-card.featured{
+  background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.06));
+  border-color:rgba(34,197,94,.35);
+}
+
+.plan-name{
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.plan-price{
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:14px;
+}
+
+.plan-list{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.8;
+}
+
+.plan-button{
+  display:inline-block;
+  margin-top:16px;
+  text-decoration:none;
+  background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.section-title{
+  font-size:26px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+
+.section-subtitle{
+  color:var(--muted);
+  margin-bottom:16px;
+}
+
+@media (max-width: 980px){
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .pricing{
+    grid-template-columns:1fr;
+  }
+
+  .composer{
+    grid-template-columns:1fr;
+  }
+
+  .message, .document-card{
+    max-width:100%;
+    width:100%;
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .topbar-right{
+    width:100%;
+    justify-content:flex-start;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="page">
 
-<h1>ProtocolMind</h1>
-<div class="subtitle" id="subtitleText">AI Diplomatic Protocol Assistant</div>
-<div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
+  <div class="topbar card">
+    <div class="brand">
+      <div class="brand-title">ProtocolMind</div>
+      <div class="brand-subtitle" id="subtitleText">AI Diplomatic Protocol Assistant</div>
+      <div class="brand-credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
+    </div>
 
-<div class="auth-box">
-<input id="emailInput" type="email" placeholder="Email">
-<button class="auth-btn" onclick="signUp()">Sign Up</button>
-<button class="auth-btn" onclick="signIn()">Sign In</button>
-<button class="auth-btn" onclick="signOutUser()">Logout</button>
-</div>
+    <div class="topbar-right">
+      <a class="upgrade-link" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">
+        <button class="upgrade-btn" id="topUpgradeBtn">Upgrade to ProtocolMind Pro</button>
+      </a>
+    </div>
+  </div>
 
-<div class="user-status" id="userStatus">Not signed in</div>
+  <div class="layout">
 
-<div class="upgrade-wrap">
-<a class="upgrade-link" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">
-<button class="upgrade-btn" id="topUpgradeBtn">Upgrade to ProtocolMind Pro</button>
-</a>
-</div>
+    <aside class="sidebar">
 
-<div class="controls">
-<select id="languageSelect" class="language-select">
-<option value="English">English</option>
-<option value="Azərbaycan dili">Azərbaycan dili</option>
-<option value="Русский">Русский</option>
-<option value="Türkçe">Türkçe</option>
-</select>
+      <div class="card side-section">
+        <div class="side-title">Account</div>
+        <div class="auth-stack">
+          <input id="emailInput" class="input" type="email" placeholder="Email">
+          <div class="auth-actions">
+            <button class="small-btn" onclick="signUp()">Sign Up</button>
+            <button class="small-btn" onclick="signIn()">Sign In</button>
+            <button class="small-btn" onclick="signOutUser()">Logout</button>
+          </div>
+          <div class="user-pill" id="userStatus">Not signed in</div>
+        </div>
+      </div>
 
-<select id="templateSelect" class="template-select">
-<option value="none">No template</option>
-<option value="invitation_letter">Invitation Letter</option>
-<option value="thank_you_letter">Thank You Letter</option>
-<option value="note_verbale">Note Verbale</option>
-<option value="briefing_note">Briefing Note</option>
-<option value="meeting_scenario">Meeting Scenario</option>
-</select>
-</div>
+      <div class="card side-section">
+        <div class="side-title">Workspace</div>
+        <div class="select-stack">
+          <select id="languageSelect" class="select">
+            <option value="English">English</option>
+            <option value="Azərbaycan dili">Azərbaycan dili</option>
+            <option value="Русский">Русский</option>
+            <option value="Türkçe">Türkçe</option>
+          </select>
 
-<div class="modes">
-<button class="mode-btn active" data-mode="advice" onclick="setMode('advice',this)">Protocol Advice</button>
-<button class="mode-btn" data-mode="seating" onclick="setMode('seating',this)">Seating Plan</button>
-<button class="mode-btn" data-mode="checklist" onclick="setMode('checklist',this)">Checklist</button>
-<button class="mode-btn" data-mode="visit_program" onclick="setMode('visit_program',this)">Visit Program</button>
-<button class="mode-btn" data-mode="official_letter" onclick="setMode('official_letter',this)">Official Letter</button>
-<button class="mode-btn" data-mode="protocol_pack" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
-</div>
+          <select id="templateSelect" class="select">
+            <option value="none">No template</option>
+            <option value="invitation_letter">Invitation Letter</option>
+            <option value="thank_you_letter">Thank You Letter</option>
+            <option value="note_verbale">Note Verbale</option>
+            <option value="briefing_note">Briefing Note</option>
+            <option value="meeting_scenario">Meeting Scenario</option>
+          </select>
+        </div>
+      </div>
 
-<div class="mode-label" id="modeLabel">
-Current mode: Protocol Advice
-</div>
+      <div class="card side-section">
+        <div class="side-title">Quick Actions</div>
+        <div class="quick-list">
+          <button class="quick-btn" onclick="setQuickPrompt('Draft an official invitation letter for a parliamentary delegation to visit Baku')">Draft invitation letter</button>
+          <button class="quick-btn" onclick="setQuickPrompt('Create a one-day official visit program for a parliamentary speaker arriving at 10:00')">Create visit program</button>
+          <button class="quick-btn" onclick="setQuickPrompt('Protocol pack for an official parliamentary visit with a 6-member delegation')">Generate protocol pack</button>
+          <button class="quick-btn" onclick="setQuickPrompt('Bilateral meeting between the Speaker and a foreign parliamentary delegation of 6 members, rectangular table, interpreters present')">Generate seating plan</button>
+        </div>
+      </div>
 
-<div id="diagramContainer" class="diagram"></div>
+      <div class="card side-section">
+        <div class="side-title">ProtocolMind Pro</div>
+        <div class="plan-box">
+          <div class="plan-name">Professional workflow</div>
+          <div class="plan-text">
+            Unlimited use, polished official drafts, protocol packs, document export, multilingual workflow, and stronger day-to-day utility for protocol offices.
+          </div>
+        </div>
+      </div>
 
-<div class="chat-box" id="chatBox">
-<div class="message assistant" id="welcomeMessage">
+    </aside>
+
+    <main class="main">
+
+      <div class="card modes-wrap">
+        <div class="modes">
+          <button class="mode-btn active" data-mode="advice" onclick="setMode('advice',this)">Protocol Advice</button>
+          <button class="mode-btn" data-mode="seating" onclick="setMode('seating',this)">Seating Plan</button>
+          <button class="mode-btn" data-mode="checklist" onclick="setMode('checklist',this)">Checklist</button>
+          <button class="mode-btn" data-mode="visit_program" onclick="setMode('visit_program',this)">Visit Program</button>
+          <button class="mode-btn" data-mode="official_letter" onclick="setMode('official_letter',this)">Official Letter</button>
+          <button class="mode-btn" data-mode="protocol_pack" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
+        </div>
+
+        <div class="mode-label" id="modeLabel">Current mode: Protocol Advice</div>
+
+        <div id="diagramContainer" class="diagram"></div>
+      </div>
+
+      <div class="card chat-panel">
+        <div class="chat-box" id="chatBox">
+          <div class="message assistant" id="welcomeMessage">
 Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
-</div>
-</div>
+          </div>
+        </div>
 
-<div class="input-row">
-<input id="question" placeholder="Ask about diplomatic protocol...">
-<button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
-<button class="clear-btn" id="clearBtn" onclick="clearChat()">Clear</button>
-</div>
+        <div class="composer">
+          <input id="question" placeholder="Ask about diplomatic protocol...">
+          <button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
+          <button class="clear-btn" id="clearBtn" onclick="clearChat()">Clear</button>
+        </div>
 
-<div id="noticeBox"></div>
+        <div class="notice" id="noticeBox"></div>
+      </div>
 
+      <div class="card side-section">
+        <div class="section-title">ProtocolMind Plans</div>
+        <div class="section-subtitle">Choose the plan that fits your protocol work.</div>
+
+        <div class="pricing">
+          <div class="plan-card">
+            <div class="plan-name" id="freePlanName">Free</div>
+            <div class="plan-price" id="freePlanPrice">$0</div>
+            <div class="plan-list" id="freePlanList">
+              • Limited daily usage<br>
+              • Protocol Advice<br>
+              • Seating Plan<br>
+              • Basic checklist support
+            </div>
+          </div>
+
+          <div class="plan-card featured">
+            <div class="plan-name" id="proPlanName">ProtocolMind Pro</div>
+            <div class="plan-price" id="proPlanPrice">$19 / month</div>
+            <div class="plan-list" id="proPlanList">
+              • Unlimited requests<br>
+              • Visit Program generator<br>
+              • Official Letter drafts<br>
+              • Protocol Pack<br>
+              • Copy / TXT / DOC export<br>
+              • Multilingual workflow
+            </div>
+            <a class="plan-button" id="proPlanButton" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">Upgrade Now</a>
+          </div>
+
+          <div class="plan-card">
+            <div class="plan-name" id="instPlanName">Institutional</div>
+            <div class="plan-price" id="instPlanPrice">$99 / month</div>
+            <div class="plan-list" id="instPlanList">
+              • Institutional use<br>
+              • Protocol Pack workflows<br>
+              • Advanced drafting support<br>
+              • Priority use case expansion<br>
+              • Suitable for teams and offices
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
 </div>
 
 <script>
@@ -389,113 +750,131 @@ let conversationHistory=[];
 let currentUser=null;
 
 async function signUp(){
-const email = document.getElementById("emailInput").value.trim();
-if(!email){
-showNotice("Enter your email first.");
-return;
-}
+  const email = document.getElementById("emailInput").value.trim();
+  if(!email){
+    showNotice("Enter your email first.");
+    return;
+  }
 
-const { error } = await supabaseClient.auth.signInWithOtp({
-email: email,
-options: {
-shouldCreateUser: true
-}
-});
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email: email,
+    options: { shouldCreateUser: true }
+  });
 
-if(error){
-showNotice("Sign up error: " + error.message);
-return;
-}
+  if(error){
+    showNotice("Sign up error: " + error.message);
+    return;
+  }
 
-showNotice("Check your email. Supabase sent you a login link.", true);
+  showNotice("Check your email. Supabase sent you a login link.", true);
 }
 
 async function signIn(){
-const email = document.getElementById("emailInput").value.trim();
-if(!email){
-showNotice("Enter your email first.");
-return;
-}
+  const email = document.getElementById("emailInput").value.trim();
+  if(!email){
+    showNotice("Enter your email first.");
+    return;
+  }
 
-const { error } = await supabaseClient.auth.signInWithOtp({
-email: email,
-options: {
-shouldCreateUser: true
-}
-});
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email: email,
+    options: { shouldCreateUser: true }
+  });
 
-if(error){
-showNotice("Sign in error: " + error.message);
-return;
-}
+  if(error){
+    showNotice("Sign in error: " + error.message);
+    return;
+  }
 
-showNotice("Check your email. Supabase sent you a login link.", true);
+  showNotice("Check your email. Supabase sent you a login link.", true);
 }
 
 async function signOutUser(){
-await supabaseClient.auth.signOut();
-currentUser=null;
-updateUserStatus();
-showNotice("Logged out.", true);
+  await supabaseClient.auth.signOut();
+  currentUser=null;
+  updateUserStatus();
+  showNotice("Logged out.", true);
 }
 
 async function loadUser(){
-const { data } = await supabaseClient.auth.getUser();
-currentUser = data?.user || null;
-updateUserStatus();
+  const { data } = await supabaseClient.auth.getUser();
+  currentUser = data?.user || null;
+  updateUserStatus();
 }
 
 function updateUserStatus(){
-const box = document.getElementById("userStatus");
-if(currentUser){
-box.innerText = "Signed in: " + currentUser.email;
-}else{
-box.innerText = "Not signed in";
-}
+  const box = document.getElementById("userStatus");
+  if(currentUser){
+    box.innerText = "Signed in: " + currentUser.email;
+  }else{
+    box.innerText = "Not signed in";
+  }
 }
 
 function showNotice(html, success=false){
-document.getElementById("noticeBox").innerHTML = `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
+  document.getElementById("noticeBox").innerHTML =
+    `<div class="${success ? 'success-box' : 'limit-warning'}">${html}</div>`;
 }
 
 function clearNotice(){
-document.getElementById("noticeBox").innerHTML = "";
+  document.getElementById("noticeBox").innerHTML = "";
+}
+
+function setQuickPrompt(text){
+  document.getElementById("question").value = text;
+  document.getElementById("question").focus();
 }
 
 function setMode(mode,el){
-currentMode=mode;
+  currentMode=mode;
 
-document.querySelectorAll(".mode-btn").forEach(btn=>{
-btn.classList.remove("active");
-});
+  document.querySelectorAll(".mode-btn").forEach(btn=>{
+    btn.classList.remove("active");
+  });
 
-el.classList.add("active");
-document.getElementById("modeLabel").innerText = "Current mode: " + el.innerText;
+  el.classList.add("active");
+  document.getElementById("modeLabel").innerText = "Current mode: " + el.innerText;
+  updatePlaceholder();
+}
+
+function updatePlaceholder(){
+  const input = document.getElementById("question");
+
+  const placeholders = {
+    advice: "Ask about diplomatic protocol...",
+    seating: "Describe the meeting format, delegation size, table type, and interpreters...",
+    checklist: "Example: checklist for receiving a parliamentary delegation...",
+    visit_program: "Example: one-day official visit program for a parliamentary speaker...",
+    official_letter: "Example: draft an invitation letter for an official visit...",
+    protocol_pack: "Example: protocol pack for an official visit with a 6-member delegation..."
+  };
+
+  input.placeholder = placeholders[currentMode] || "Ask about diplomatic protocol...";
 }
 
 function escapeHtml(text){
-return text
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
+  return text
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
 function downloadTxtFile(text, filename="protocolmind.txt"){
-const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download=filename;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+  const blob=new Blob([text],{type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function downloadDocFile(text, filename="protocolmind.doc"){
-const html=`
+  const html=`
 <html>
 <head>
 <meta charset="UTF-8">
@@ -506,280 +885,290 @@ const html=`
 </body>
 </html>
 `;
-const blob=new Blob([html],{type:"application/msword"});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download=filename;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+  const blob=new Blob([html],{type:"application/msword"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function buildFilename(prefix){
-const now=new Date();
-const datePart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
-return `${prefix}-${datePart}`;
+  const now=new Date();
+  const datePart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+  return `${prefix}-${datePart}`;
 }
 
 function isDocumentOutput(){
-const template=document.getElementById("templateSelect").value;
-return currentMode==="visit_program" ||
-       currentMode==="official_letter" ||
-       currentMode==="protocol_pack" ||
-       template!=="none";
+  const template=document.getElementById("templateSelect").value;
+  return currentMode==="visit_program" ||
+         currentMode==="official_letter" ||
+         currentMode==="protocol_pack" ||
+         template!=="none";
 }
 
 function documentLabel(){
-const template=document.getElementById("templateSelect").value;
+  const template=document.getElementById("templateSelect").value;
 
-if(template==="invitation_letter") return "Invitation Letter";
-if(template==="thank_you_letter") return "Thank You Letter";
-if(template==="note_verbale") return "Note Verbale";
-if(template==="briefing_note") return "Briefing Note";
-if(template==="meeting_scenario") return "Meeting Scenario";
-if(currentMode==="visit_program") return "Visit Program";
-if(currentMode==="official_letter") return "Official Letter";
-if(currentMode==="protocol_pack") return "Protocol Pack";
-if(currentMode==="checklist") return "Checklist";
-return "Document";
+  if(template==="invitation_letter") return "Invitation Letter";
+  if(template==="thank_you_letter") return "Thank You Letter";
+  if(template==="note_verbale") return "Note Verbale";
+  if(template==="briefing_note") return "Briefing Note";
+  if(template==="meeting_scenario") return "Meeting Scenario";
+  if(currentMode==="visit_program") return "Visit Program";
+  if(currentMode==="official_letter") return "Official Letter";
+  if(currentMode==="protocol_pack") return "Protocol Pack";
+  if(currentMode==="checklist") return "Checklist";
+  return "Document";
 }
 
 function addMessage(role,text){
-const chatBox=document.getElementById("chatBox");
+  const chatBox=document.getElementById("chatBox");
 
-const wrapper=document.createElement("div");
-wrapper.className="message-wrapper";
-wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
+  const wrapper=document.createElement("div");
+  wrapper.className="message-wrapper";
+  wrapper.style.alignItems=role==="user"?"flex-end":"flex-start";
 
-let contentBlock;
+  let contentBlock;
 
-if(role==="assistant" && isDocumentOutput()){
-contentBlock=document.createElement("div");
-contentBlock.className="document-card";
+  if(role==="assistant" && isDocumentOutput()){
+    contentBlock=document.createElement("div");
+    contentBlock.className="document-card";
 
-const title=document.createElement("div");
-title.className="document-title";
-title.innerText=documentLabel();
+    const title=document.createElement("div");
+    title.className="document-title";
+    title.innerText=documentLabel();
 
-const body=document.createElement("div");
-body.innerText=text;
+    const body=document.createElement("div");
+    body.innerText=text;
 
-contentBlock.appendChild(title);
-contentBlock.appendChild(body);
-}else{
-contentBlock=document.createElement("div");
-contentBlock.className="message "+role;
-contentBlock.innerText=text;
-}
+    contentBlock.appendChild(title);
+    contentBlock.appendChild(body);
+  }else{
+    contentBlock=document.createElement("div");
+    contentBlock.className="message "+role;
+    contentBlock.innerText=text;
+  }
 
-wrapper.appendChild(contentBlock);
+  wrapper.appendChild(contentBlock);
 
-if(role==="assistant"){
-const actions=document.createElement("div");
-actions.className="message-actions";
+  if(role==="assistant"){
+    const actions=document.createElement("div");
+    actions.className="message-actions";
 
-const copyBtn=document.createElement("button");
-copyBtn.className="action-btn";
-copyBtn.innerText="Copy";
-copyBtn.onclick=function(){
-navigator.clipboard.writeText(text);
-copyBtn.innerText="Copied";
-setTimeout(()=>{ copyBtn.innerText="Copy"; },1500);
-};
+    const copyBtn=document.createElement("button");
+    copyBtn.className="action-btn";
+    copyBtn.innerText="Copy";
+    copyBtn.onclick=function(){
+      navigator.clipboard.writeText(text);
+      copyBtn.innerText="Copied";
+      setTimeout(()=>{ copyBtn.innerText="Copy"; },1500);
+    };
 
-const txtBtn=document.createElement("button");
-txtBtn.className="action-btn";
-txtBtn.innerText="TXT";
-txtBtn.onclick=function(){
-let prefix="protocolmind-answer";
-if(currentMode==="visit_program") prefix="visit-program";
-if(currentMode==="official_letter") prefix="official-letter";
-if(currentMode==="protocol_pack") prefix="protocol-pack";
-if(currentMode==="checklist") prefix="protocol-checklist";
-const template=document.getElementById("templateSelect").value;
-if(template!=="none") prefix=template.replaceAll("_","-");
-downloadTxtFile(text,buildFilename(prefix)+".txt");
-};
+    const txtBtn=document.createElement("button");
+    txtBtn.className="action-btn";
+    txtBtn.innerText="TXT";
+    txtBtn.onclick=function(){
+      let prefix="protocolmind-answer";
+      if(currentMode==="visit_program") prefix="visit-program";
+      if(currentMode==="official_letter") prefix="official-letter";
+      if(currentMode==="protocol_pack") prefix="protocol-pack";
+      if(currentMode==="checklist") prefix="protocol-checklist";
+      const template=document.getElementById("templateSelect").value;
+      if(template!=="none") prefix=template.replaceAll("_","-");
+      downloadTxtFile(text,buildFilename(prefix)+".txt");
+    };
 
-const docBtn=document.createElement("button");
-docBtn.className="action-btn";
-docBtn.innerText="DOC";
-docBtn.onclick=function(){
-let prefix="protocolmind-answer";
-if(currentMode==="visit_program") prefix="visit-program";
-if(currentMode==="official_letter") prefix="official-letter";
-if(currentMode==="protocol_pack") prefix="protocol-pack";
-if(currentMode==="checklist") prefix="protocol-checklist";
-const template=document.getElementById("templateSelect").value;
-if(template!=="none") prefix=template.replaceAll("_","-");
-downloadDocFile(text,buildFilename(prefix)+".doc");
-};
+    const docBtn=document.createElement("button");
+    docBtn.className="action-btn";
+    docBtn.innerText="DOC";
+    docBtn.onclick=function(){
+      let prefix="protocolmind-answer";
+      if(currentMode==="visit_program") prefix="visit-program";
+      if(currentMode==="official_letter") prefix="official-letter";
+      if(currentMode==="protocol_pack") prefix="protocol-pack";
+      if(currentMode==="checklist") prefix="protocol-checklist";
+      const template=document.getElementById("templateSelect").value;
+      if(template!=="none") prefix=template.replaceAll("_","-");
+      downloadDocFile(text,buildFilename(prefix)+".doc");
+    };
 
-actions.appendChild(copyBtn);
-actions.appendChild(txtBtn);
-actions.appendChild(docBtn);
-wrapper.appendChild(actions);
-}
+    actions.appendChild(copyBtn);
+    actions.appendChild(txtBtn);
+    actions.appendChild(docBtn);
+    wrapper.appendChild(actions);
+  }
 
-chatBox.appendChild(wrapper);
-chatBox.scrollTop=chatBox.scrollHeight;
+  chatBox.appendChild(wrapper);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function clearChat(){
-conversationHistory=[];
-document.getElementById("chatBox").innerHTML=
+  conversationHistory=[];
+  document.getElementById("chatBox").innerHTML=
 `<div class="message assistant">Chat cleared.</div>`;
-document.getElementById("diagramContainer").innerHTML="";
-clearNotice();
+  document.getElementById("diagramContainer").innerHTML="";
+  clearNotice();
 }
 
 function drawStructuredSeatingDiagram(hostCount,guestCount,hasInterpreters=false){
-const container=document.getElementById("diagramContainer");
-container.innerHTML="";
+  const container=document.getElementById("diagramContainer");
+  container.innerHTML="";
 
-const hostTitle=document.createElement("div");
-hostTitle.className="seat-section-title";
-hostTitle.innerText="Host Side";
+  const shell=document.createElement("div");
+  shell.className="seat-shell";
 
-const hostRow=document.createElement("div");
-hostRow.className="seat-row";
+  const hostTitle=document.createElement("div");
+  hostTitle.className="seat-section-title";
+  hostTitle.innerText="Host Side";
 
-for(let i=1;i<=hostCount;i++){
-const seat=document.createElement("div");
-seat.className="seat" + (i===Math.ceil(hostCount/2) ? " principal" : "");
-seat.innerText=i===Math.ceil(hostCount/2) ? "HOST PRINCIPAL" : "H"+i;
-hostRow.appendChild(seat);
-}
+  const hostRow=document.createElement("div");
+  hostRow.className="seat-row";
 
-if(hasInterpreters){
-const hostInterp=document.createElement("div");
-hostInterp.className="seat-row";
-hostInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
-container.appendChild(hostInterp);
-}
+  for(let i=1;i<=hostCount;i++){
+    const seat=document.createElement("div");
+    seat.className="seat" + (i===Math.ceil(hostCount/2) ? " principal" : "");
+    seat.innerText=i===Math.ceil(hostCount/2) ? "HOST PRINCIPAL" : "H"+i;
+    hostRow.appendChild(seat);
+  }
 
-const table=document.createElement("div");
-table.className="table";
-table.innerText="TABLE";
+  shell.appendChild(hostTitle);
+  shell.appendChild(hostRow);
 
-const guestTitle=document.createElement("div");
-guestTitle.className="seat-section-title";
-guestTitle.innerText="Guest Side";
+  if(hasInterpreters){
+    const hostInterp=document.createElement("div");
+    hostInterp.className="seat-row";
+    hostInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
+    shell.appendChild(hostInterp);
+  }
 
-const guestRow=document.createElement("div");
-guestRow.className="seat-row";
+  const tableWrap=document.createElement("div");
+  tableWrap.className="table-box";
+  const table=document.createElement("div");
+  table.className="table";
+  table.innerText="TABLE";
+  tableWrap.appendChild(table);
 
-for(let i=1;i<=guestCount;i++){
-const seat=document.createElement("div");
-seat.className="seat" + (i===Math.ceil(guestCount/2) ? " principal" : "");
-seat.innerText=i===Math.ceil(guestCount/2) ? "GUEST PRINCIPAL" : "G"+i;
-guestRow.appendChild(seat);
-}
+  const guestTitle=document.createElement("div");
+  guestTitle.className="seat-section-title";
+  guestTitle.innerText="Guest Side";
 
-container.appendChild(hostTitle);
-container.appendChild(hostRow);
-container.appendChild(table);
-container.appendChild(guestTitle);
-container.appendChild(guestRow);
+  const guestRow=document.createElement("div");
+  guestRow.className="seat-row";
 
-if(hasInterpreters){
-const guestInterp=document.createElement("div");
-guestInterp.className="seat-row";
-guestInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
-container.appendChild(guestInterp);
-}
+  for(let i=1;i<=guestCount;i++){
+    const seat=document.createElement("div");
+    seat.className="seat" + (i===Math.ceil(guestCount/2) ? " principal" : "");
+    seat.innerText=i===Math.ceil(guestCount/2) ? "GUEST PRINCIPAL" : "G"+i;
+    guestRow.appendChild(seat);
+  }
+
+  shell.appendChild(tableWrap);
+  shell.appendChild(guestTitle);
+  shell.appendChild(guestRow);
+
+  if(hasInterpreters){
+    const guestInterp=document.createElement("div");
+    guestInterp.className="seat-row";
+    guestInterp.innerHTML=`<div class="seat interpreter">INT</div>`;
+    shell.appendChild(guestInterp);
+  }
+
+  container.appendChild(shell);
 }
 
 function detectDelegationNumbers(text){
-const numbers=text.match(/\d+/g);
-if(!numbers) return null;
+  const numbers=text.match(/\d+/g);
+  if(!numbers) return null;
 
-if(numbers.length===1){
-return {
-host:parseInt(numbers[0]),
-guest:parseInt(numbers[0])
-};
-}
+  if(numbers.length===1){
+    return {
+      host:parseInt(numbers[0]),
+      guest:parseInt(numbers[0])
+    };
+  }
 
-return {
-host:parseInt(numbers[0]),
-guest:parseInt(numbers[1])
-};
+  return {
+    host:parseInt(numbers[0]),
+    guest:parseInt(numbers[1])
+  };
 }
 
 function detectInterpreters(text){
-const lower=text.toLowerCase();
-return lower.includes("interpreter") ||
-       lower.includes("interpreters") ||
-       lower.includes("translation") ||
-       lower.includes("translator") ||
-       lower.includes("перевод") ||
-       lower.includes("переводчик");
+  const lower=text.toLowerCase();
+  return lower.includes("interpreter") ||
+         lower.includes("interpreters") ||
+         lower.includes("translation") ||
+         lower.includes("translator") ||
+         lower.includes("перевод") ||
+         lower.includes("переводчик");
 }
 
 async function ask(){
-clearNotice();
+  clearNotice();
 
-const input=document.getElementById("question");
-const question=input.value.trim();
-const language=document.getElementById("languageSelect").value;
-const template=document.getElementById("templateSelect").value;
+  const input=document.getElementById("question");
+  const question=input.value.trim();
+  const language=document.getElementById("languageSelect").value;
+  const template=document.getElementById("templateSelect").value;
 
-if(!question) return;
+  if(!question) return;
 
-addMessage("user",question);
-conversationHistory.push({role:"user",content:question});
-input.value="";
+  addMessage("user",question);
+  conversationHistory.push({role:"user",content:question});
+  input.value="";
 
-try{
-const response=await fetch("/api/ask",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-question,
-mode:currentMode,
-template,
-language,
-history:conversationHistory.slice(-10),
-userEmail: currentUser ? currentUser.email : ""
-})
-});
+  try{
+    const response=await fetch("/api/ask",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        question,
+        mode:currentMode,
+        template,
+        language,
+        history:conversationHistory.slice(-10),
+        userEmail: currentUser ? currentUser.email : ""
+      })
+    });
 
-const data=await response.json();
+    const data=await response.json();
 
-if(!response.ok){
-addMessage("assistant","Error: "+(data.details||data.error||"Unknown error"));
-return;
-}
+    if(!response.ok){
+      addMessage("assistant","Error: "+(data.details||data.error||"Unknown error"));
+      return;
+    }
 
-const answer=data.answer||"No answer returned.";
+    const answer=data.answer||"No answer returned.";
 
-addMessage("assistant",answer);
-conversationHistory.push({role:"assistant",content:answer});
+    addMessage("assistant",answer);
+    conversationHistory.push({role:"assistant",content:answer});
 
-if(currentMode==="seating"){
-const counts=detectDelegationNumbers(question);
-if(counts){
-drawStructuredSeatingDiagram(counts.host,counts.guest,detectInterpreters(question));
-}
-}
+    if(currentMode==="seating"){
+      const counts=detectDelegationNumbers(question);
+      if(counts){
+        drawStructuredSeatingDiagram(counts.host,counts.guest,detectInterpreters(question));
+      }
+    }
 
-}catch(err){
-addMessage("assistant","Request failed: "+err.message);
-}
+  }catch(err){
+    addMessage("assistant","Request failed: "+err.message);
+  }
 }
 
 document.getElementById("question").addEventListener("keydown",function(e){
-if(e.key==="Enter"){
-ask();
-}
+  if(e.key==="Enter"){
+    ask();
+  }
 });
 
 loadUser();
+updatePlaceholder();
 </script>
 
 </body>
