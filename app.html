@@ -41,8 +41,7 @@ select{
 padding:6px;
 border-radius:6px;
 }
-
-.chat{
+  .chat{
 background:#1e293b;
 padding:20px;
 border-radius:10px;
@@ -82,8 +81,7 @@ background:#22c55e;
 color:white;
 cursor:pointer;
 }
-
-.documents{
+  .documents{
 margin-top:30px;
 background:#1e293b;
 padding:15px;
@@ -161,8 +159,7 @@ SUPABASE_ANON_KEY
 
 let lastAnswer = "";
 let userEmail = "";
-
-async function loadUser(){
+  async function loadUser(){
 
 const { data } = await supabaseClient.auth.getUser();
 
@@ -175,50 +172,10 @@ loadDocuments();
 }
 
 }
-const translations = {
-
-English:{
-welcome:"Welcome to ProtocolMind. Ask about diplomatic protocol.",
-placeholder:"Ask about diplomatic protocol..."
-},
-
-Русский:{
-welcome:"Добро пожаловать в ProtocolMind. Спросите о дипломатическом протоколе.",
-placeholder:"Задайте вопрос..."
-},
-
-"Azərbaycan dili":{
-welcome:"ProtocolMind-ə xoş gəlmisiniz. Diplomatik protokol barədə soruşun.",
-placeholder:"Protokol barədə sual verin..."
-},
-
-Türkçe:{
-welcome:"ProtocolMind'e hoş geldiniz. Diplomatik protokol hakkında sorabilirsiniz.",
-placeholder:"Protokol hakkında sorun..."
-},
-
-ქართული:{
-welcome:"კეთილი იყოს თქვენი მობრძანება ProtocolMind-ში.",
-placeholder:"დასვით კითხვა..."
-}
-
-};
-
-function updateLanguage(){
-
-const lang = document.getElementById("languageSelect").value;
-
-document.getElementById("welcome").innerText =
-translations[lang].welcome;
-
-document.getElementById("question").placeholder =
-translations[lang].placeholder;
-
-}
 
 async function ask(){
 
-const q = document.getElementById("question").value;
+const q = document.getElementById("question").value.trim();
 
 if(!q) return;
 
@@ -226,40 +183,49 @@ const chat = document.getElementById("chat");
 
 chat.innerHTML += `<div class="message user">${q}</div>`;
 
-document.getElementById("question").value="";
+document.getElementById("question").value = "";
+
+try{
 
 const res = await fetch("/api/ask",{
-
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 question:q,
 userEmail:userEmail
 })
-
 });
 
 const data = await res.json();
 
-lastAnswer = data.answer;
+const answer =
+data.answer ||
+data.response ||
+data.result ||
+data.error ||
+data.details ||
+"Server returned no answer";
 
-chat.innerHTML += `<div class="message assistant">${data.answer}</div>`;
+lastAnswer = answer;
+
+chat.innerHTML += `<div class="message assistant">${answer}</div>`;
 
 chat.scrollTop = chat.scrollHeight;
+
+}catch(e){
+
+chat.innerHTML += `<div class="message assistant">Error: ${e.message}</div>`;
+
+}
 
 }
   async function saveDocument(){
 
 if(!lastAnswer){
-
 alert("Nothing to save");
-
 return;
-
 }
 
 const title = prompt("Document title");
@@ -267,20 +233,16 @@ const title = prompt("Document title");
 if(!title) return;
 
 await fetch("/api/save-document",{
-
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 userEmail:userEmail,
 title:title,
 type:"AI Document",
 content:lastAnswer
 })
-
 });
 
 loadDocuments();
@@ -290,17 +252,13 @@ loadDocuments();
 async function loadDocuments(){
 
 const res = await fetch("/api/get-documents",{
-
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 userEmail:userEmail
 })
-
 });
 
 const data = await res.json();
@@ -314,14 +272,11 @@ data.documents.forEach(d=>{
 const el = document.createElement("div");
 
 el.className="doc";
-
 el.innerText=d.title;
 
 el.onclick=()=>{
-
 document.getElementById("chat").innerHTML +=
 `<div class="message assistant">${d.content}</div>`;
-
 };
 
 docs.appendChild(el);
@@ -329,6 +284,12 @@ docs.appendChild(el);
 });
 
 }
+
+document.getElementById("question").addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+ask();
+}
+});
 
 loadUser();
 
