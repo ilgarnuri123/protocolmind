@@ -193,11 +193,20 @@ margin-bottom:15px;
 text-align:center;
 }
 
+.seat-section-title{
+font-size:13px;
+text-transform:uppercase;
+letter-spacing:.08em;
+color:#cbd5e1;
+margin:10px 0 6px;
+}
+
 .seat-row{
 display:flex;
 justify-content:center;
 gap:8px;
 margin:6px 0;
+flex-wrap:wrap;
 }
 
 .seat{
@@ -205,6 +214,18 @@ background:#1f2937;
 border:1px solid #374151;
 padding:8px 10px;
 border-radius:6px;
+min-width:44px;
+}
+
+.principal{
+background:#14532d;
+border:1px solid #22c55e;
+font-weight:700;
+}
+
+.interpreter{
+background:#3f2a12;
+border:1px solid #f59e0b;
 }
 
 .table{
@@ -213,6 +234,7 @@ border:1px solid #334155;
 border-radius:8px;
 background:#111827;
 margin:10px;
+display:inline-block;
 }
 </style>
 </head>
@@ -222,11 +244,11 @@ margin:10px;
 <div class="container">
 
 <h1>ProtocolMind</h1>
-<div class="subtitle">AI Diplomatic Protocol Assistant</div>
+<div class="subtitle" id="subtitleText">AI Diplomatic Protocol Assistant</div>
 <div class="credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
 
 <div class="controls">
-<select id="languageSelect" class="language-select">
+<select id="languageSelect" class="language-select" onchange="updateInterfaceLanguage()">
 <option value="English">English</option>
 <option value="Azərbaycan dili">Azərbaycan dili</option>
 <option value="Русский">Русский</option>
@@ -244,12 +266,12 @@ margin:10px;
 </div>
 
 <div class="modes">
-<button class="mode-btn active" onclick="setMode('advice',this)">Protocol Advice</button>
-<button class="mode-btn" onclick="setMode('seating',this)">Seating Plan</button>
-<button class="mode-btn" onclick="setMode('checklist',this)">Checklist</button>
-<button class="mode-btn" onclick="setMode('visit_program',this)">Visit Program</button>
-<button class="mode-btn" onclick="setMode('official_letter',this)">Official Letter</button>
-<button class="mode-btn" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
+<button class="mode-btn active" data-mode="advice" onclick="setMode('advice',this)">Protocol Advice</button>
+<button class="mode-btn" data-mode="seating" onclick="setMode('seating',this)">Seating Plan</button>
+<button class="mode-btn" data-mode="checklist" onclick="setMode('checklist',this)">Checklist</button>
+<button class="mode-btn" data-mode="visit_program" onclick="setMode('visit_program',this)">Visit Program</button>
+<button class="mode-btn" data-mode="official_letter" onclick="setMode('official_letter',this)">Official Letter</button>
+<button class="mode-btn" data-mode="protocol_pack" onclick="setMode('protocol_pack',this)">Protocol Pack</button>
 </div>
 
 <div class="mode-label" id="modeLabel">
@@ -259,15 +281,15 @@ Current mode: Protocol Advice
 <div id="diagramContainer" class="diagram"></div>
 
 <div class="chat-box" id="chatBox">
-<div class="message assistant">
+<div class="message assistant" id="welcomeMessage">
 Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.
 </div>
 </div>
 
 <div class="input-row">
 <input id="question" placeholder="Ask about diplomatic protocol...">
-<button class="ask-btn" onclick="ask()">Ask</button>
-<button class="clear-btn" onclick="clearChat()">Clear</button>
+<button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
+<button class="clear-btn" id="clearBtn" onclick="clearChat()">Clear</button>
 </div>
 
 </div>
@@ -275,6 +297,173 @@ Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating
 <script>
 let currentMode="advice";
 let conversationHistory=[];
+
+const uiTexts = {
+  "English": {
+    subtitle: "AI Diplomatic Protocol Assistant",
+    ask: "Ask",
+    clear: "Clear",
+    placeholder: "Ask about diplomatic protocol...",
+    welcome: "Welcome to ProtocolMind. Ask about diplomatic protocol, official visits, seating plans, protocol checklists, visit programs, official letters, or request a full Protocol Pack.",
+    cleared: "Chat cleared.",
+    currentModePrefix: "Current mode:",
+    modes: {
+      advice: "Protocol Advice",
+      seating: "Seating Plan",
+      checklist: "Checklist",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack"
+    },
+    templates: {
+      none: "No template",
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario"
+    },
+    actions: {
+      copy: "Copy",
+      copied: "Copied",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    diagram: {
+      hostSide: "Host Side",
+      guestSide: "Guest Side",
+      table: "TABLE",
+      hostPrincipal: "HOST PRINCIPAL",
+      guestPrincipal: "GUEST PRINCIPAL",
+      interpreter: "INT"
+    }
+  },
+  "Azərbaycan dili": {
+    subtitle: "Süni İntellekt Diplomatik Protokol Köməkçisi",
+    ask: "Soruş",
+    clear: "Təmizlə",
+    placeholder: "Diplomatik protokol barədə soruşun...",
+    welcome: "ProtocolMind-ə xoş gəlmisiniz. Diplomatik protokol, rəsmi səfərlər, seating plan, checklist, visit program, official letter və ya tam Protocol Pack barədə soruşun.",
+    cleared: "Söhbət təmizləndi.",
+    currentModePrefix: "Cari rejim:",
+    modes: {
+      advice: "Protocol Advice",
+      seating: "Seating Plan",
+      checklist: "Checklist",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack"
+    },
+    templates: {
+      none: "Şablon yoxdur",
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario"
+    },
+    actions: {
+      copy: "Kopyala",
+      copied: "Kopyalandı",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    diagram: {
+      hostSide: "Ev sahibi tərəfi",
+      guestSide: "Qonaq tərəfi",
+      table: "MASA",
+      hostPrincipal: "EV SAHİBİ PRİNSİPAL",
+      guestPrincipal: "QONAQ PRİNSİPAL",
+      interpreter: "TƏRC"
+    }
+  },
+  "Русский": {
+    subtitle: "ИИ-помощник по дипломатическому протоколу",
+    ask: "Спросить",
+    clear: "Очистить",
+    placeholder: "Спросите о дипломатическом протоколе...",
+    welcome: "Добро пожаловать в ProtocolMind. Спрашивайте о дипломатическом протоколе, официальных визитах, рассадке, checklist, программе визита, официальных письмах или запросите полный Protocol Pack.",
+    cleared: "Чат очищен.",
+    currentModePrefix: "Текущий режим:",
+    modes: {
+      advice: "Protocol Advice",
+      seating: "Seating Plan",
+      checklist: "Checklist",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack"
+    },
+    templates: {
+      none: "Без шаблона",
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario"
+    },
+    actions: {
+      copy: "Копировать",
+      copied: "Скопировано",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    diagram: {
+      hostSide: "Сторона хозяев",
+      guestSide: "Сторона гостей",
+      table: "СТОЛ",
+      hostPrincipal: "ГЛАВНЫЙ ХОЗЯИН",
+      guestPrincipal: "ГЛАВНЫЙ ГОСТЬ",
+      interpreter: "ПЕРЕВ"
+    }
+  },
+  "Türkçe": {
+    subtitle: "Yapay Zekâ Diplomatik Protokol Asistanı",
+    ask: "Sor",
+    clear: "Temizle",
+    placeholder: "Diplomatik protokol hakkında sor...",
+    welcome: "ProtocolMind'e hoş geldiniz. Diplomatik protokol, resmî ziyaretler, seating plan, checklist, visit program, official letter veya tam Protocol Pack hakkında sorabilirsiniz.",
+    cleared: "Sohbet temizlendi.",
+    currentModePrefix: "Geçerli mod:",
+    modes: {
+      advice: "Protocol Advice",
+      seating: "Seating Plan",
+      checklist: "Checklist",
+      visit_program: "Visit Program",
+      official_letter: "Official Letter",
+      protocol_pack: "Protocol Pack"
+    },
+    templates: {
+      none: "Şablon yok",
+      invitation_letter: "Invitation Letter",
+      thank_you_letter: "Thank You Letter",
+      note_verbale: "Note Verbale",
+      briefing_note: "Briefing Note",
+      meeting_scenario: "Meeting Scenario"
+    },
+    actions: {
+      copy: "Kopyala",
+      copied: "Kopyalandı",
+      txt: "TXT",
+      doc: "DOC"
+    },
+    diagram: {
+      hostSide: "Ev sahibi tarafı",
+      guestSide: "Misafir tarafı",
+      table: "MASA",
+      hostPrincipal: "EV SAHİBİ ASIL",
+      guestPrincipal: "MİSAFİR ASIL",
+      interpreter: "TERC"
+    }
+  }
+};
+
+function currentLanguage(){
+  return document.getElementById("languageSelect").value;
+}
+
+function t(){
+  return uiTexts[currentLanguage()] || uiTexts["English"];
+}
 
 function setMode(mode,el){
 currentMode=mode;
@@ -284,17 +473,47 @@ btn.classList.remove("active");
 });
 
 el.classList.add("active");
+updateModeLabel();
+updateModeButtonLabels();
+}
 
-const labels={
-advice:"Current mode: Protocol Advice",
-seating:"Current mode: Seating Plan",
-checklist:"Current mode: Checklist",
-visit_program:"Current mode: Visit Program",
-official_letter:"Current mode: Official Letter",
-protocol_pack:"Current mode: Protocol Pack"
-};
+function updateModeLabel(){
+document.getElementById("modeLabel").innerText = `${t().currentModePrefix} ${t().modes[currentMode]}`;
+}
 
-document.getElementById("modeLabel").innerText=labels[mode];
+function updateModeButtonLabels(){
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+  const mode = btn.dataset.mode;
+  btn.innerText = t().modes[mode];
+});
+}
+
+function updateTemplateLabels(){
+  const select = document.getElementById("templateSelect");
+  [...select.options].forEach(opt=>{
+    opt.text = t().templates[opt.value];
+  });
+}
+
+function updateInterfaceLanguage(){
+  document.getElementById("subtitleText").innerText = t().subtitle;
+  document.getElementById("askBtn").innerText = t().ask;
+  document.getElementById("clearBtn").innerText = t().clear;
+  document.getElementById("question").placeholder = t().placeholder;
+  updateModeLabel();
+  updateModeButtonLabels();
+  updateTemplateLabels();
+
+  const welcome = document.getElementById("welcomeMessage");
+  if(welcome){
+    welcome.innerText = t().welcome;
+  }
+
+  const chatBox = document.getElementById("chatBox");
+  const plainAssistant = chatBox.querySelector(".message.assistant");
+  if(plainAssistant && chatBox.children.length===1){
+    plainAssistant.innerText = t().welcome;
+  }
 }
 
 function escapeHtml(text){
@@ -358,15 +577,15 @@ return currentMode==="visit_program" ||
 function documentLabel(){
 const template=document.getElementById("templateSelect").value;
 
-if(template==="invitation_letter") return "Invitation Letter";
-if(template==="thank_you_letter") return "Thank You Letter";
-if(template==="note_verbale") return "Note Verbale";
-if(template==="briefing_note") return "Briefing Note";
-if(template==="meeting_scenario") return "Meeting Scenario";
-if(currentMode==="visit_program") return "Visit Program";
-if(currentMode==="official_letter") return "Official Letter";
-if(currentMode==="protocol_pack") return "Protocol Pack";
-if(currentMode==="checklist") return "Checklist";
+if(template==="invitation_letter") return t().templates.invitation_letter;
+if(template==="thank_you_letter") return t().templates.thank_you_letter;
+if(template==="note_verbale") return t().templates.note_verbale;
+if(template==="briefing_note") return t().templates.briefing_note;
+if(template==="meeting_scenario") return t().templates.meeting_scenario;
+if(currentMode==="visit_program") return t().modes.visit_program;
+if(currentMode==="official_letter") return t().modes.official_letter;
+if(currentMode==="protocol_pack") return t().modes.protocol_pack;
+if(currentMode==="checklist") return t().modes.checklist;
 return "Document";
 }
 
@@ -406,16 +625,16 @@ actions.className="message-actions";
 
 const copyBtn=document.createElement("button");
 copyBtn.className="action-btn";
-copyBtn.innerText="Copy";
+copyBtn.innerText=t().actions.copy;
 copyBtn.onclick=function(){
 navigator.clipboard.writeText(text);
-copyBtn.innerText="Copied";
-setTimeout(()=>{ copyBtn.innerText="Copy"; },1500);
+copyBtn.innerText=t().actions.copied;
+setTimeout(()=>{ copyBtn.innerText=t().actions.copy; },1500);
 };
 
 const txtBtn=document.createElement("button");
 txtBtn.className="action-btn";
-txtBtn.innerText="TXT";
+txtBtn.innerText=t().actions.txt;
 txtBtn.onclick=function(){
 let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
@@ -429,7 +648,7 @@ downloadTxtFile(text,buildFilename(prefix)+".txt");
 
 const docBtn=document.createElement("button");
 docBtn.className="action-btn";
-docBtn.innerText="DOC";
+docBtn.innerText=t().actions.doc;
 docBtn.onclick=function(){
 let prefix="protocolmind-answer";
 if(currentMode==="visit_program") prefix="visit-program";
@@ -454,41 +673,65 @@ chatBox.scrollTop=chatBox.scrollHeight;
 function clearChat(){
 conversationHistory=[];
 document.getElementById("chatBox").innerHTML=
-`<div class="message assistant">Chat cleared.</div>`;
+`<div class="message assistant">${t().cleared}</div>`;
 document.getElementById("diagramContainer").innerHTML="";
 }
 
-function drawSeatingDiagram(hostCount,guestCount){
+function drawStructuredSeatingDiagram(hostCount,guestCount,hasInterpreters=false){
 const container=document.getElementById("diagramContainer");
 container.innerHTML="";
+
+const hostTitle=document.createElement("div");
+hostTitle.className="seat-section-title";
+hostTitle.innerText=t().diagram.hostSide;
 
 const hostRow=document.createElement("div");
 hostRow.className="seat-row";
 
 for(let i=1;i<=hostCount;i++){
 const seat=document.createElement("div");
-seat.className="seat";
-seat.innerText="H"+i;
+seat.className="seat" + (i===Math.ceil(hostCount/2) ? " principal" : "");
+seat.innerText=i===Math.ceil(hostCount/2) ? t().diagram.hostPrincipal : "H"+i;
 hostRow.appendChild(seat);
+}
+
+if(hasInterpreters){
+const hostInterp=document.createElement("div");
+hostInterp.className="seat-row";
+hostInterp.innerHTML=`<div class="seat interpreter">${t().diagram.interpreter}</div>`;
+container.appendChild(hostInterp);
 }
 
 const table=document.createElement("div");
 table.className="table";
-table.innerText="TABLE";
+table.innerText=t().diagram.table;
+
+const guestTitle=document.createElement("div");
+guestTitle.className="seat-section-title";
+guestTitle.innerText=t().diagram.guestSide;
 
 const guestRow=document.createElement("div");
 guestRow.className="seat-row";
 
 for(let i=1;i<=guestCount;i++){
 const seat=document.createElement("div");
-seat.className="seat";
-seat.innerText="G"+i;
+seat.className="seat" + (i===Math.ceil(guestCount/2) ? " principal" : "");
+seat.innerText=i===Math.ceil(guestCount/2) ? t().diagram.guestPrincipal : "G"+i;
 guestRow.appendChild(seat);
 }
 
+container.appendChild(hostTitle);
 container.appendChild(hostRow);
 container.appendChild(table);
+container.appendChild(guestTitle);
 container.appendChild(guestRow);
+
+if(hasInterpreters){
+const guestInterp=document.createElement("div");
+guestInterp.className="seat-row";
+guestInterp.innerHTML=`<div class="seat interpreter">${t().diagram.interpreter}</div>`;
+container.appendChild(guestInterp);
+}
 }
 
 function detectDelegationNumbers(text){
@@ -506,6 +749,18 @@ return {
 host:parseInt(numbers[0]),
 guest:parseInt(numbers[1])
 };
+}
+
+function detectInterpreters(text){
+const lower=text.toLowerCase();
+return lower.includes("interpreter") ||
+       lower.includes("interpreters") ||
+       lower.includes("translation") ||
+       lower.includes("translator") ||
+       lower.includes("перевод") ||
+       lower.includes("переводчик") ||
+       lower.includes("tərcüməçi") ||
+       lower.includes("tercüman");
 }
 
 async function ask(){
@@ -550,7 +805,7 @@ conversationHistory.push({role:"assistant",content:answer});
 if(currentMode==="seating"){
 const counts=detectDelegationNumbers(question);
 if(counts){
-drawSeatingDiagram(counts.host,counts.guest);
+drawStructuredSeatingDiagram(counts.host,counts.guest,detectInterpreters(question));
 }
 }
 
@@ -564,6 +819,8 @@ if(e.key==="Enter"){
 ask();
 }
 });
+
+updateInterfaceLanguage();
 </script>
 
 </body>
