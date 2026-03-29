@@ -4,6 +4,9 @@ import path from "path";
 
 const rateLimitMap = new Map();
 
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
 function checkRateLimit(ip) {
   const now = Date.now();
   const windowMs = 60000;
@@ -250,6 +253,120 @@ Especially useful for:
 - diplomatic and institutional events`;
 }
 
+async function getUserProfileByEmail(email) {
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  if (!normalizedEmail) return null;
+
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?email=eq.${encodeURIComponent(normalizedEmail)}&select=*`,
+    {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error("Supabase profile lookup error: " + errText);
+  }
+
+  const rows = await response.json();
+  return rows && rows.length ? rows[0] : null;
+}
+
+async function getUsageRow(userId, date) {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/usage?user_id=eq.${encodeURIComponent(userId)}&date=eq.${encodeURIComponent(date)}&select=*`,
+    {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error("Supabase usage lookup error: " + errText);
+  }
+
+  const rows = await response.json();
+  return rows && rows.length ? rows[0] : null;
+}
+
+async function incrementUsage(userId, date) {
+  const existing = await getUsageRow(userId, date);
+
+  if (!existing) {
+    const createResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/usage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          date,
+          count: 1,
+        }),
+      }
+    );
+
+    if (!createResponse.ok) {
+      const errText = await createResponse.text();
+      throw new Error("Supabase usage create error: " + errText);
+    }
+
+    const created = await createResponse.json();
+    return created?.[0]?.count || 1;
+  }
+
+  const updateResponse = await fetch(
+    `${SUPABASE_URL}/rest/v1/usage?id=eq.${existing.id}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        Prefer: "return=representation",
+      },
+      body: JSON.stringify({
+        count: Number(existing.count || 0) + 1,
+      }),
+    }
+  );
+
+  if (!updateResponse.ok) {
+    const errText = await updateResponse.text();
+    throw new Error("Supabase usage update error: " + errText);
+  }
+
+  const updated = await updateResponse.json();
+  return updated?.[0]?.count || Number(existing.count || 0) + 1;
+}
+
+async function getUsageCount(userId, date) {
+  const row = await getUsageRow(userId, date);
+  return row ? Number(row.count || 0) : 0;
+}
+
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(now.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
@@ -270,14 +387,44 @@ export default async function handler(req, res) {
     const template = req.body?.template || "none";
     const language = req.body?.language || "English";
     const history = Array.isArray(req.body?.history) ? req.body.history : [];
+    const userEmail = String(req.body?.userEmail || "").trim().toLowerCase();
 
     if (!question || !question.trim()) {
       return res.status(400).json({ error: "Question required" });
     }
 
+    let profile = null;
+    let isPro = false;
+
+    if (userEmail) {
+      profile = await getUserProfileByEmail(userEmail);
+      isPro = profile?.plan === "pro" && profile?.status === "active";
+    }
+
+    if (!isPro) {
+      if (!profile && userEmail) {
+        return res.status(403).json({
+          error: "User profile not found. Please sign in again."
+        });
+      }
+
+      const userId = profile?.id || "guest";
+      const today = getTodayDateString();
+      const usedCount = await getUsageCount(userId, today);
+
+      if (usedCount >= 5) {
+        return res.status(403).json({
+          error: "Daily free limit reached (5 requests). Upgrade to ProtocolMind Pro for unlimited access."
+        });
+      }
+
+      await incrementUsage(userId, today);
+    }
+
     if (isCapabilitiesQuestion(question)) {
       return res.status(200).json({
-        answer: getCapabilitiesAnswer(language)
+        answer: getCapabilitiesAnswer(language),
+        plan: isPro ? "pro" : "free"
       });
     }
 
@@ -520,7 +667,10 @@ ${languageInstruction}
     const answer =
       completion.choices?.[0]?.message?.content || "No answer returned.";
 
-    return res.status(200).json({ answer });
+    return res.status(200).json({
+      answer,
+      plan: isPro ? "pro" : "free"
+    });
   } catch (error) {
     console.error("API ERROR:", error);
 
