@@ -1,0 +1,32 @@
+SEATING ENGINE RULES
+
+Core principles of diplomatic seating:
+
+1. Bilateral meetings follow parity and symmetry.
+2. The principal host and principal guest should occupy mirrored central positions.
+3. Equivalent rank should face equivalent rank.
+4. Senior advisers sit closest to principals.
+5. Interpreters should sit beside principals or slightly behind, depending on room format.
+6. If there are unequal delegation sizes, visual balance should still be preserved.
+7. Flags should be placed so that both sides are represented with equal dignity.
+8. For rectangular tables, principals usually sit in the middle of the long sides or at opposing central seats.
+9. For round tables, strict visual equality is preferred.
+10. In politically sensitive meetings, neutrality and symmetry are more important than convenience.
+
+Operational rules:
+
+- Always identify principal host and principal guest.
+- Always separate seating logic from seating layout.
+- Always mention protocol risks if information is incomplete.
+- If delegation composition is unclear, provide a recommended model arrangement.
+- If interpreters are likely needed, mention interpreter placement.
+- If media is expected, mention camera-facing balance and flag visibility.
+
+Output logic:
+
+A seating response should include:
+1. Seating Logic
+2. Recommended Layout
+3. Principal Placement
+4. Supporting Delegation Placement
+5. Protocol Risks / Notes
