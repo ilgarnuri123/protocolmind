@@ -8,7 +8,8 @@
 
 <title>ProtocolMind</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/auth-ui-js@0.2.7/dist/index.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@supabase/auth-ui-js@0.2.7/dist/style.css" />
 
 <style>
 
@@ -103,6 +104,7 @@ cursor:pointer;
 <body>
 
 <div class="container">
+  <div id="auth"></div>
 
 <div class="header">
 
@@ -291,6 +293,22 @@ ask();
 }
 });
 
+  const authContainer = document.getElementById("auth");
+
+supabaseClient.auth.getSession().then(({ data }) => {
+
+if(!data.session){
+
+new supabase.AuthUI({
+supabaseClient: supabaseClient
+}).start('#auth',{
+providers: ['email']
+});
+
+}
+
+});
+  
 loadUser();
 
 </script>
