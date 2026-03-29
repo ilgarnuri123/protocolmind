@@ -1,15 +1,275 @@
-Diplomatic Seating Guidelines
+TITLE: SEATING RULES AND ARRANGEMENT LOGIC
 
-1. Bilateral meetings normally follow mirror symmetry.
+SECTION 1. PURPOSE
 
-2. Heads of delegation occupy central seats.
+Seating is one of the most visible expressions of protocol.
+It reflects hierarchy, balance, parity, respect, and political intent.
 
-3. Senior advisers sit closest to principals.
+A correct seating arrangement should:
+- clearly identify the principals
+- reflect official rank
+- preserve symmetry where required
+- support the working format of the meeting
+- allow interpreters, note-takers, and support staff to function without disturbing the principals
 
-4. Interpreters sit beside principals or slightly behind.
+Seating mistakes are highly visible and can create diplomatic discomfort immediately.
 
-5. Tables may be rectangular, round, or U-shaped depending on meeting format.
+SECTION 2. PRIMARY RULE
 
-6. Nameplates should be clearly visible.
+The two principals occupy the most important and most visible positions.
 
-7. Flags should appear behind principals or between delegations.
+In bilateral formats, this usually means:
+- principal opposite principal
+- centered on the main axis of the table or room
+
+Everything else should be organized around that central logic.
+
+SECTION 3. BILATERAL RECTANGULAR TABLE
+
+Standard rule:
+- host principal sits at the center of one side
+- guest principal sits directly opposite at the center of the other side
+- the most senior supporting officials sit nearest to the principals
+- rank usually decreases as one moves away from the principal
+
+Example logic:
+H3 H2 HOST PRINCIPAL H1
+G3 G2 GUEST PRINCIPAL G1
+
+Or, depending on exact numbering style:
+- the seat immediately to the principal’s right may be reserved for the top supporting official
+- the seat immediately to the principal’s left may be used for the second most important supporting official
+- this depends on local protocol practice and interpretation setup
+
+SECTION 4. BILATERAL ROUND TABLE
+
+At a round table:
+- the two principals should still be clearly opposite each other if the format allows
+- parity remains important
+- supporting officials should be distributed symmetrically by relative rank
+- interpreters should be placed where they support the principals without breaking visual balance
+
+Round tables are symbolically useful for equality, but they still require clear rank logic.
+
+SECTION 5. EXPANDED DELEGATION SEATING
+
+In expanded meetings:
+- principals remain central
+- delegation members are placed by rank and function
+- the table should not be overloaded
+- if there are too many participants, a second row or side seating may be used
+- visible imbalance should be avoided unless politically intended
+
+The more formal the event, the less improvisation should occur.
+
+SECTION 6. INTERPRETERS
+
+Interpreter placement depends on the format.
+
+Common options:
+1. beside the principal
+2. slightly behind the principal
+3. at a secondary adjacent position with microphone support
+
+Rules:
+- interpreters must hear clearly
+- principals must not need to turn awkwardly
+- interpreter placement should not visually displace senior officials unless necessary
+
+In highly formal bilateral meetings, placing interpreters near the principals is usually the safest approach.
+
+SECTION 7. NOTE-TAKERS AND SUPPORT STAFF
+
+Support staff should not visually outrank principals or senior delegation members.
+
+Possible placements:
+- outer ends of the table
+- second line behind delegation
+- side wall seating
+- support console behind principals if format allows
+
+If the room is small, the protocol officer should protect visual clarity first.
+
+SECTION 8. PODIUM OR STAGE SEATING
+
+For panel, conference, or ceremonial stage seating:
+- the chair or main host normally occupies the central seat
+- the principal guest may sit to the chair’s right or in another position according to host custom
+- remaining seats follow precedence
+
+Stage seating must be decided with attention to:
+- flags
+- cameras
+- speaking order
+- entrance and exit routes
+- whether documents or microphones are placed
+
+SECTION 9. HEAD TABLE OR OFFICIAL DINNER SEATING
+
+At an official lunch or dinner:
+- seating may alternate host and guest where appropriate
+- the host principal and guest principal usually occupy the principal positions
+- spouses, deputy officials, ministers, or ambassadors may be positioned according to ceremonial logic and rank
+
+If the meal is formal:
+- use place cards
+- confirm dietary restrictions
+- confirm toasting order
+- avoid last-minute seat changes
+
+SECTION 10. RANK ORDER
+
+Basic seating order generally follows:
+1. principal
+2. deputy or equivalent second-ranking figure
+3. relevant minister / committee chair / head of delegation
+4. ambassador where appropriate
+5. senior adviser
+6. supporting staff
+
+However, relevance may modify rank.
+For example:
+- in a defense meeting, the defense official may sit closer than a formally older but less relevant official
+- in a parliamentary committee meeting, the committee chair may outrank a less relevant senior bureaucratic figure
+
+SECTION 11. PARITY
+
+In bilateral settings, parity is critical.
+This includes:
+- equal number of visible delegation members where possible
+- balanced flags
+- similar chair size and quality
+- mirrored or equivalent seating geometry
+- equitable access to interpretation, documents, and water
+
+Visible asymmetry may be read as status signaling.
+
+SECTION 12. COMMON TABLE FORMATS
+
+Common table formats include:
+- rectangular bilateral table
+- round bilateral table
+- U-shape
+- boardroom style
+- horseshoe
+- side-by-side conference format
+- tête-à-tête small table
+
+ProtocolMind should identify the format before recommending seating.
+
+SECTION 13. SMALL MEETING / TÊTE-À-TÊTE
+
+A small high-level meeting may include:
+- two principals only
+- two principals plus interpreters
+- two principals plus one aide each
+- two principals plus note-takers placed separately
+
+The key rule is to preserve intimacy, confidentiality, and dignity.
+
+SECTION 14. LARGE DELEGATIONS
+
+If a delegation is larger than the room supports:
+- prioritize visible participants
+- move secondary participants to second row or side seating
+- avoid crowding the principals
+- preserve working order and camera clarity
+
+A smaller well-structured visible table is better than a crowded and confused one.
+
+SECTION 15. FLAGS AND SEATING RELATION
+
+Flag placement and seating should reinforce each other.
+The principal photo angle should show:
+- correct centrality of principals
+- balanced flags
+- clean institutional background
+
+Flags should not block participants or create visual hierarchy inconsistent with seating.
+
+SECTION 16. NAMEPLATES
+
+Nameplates should:
+- be placed before arrival
+- match actual seating
+- use correct names and titles
+- be readable from the opposite side
+- be consistent in language and formatting
+
+Incorrect nameplates create immediate embarrassment.
+
+SECTION 17. WATER, MICROPHONES, DOCUMENTS
+
+At each seat, the following may be required:
+- nameplate
+- water
+- glass
+- notepad
+- pen
+- microphone
+- folder
+
+Placement should be clean and symmetrical.
+
+SECTION 18. ENTRY TO THE ROOM
+
+Seating is not only about where people sit, but how they arrive to those seats.
+
+Before principals enter:
+- all seats must already be set
+- delegations must know where to move
+- interpreters must know their positions
+- support staff should not cross in front of principals unnecessarily
+
+SECTION 19. PHOTO MOMENT BEFORE SEATING
+
+If there is a handshake or standing photo before seating:
+- principals should know where to stand
+- delegation members should know whether to remain back or enter after the photo
+- movement from photo point to seat must be smooth
+
+SECTION 20. COMMON SEATING ERRORS
+
+Typical errors:
+- principal not centered
+- junior official closer than senior official
+- unbalanced delegation numbers without explanation
+- interpreters placed too far away
+- nameplate mismatch
+- host and guest not opposite each other in bilateral format
+- chairs and visual setup unequal
+- staff seated where principals should be
+- no plan for overflow participants
+
+SECTION 21. PROTOCOL DECISION QUESTIONS FOR SEATING
+
+Before finalizing seating, ask:
+1. Who are the two principals?
+2. What is the exact rank order?
+3. Is this bilateral or multilateral?
+4. Is symmetry required?
+5. Are interpreters needed?
+6. Are photos expected?
+7. Is this working or ceremonial?
+8. Will the arrangement look correct in a photograph?
+
+SECTION 22. PROTOCOLMIND OUTPUT STANDARD FOR SEATING
+
+When ProtocolMind receives a seating request, it should:
+- identify principals
+- identify the format
+- identify delegation size
+- identify interpreters
+- explain the logic clearly
+- produce a simple structured seating recommendation
+- preserve rank, parity, and functionality
+
+If useful, the output may include:
+- host side
+- guest side
+- principal positions
+- supporting official positions
+- interpreter positions
+- note on visual and protocol rationale
+
+END OF FILE
