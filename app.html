@@ -1,357 +1,1482 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtocolMind App</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-<title>ProtocolMind</title>
+  <style>
+    :root{
+      --bg:#08101d;
+      --bg-soft:#0d1728;
+      --panel:#101c30;
+      --panel-2:#13223b;
+      --line:rgba(255,255,255,.08);
+      --text:#f4f7fb;
+      --muted:#a9b7cc;
+      --gold:#d8b46a;
+      --gold-2:#f0d59b;
+      --danger:#ff7272;
+      --success:#7bd8a6;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:20px;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:"Inter",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(216,180,106,.10), transparent 20%),
+        radial-gradient(circle at top right, rgba(240,213,155,.08), transparent 18%),
+        linear-gradient(180deg,#07101c 0%,#091220 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
 
-<style>
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
 
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-}
+    .app-shell{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      min-height:100vh;
+    }
 
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
+    .sidebar{
+      border-right:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(16,28,48,.92), rgba(10,18,32,.96));
+      padding:24px 18px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      backdrop-filter: blur(10px);
+    }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:24px;
+      padding-bottom:20px;
+      border-bottom:1px solid var(--line);
+    }
 
-.title{
-font-size:26px;
-font-weight:bold;
-}
+    .brand-mark{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#101010;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 10px 30px rgba(216,180,106,.25);
+    }
 
-select{
-padding:6px;
-border-radius:6px;
-background:#1e293b;
-color:white;
-border:none;
-}
-  .chat{
-background:#1e293b;
-padding:20px;
-border-radius:12px;
-min-height:350px;
-margin-bottom:15px;
-}
+    .brand-text h1{
+      font-size:18px;
+      line-height:1.1;
+      margin:0;
+      font-weight:700;
+      letter-spacing:.2px;
+    }
 
-.message{
-margin-bottom:12px;
-line-height:1.5;
-}
+    .brand-text p{
+      margin:4px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
 
-.user{
-color:#60a5fa;
-}
+    .sidebar-section{
+      margin-top:22px;
+    }
 
-.assistant{
-color:#22c55e;
-}
+    .sidebar-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:1.1px;
+      color:var(--muted);
+      margin:0 0 10px;
+    }
 
-.inputbox{
-display:flex;
-gap:10px;
-}
+    .lang-select,
+    .mode-select,
+    .template-select{
+      width:100%;
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      outline:none;
+    }
 
-input{
-flex:1;
-padding:12px;
-border-radius:10px;
-border:none;
-background:#020617;
-color:white;
-}
+    .nav-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      margin-top:10px;
+    }
 
-button{
-padding:12px 16px;
-border-radius:10px;
-border:none;
-background:#22c55e;
-color:white;
-cursor:pointer;
-}
+    .nav-card strong{
+      display:block;
+      font-size:14px;
+      margin-bottom:6px;
+    }
 
-.auth-card{
-background:#111827;
-padding:30px;
-border-radius:16px;
-max-width:420px;
-margin:20px auto;
-display:flex;
-flex-direction:column;
-gap:15px;
-}
-  .auth-title{
-text-align:center;
-font-size:20px;
-font-weight:600;
-}
+    .nav-card p{
+      font-size:12px;
+      color:var(--muted);
+      margin:0;
+      line-height:1.5;
+    }
 
-.auth-input{
-padding:12px;
-border-radius:10px;
-border:1px solid #334155;
-background:#020617;
-color:white;
-font-size:14px;
-}
+    .quick-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-.auth-btn{
-padding:12px;
-border-radius:10px;
-border:none;
-background:#22c55e;
-color:white;
-font-weight:600;
-cursor:pointer;
-}
+    .quick-btn{
+      width:100%;
+      text-align:left;
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      color:var(--text);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      cursor:pointer;
+      transition:.2s ease;
+    }
 
-.auth-divider{
-text-align:center;
-color:#64748b;
-font-size:14px;
-}
+    .quick-btn:hover{
+      transform:translateY(-1px);
+      background:rgba(216,180,106,.10);
+      border-color:rgba(216,180,106,.35);
+    }
 
-.auth-social{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+    .documents-box{
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+    }
 
-.auth-social-btn{
-padding:12px;
-border-radius:10px;
-background:#1e293b;
-border:none;
-color:white;
-cursor:pointer;
-}
+    .documents-box ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
-.logout-btn{
-margin-top:10px;
-background:#ef4444;
-border:none;
-padding:10px;
-border-radius:10px;
-cursor:pointer;
-}
+    .documents-box li{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.05);
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:13px;
+      color:var(--muted);
+    }
 
-</style>
+    .main{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
 
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:20px 26px;
+      border-bottom:1px solid var(--line);
+      background:rgba(8,16,29,.65);
+      backdrop-filter:blur(12px);
+      position:sticky;
+      top:0;
+      z-index:20;
+    }
+
+    .topbar-left h2{
+      margin:0;
+      font-size:22px;
+      font-weight:700;
+    }
+
+    .topbar-left p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .topbar-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .top-btn{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      cursor:pointer;
+    }
+
+    .top-btn.primary{
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#101010;
+      border:none;
+      font-weight:600;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns:1fr 340px;
+      gap:20px;
+      padding:24px;
+      min-width:0;
+    }
+
+    .chat-panel,
+    .side-panel{
+      min-width:0;
+    }
+
+    .hero-card{
+      background:linear-gradient(135deg, rgba(216,180,106,.13), rgba(255,255,255,.03));
+      border:1px solid rgba(216,180,106,.22);
+      border-radius:24px;
+      padding:22px;
+      margin-bottom:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero-card h3{
+      margin:0 0 10px;
+      font-size:22px;
+    }
+
+    .hero-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    .chat-box{
+      background:linear-gradient(180deg, rgba(16,28,48,.96), rgba(13,23,40,.96));
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+    }
+
+    .messages{
+      padding:22px;
+      height:56vh;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.01), rgba(255,255,255,0)),
+        radial-gradient(circle at center, rgba(216,180,106,.03), transparent 30%);
+    }
+
+    .msg{
+      max-width:84%;
+      padding:14px 16px;
+      border-radius:18px;
+      line-height:1.65;
+      font-size:14px;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+    }
+
+    .msg.user{
+      align-self:flex-end;
+      background:linear-gradient(135deg, rgba(216,180,106,.95), rgba(240,213,155,.92));
+      color:#111;
+      border-bottom-right-radius:6px;
+    }
+
+    .msg.assistant{
+      align-self:flex-start;
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.06);
+      border-bottom-left-radius:6px;
+    }
+
+    .composer{
+      border-top:1px solid var(--line);
+      padding:16px;
+      background:rgba(9,16,28,.84);
+    }
+
+    .composer-top{
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+    }
+
+    .composer-wrap{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:end;
+    }
+
+    .prompt{
+      width:100%;
+      min-height:120px;
+      resize:vertical;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:16px;
+      outline:none;
+    }
+
+    .send-btn{
+      min-width:140px;
+      height:52px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#111;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 28px rgba(216,180,106,.25);
+    }
+
+    .side-card{
+      background:linear-gradient(180deg, rgba(16,28,48,.94), rgba(13,23,40,.94));
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .side-card h4{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+
+    .side-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+        .status-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .status-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .status-item strong{
+      display:block;
+      font-size:13px;
+      margin-bottom:4px;
+    }
+
+    .status-item span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .badge-status{
+      font-size:11px;
+      padding:6px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+      border:1px solid var(--line);
+    }
+
+    .badge-status.ok{
+      color:var(--success);
+      border-color:rgba(123,216,166,.3);
+      background:rgba(123,216,166,.08);
+    }
+
+    .badge-status.limited{
+      color:var(--gold-2);
+      border-color:rgba(216,180,106,.3);
+      background:rgba(216,180,106,.08);
+    }
+
+    .badge-status.off{
+      color:var(--danger);
+      border-color:rgba(255,114,114,.3);
+      background:rgba(255,114,114,.08);
+    }
+
+    .export-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+
+    .export-btn{
+      border:none;
+      border-radius:14px;
+      padding:12px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .auth-screen{
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(216,180,106,.12), transparent 18%),
+        radial-gradient(circle at 80% 10%, rgba(240,213,155,.08), transparent 18%),
+        linear-gradient(180deg, rgba(6,12,22,.97), rgba(8,16,29,.99));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      z-index:200;
+    }
+
+    .auth-card{
+      width:min(980px,100%);
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:0;
+      overflow:hidden;
+      border:1px solid rgba(216,180,106,.18);
+      border-radius:28px;
+      box-shadow:0 30px 80px rgba(0,0,0,.45);
+      background:linear-gradient(180deg, rgba(16,28,48,.97), rgba(9,16,29,.98));
+    }
+
+    .auth-left{
+      padding:42px;
+      border-right:1px solid var(--line);
+      background:
+        radial-gradient(circle at top left, rgba(216,180,106,.10), transparent 28%),
+        linear-gradient(180deg, rgba(19,34,59,.92), rgba(10,18,32,.96));
+    }
+
+    .auth-kicker{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(216,180,106,.12);
+      border:1px solid rgba(216,180,106,.22);
+      color:var(--gold-2);
+      font-size:12px;
+      margin-bottom:18px;
+    }
+
+    .auth-left h1{
+      margin:0 0 14px;
+      font-size:40px;
+      line-height:1.05;
+    }
+
+    .auth-left p{
+      margin:0 0 18px;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    .auth-points{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:24px;
+    }
+
+    .auth-point{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      padding:14px;
+      border-radius:16px;
+    }
+
+    .auth-point b{
+      display:block;
+      margin-bottom:4px;
+    }
+
+    .auth-right{
+      padding:42px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .auth-title{
+      margin:0 0 8px;
+      font-size:24px;
+      font-weight:700;
+    }
+
+    .auth-sub{
+      margin:0 0 22px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .auth-form{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .auth-input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      padding:14px 16px;
+      outline:none;
+    }
+
+    .auth-btn{
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .auth-btn.primary{
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#101010;
+    }
+
+    .auth-btn.secondary{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .auth-divider{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      font-size:12px;
+      margin:6px 0;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after{
+      content:"";
+      flex:1;
+      height:1px;
+      background:var(--line);
+    }
+
+    .hidden{display:none!important}
+
+    @media (max-width:1100px){
+      .content{grid-template-columns:1fr}
+      .side-panel{order:-1}
+    }
+
+    @media (max-width:960px){
+      .app-shell{grid-template-columns:1fr}
+      .sidebar{
+        position:relative;
+        height:auto;
+        border-right:none;
+        border-bottom:1px solid var(--line);
+      }
+      .auth-card{grid-template-columns:1fr}
+      .auth-left{border-right:none;border-bottom:1px solid var(--line)}
+    }
+
+    @media (max-width:640px){
+      .topbar{padding:16px}
+      .content{padding:16px}
+      .messages{height:48vh;padding:16px}
+      .composer-wrap{grid-template-columns:1fr}
+      .send-btn{width:100%}
+      .export-actions{grid-template-columns:1fr}
+      .topbar-actions{width:100%}
+      .top-btn{flex:1}
+      .auth-left,.auth-right{padding:24px}
+      .auth-left h1{font-size:30px}
+    }
+  </style>
 </head>
-
 <body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-left">
+        <div class="auth-kicker" data-i18n="authKicker">Premium AI Protocol Platform</div>
+        <h1 data-i18n="authHeadline">ProtocolMind for State, Parliamentary, Diplomatic and Corporate Use</h1>
+        <p data-i18n="authText">
+          A multilingual protocol assistant designed to help draft official letters, create visit programs, prepare seating plans, generate checklists and support executive protocol operations.
+        </p>
 
-<div class="container">
+        <div class="auth-points">
+          <div class="auth-point">
+            <div>◆</div>
+            <div>
+              <b data-i18n="authPoint1Title">Official Writing</b>
+              <span data-i18n="authPoint1Text">Invitation letters, note verbale, briefing notes and diplomatic phrasing.</span>
+            </div>
+          </div>
+          <div class="auth-point">
+            <div>◆</div>
+            <div>
+              <b data-i18n="authPoint2Title">Protocol Logic</b>
+              <span data-i18n="authPoint2Text">Seating hierarchy, order of precedence, ceremonial planning and checklists.</span>
+            </div>
+          </div>
+          <div class="auth-point">
+            <div>◆</div>
+            <div>
+              <b data-i18n="authPoint3Title">Multilingual AI</b>
+              <span data-i18n="authPoint3Text">English, Russian, Azerbaijani, Turkish and Georgian interface support.</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<div class="header">
+      <div class="auth-right">
+        <h2 class="auth-title" data-i18n="signInTitle">Sign in to ProtocolMind</h2>
+        <p class="auth-sub" data-i18n="signInSub">Use magic link, Google or Microsoft to continue.</p>
 
-<div class="title">ProtocolMind</div>
+        <div class="auth-form">
+          <input id="emailInput" class="auth-input" type="email" placeholder="Email address" />
+          <button class="auth-btn primary" id="magicLinkBtn" data-i18n="magicLinkBtn">Send Magic Link</button>
 
-<select id="languageSelect">
+          <div class="auth-divider" data-i18n="orContinue">or continue with</div>
 
-<option>English</option>
-<option>Русский</option>
-<option>Azərbaycan dili</option>
-<option>Türkçe</option>
-<option>ქართული</option>
+          <button class="auth-btn secondary" id="googleBtn">Google</button>
+          <button class="auth-btn secondary" id="microsoftBtn">Microsoft</button>
+          <button class="auth-btn secondary" id="guestBtn" data-i18n="guestBtn">Continue as Demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-</select>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">PM</div>
+        <div class="brand-text">
+          <h1>ProtocolMind</h1>
+          <p data-i18n="brandSub">Executive protocol intelligence</p>
+        </div>
+      </div>
 
-</div>
-<div class="auth-card">
+      <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="languageLabel">Language</p>
+        <select id="langSelect" class="lang-select">
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="az">Azərbaycanca</option>
+          <option value="tr">Türkçe</option>
+          <option value="ka">ქართული</option>
+        </select>
+      </div>
 
-<h2 class="auth-title">Sign in to ProtocolMind</h2>
+      <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="modeLabel">Mode</p>
+        <select id="modeSelect" class="mode-select">
+          <option value="Protocol Advice">Protocol Advice</option>
+          <option value="Seating Plan">Seating Plan</option>
+          <option value="Checklist">Checklist</option>
+          <option value="Visit Program">Visit Program</option>
+          <option value="Official Letter">Official Letter</option>
+          <option value="Protocol Pack">Protocol Pack</option>
+        </select>
+      </div>
 
-<input 
-id="emailInput"
-class="auth-input"
-type="email"
-placeholder="Enter your email"
-/>
+      <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="templateLabel">Template</p>
+        <select id="templateSelect" class="template-select">
+          <option value="General">General</option>
+          <option value="Invitation Letter">Invitation Letter</option>
+          <option value="Thank You Letter">Thank You Letter</option>
+          <option value="Note Verbale">Note Verbale</option>
+          <option value="Briefing Note">Briefing Note</option>
+          <option value="Meeting Scenario">Meeting Scenario</option>
+        </select>
+      </div>
+            <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="overviewLabel">Overview</p>
 
-<button class="auth-btn" onclick="signInEmail()">
-Continue with Email
-</button>
+        <div class="nav-card">
+          <strong data-i18n="overviewTitle1">Specialized protocol assistant</strong>
+          <p data-i18n="overviewText1">Built to help with protocol drafting, order of precedence, formal wording and event logic.</p>
+        </div>
 
-<div class="auth-divider">or</div>
+        <div class="nav-card">
+          <strong data-i18n="overviewTitle2">Knowledge-powered answers</strong>
+          <p data-i18n="overviewText2">Reads internal protocol knowledge files and uses them in responses before generating the final answer.</p>
+        </div>
+      </div>
 
-<div class="auth-social">
+      <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="quickPromptsLabel">Quick prompts</p>
+        <div class="quick-list">
+          <button class="quick-btn" onclick="insertPrompt('Draft a formal invitation letter for a parliamentary delegation visit.')">Invitation Letter</button>
+          <button class="quick-btn" onclick="insertPrompt('Create a protocol checklist for receiving a foreign speaker of parliament.')">Protocol Checklist</button>
+          <button class="quick-btn" onclick="insertPrompt('Prepare a seating plan for a bilateral meeting with precedence rules.')">Seating Plan</button>
+          <button class="quick-btn" onclick="insertPrompt('Draft a note verbale in formal diplomatic language.')">Note Verbale</button>
+          <button class="quick-btn" onclick="insertPrompt('Prepare a detailed visit program for a high-level official delegation.')">Visit Program</button>
+        </div>
+      </div>
 
-<button class="auth-social-btn" onclick="loginGoogle()">
-Continue with Google
-</button>
+      <div class="sidebar-section">
+        <p class="sidebar-label" data-i18n="myDocsLabel">My Documents</p>
+        <div class="documents-box">
+          <ul id="docsList">
+            <li>diplomatic_protocol_basic.txt</li>
+            <li>parliamentary_protocol.txt</li>
+            <li>seating_rules.txt</li>
+            <li>official_letters.txt</li>
+            <li>visit_programs_and_protocol_checklists.txt</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
 
-<button class="auth-social-btn" onclick="loginMicrosoft()">
-Continue with Microsoft
-</button>
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <h2 data-i18n="topTitle">Protocol Workspace</h2>
+          <p data-i18n="topSub">Premium drafting, planning and protocol support in one multilingual system.</p>
+        </div>
 
-</div>
+        <div class="topbar-actions">
+          <button class="top-btn" id="newChatBtn" data-i18n="newChatBtn">New Chat</button>
+          <button class="top-btn" id="clearBtn" data-i18n="clearBtn">Clear</button>
+          <button class="top-btn primary" id="logoutBtn" data-i18n="logoutBtn">Logout</button>
+        </div>
+      </div>
 
-<button class="logout-btn" onclick="signOutUser()">
-Logout
-</button>
+      <div class="content">
+        <section class="chat-panel">
+          <div class="hero-card">
+            <h3 data-i18n="heroCardTitle">What ProtocolMind can do</h3>
+            <p data-i18n="heroCardText">
+              Draft official letters, suggest diplomatic phrasing, generate visit programs, prepare seating plans, build protocol packs, and respond using multilingual institutional language.
+            </p>
+          </div>
 
-</div>
+          <div class="chat-box">
+            <div id="messages" class="messages">
+              <div class="msg assistant" data-i18n="welcomeMessage">
+                Welcome to ProtocolMind. Describe your task, choose a mode, and I will prepare a structured protocol response.
+              </div>
+            </div>
 
-<div id="chat" class="chat">
+            <div class="composer">
+              <div class="composer-top">
+                <div class="chip"><span data-i18n="chipMode">Mode</span>: <span id="chipModeValue">Protocol Advice</span></div>
+                <div class="chip"><span data-i18n="chipTemplate">Template</span>: <span id="chipTemplateValue">General</span></div>
+                <div class="chip"><span data-i18n="chipTier">Plan</span>: <span id="chipTierValue">Free</span></div>
+              </div>
 
-<div class="message assistant">
-Welcome to ProtocolMind. Ask about diplomatic protocol.
-</div>
+              <div class="composer-wrap">
+                <textarea id="promptInput" class="prompt" data-i18n-placeholder="promptPlaceholder" placeholder="Ask ProtocolMind to draft, analyze or generate a protocol document..."></textarea>
+                <button id="sendBtn" class="send-btn" data-i18n="sendBtn">Send</button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-</div>
+        <aside class="side-panel">
+          <div class="side-card">
+            <h4 data-i18n="accountTitle">Account & Access</h4>
+            <p data-i18n="accountText">Free plan includes 5 requests per day. Pro unlocks unlimited use and premium workflow access.</p>
 
-<div class="inputbox">
+            <div class="status-list">
+              <div class="status-item">
+                <div>
+                  <strong data-i18n="statusAuthTitle">Authentication</strong>
+                  <span data-i18n="statusAuthText">Supabase email magic link and OAuth ready.</span>
+                </div>
+                <div class="badge-status ok">ON</div>
+              </div>
 
-<input id="question" placeholder="Ask a protocol question...">
+              <div class="status-item">
+                <div>
+                  <strong data-i18n="statusBillingTitle">Billing</strong>
+                  <span data-i18n="statusBillingText">Lemon Squeezy subscription flow prepared.</span>
+                </div>
+                <div class="badge-status ok">ON</div>
+              </div>
 
-<button onclick="ask()">Ask</button>
+              <div class="status-item">
+                <div>
+                  <strong data-i18n="statusFreeTitle">Daily Requests</strong>
+                  <span data-i18n="statusFreeText">Free tier limit: 5 requests per day.</span>
+                </div>
+                <div class="badge-status limited">5/DAY</div>
+              </div>
+            </div>
+          </div>
 
-<button onclick="saveDocument()">Save</button>
+          <div class="side-card">
+            <h4 data-i18n="capabilitiesTitle">Capabilities</h4>
+            <p data-i18n="capabilitiesText">
+              Protocol advice, official letters, note verbale, seating logic, ceremony support, event checklists, delegation visit planning and multilingual drafting.
+            </p>
+          </div>
 
-</div>
-<script>
+          <div class="side-card">
+            <h4 data-i18n="exportTitle">Export</h4>
+            <p data-i18n="exportText">Copy the latest answer or export the conversation as TXT or DOC.</p>
+            <div class="export-actions">
+              <button class="export-btn" id="copyBtn">Copy</button>
+              <button class="export-btn" id="txtBtn">TXT</button>
+              <button class="export-btn" id="docBtn">DOC</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
 
-const SUPABASE_URL="https://qzpyjgugpisphmajzrnk.supabase.co"
-const SUPABASE_KEY="sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW"
+  <script>
+    const translations = {
+      en: {
+        authKicker:"Premium AI Protocol Platform",
+        authHeadline:"ProtocolMind for State, Parliamentary, Diplomatic and Corporate Use",
+        authText:"A multilingual protocol assistant designed to help draft official letters, create visit programs, prepare seating plans, generate checklists and support executive protocol operations.",
+        authPoint1Title:"Official Writing",
+        authPoint1Text:"Invitation letters, note verbale, briefing notes and diplomatic phrasing.",
+        authPoint2Title:"Protocol Logic",
+        authPoint2Text:"Seating hierarchy, order of precedence, ceremonial planning and checklists.",
+        authPoint3Title:"Multilingual AI",
+        authPoint3Text:"English, Russian, Azerbaijani, Turkish and Georgian interface support.",
+        signInTitle:"Sign in to ProtocolMind",
+        signInSub:"Use magic link, Google or Microsoft to continue.",
+        magicLinkBtn:"Send Magic Link",
+        orContinue:"or continue with",
+        guestBtn:"Continue as Demo",
+        brandSub:"Executive protocol intelligence",
+        languageLabel:"Language",
+        modeLabel:"Mode",
+        templateLabel:"Template",
+        overviewLabel:"Overview",
+        overviewTitle1:"Specialized protocol assistant",
+        overviewText1:"Built to help with protocol drafting, order of precedence, formal wording and event logic.",
+        overviewTitle2:"Knowledge-powered answers",
+        overviewText2:"Reads internal protocol knowledge files and uses them in responses before generating the final answer.",
+        quickPromptsLabel:"Quick prompts",
+        myDocsLabel:"My Documents",
+        topTitle:"Protocol Workspace",
+        topSub:"Premium drafting, planning and protocol support in one multilingual system.",
+        newChatBtn:"New Chat",
+        clearBtn:"Clear",
+        logoutBtn:"Logout",
+        heroCardTitle:"What ProtocolMind can do",
+        heroCardText:"Draft official letters, suggest diplomatic phrasing, generate visit programs, prepare seating plans, build protocol packs, and respond using multilingual institutional language.",
+        welcomeMessage:"Welcome to ProtocolMind. Describe your task, choose a mode, and I will prepare a structured protocol response.",
+        chipMode:"Mode",
+        chipTemplate:"Template",
+        chipTier:"Plan",
+        promptPlaceholder:"Ask ProtocolMind to draft, analyze or generate a protocol document...",
+        sendBtn:"Send",
+        accountTitle:"Account & Access",
+        accountText:"Free plan includes 5 requests per day. Pro unlocks unlimited use and premium workflow access.",
+        statusAuthTitle:"Authentication",
+        statusAuthText:"Supabase email magic link and OAuth ready.",
+        statusBillingTitle:"Billing",
+        statusBillingText:"Lemon Squeezy subscription flow prepared.",
+        statusFreeTitle:"Daily Requests",
+        statusFreeText:"Free tier limit: 5 requests per day.",
+        capabilitiesTitle:"Capabilities",
+        capabilitiesText:"Protocol advice, official letters, note verbale, seating logic, ceremony support, event checklists, delegation visit planning and multilingual drafting.",
+        exportTitle:"Export",
+        exportText:"Copy the latest answer or export the conversation as TXT or DOC."
+      },
+            ru: {
+        authKicker:"Премиальная ИИ платформа протокола",
+        authHeadline:"ProtocolMind для государственного, парламентского, дипломатического и корпоративного использования",
+        authText:"Многоязычный помощник по протоколу, созданный для подготовки официальных писем, программ визитов, схем рассадки, чек-листов и поддержки протокольной работы.",
+        authPoint1Title:"Официальные тексты",
+        authPoint1Text:"Пригласительные письма, вербальные ноты, брифы и дипломатические формулировки.",
+        authPoint2Title:"Протокольная логика",
+        authPoint2Text:"Иерархия рассадки, порядок старшинства, церемониальное планирование и чек-листы.",
+        authPoint3Title:"Многоязычный ИИ",
+        authPoint3Text:"Поддержка интерфейса на английском, русском, азербайджанском, турецком и грузинском языках.",
+        signInTitle:"Вход в ProtocolMind",
+        signInSub:"Используйте magic link, Google или Microsoft.",
+        magicLinkBtn:"Отправить Magic Link",
+        orContinue:"или продолжить через",
+        guestBtn:"Войти как Demo",
+        brandSub:"Интеллект исполнительного протокола",
+        languageLabel:"Язык",
+        modeLabel:"Режим",
+        templateLabel:"Шаблон",
+        overviewLabel:"Обзор",
+        overviewTitle1:"Специализированный протокольный ассистент",
+        overviewText1:"Создан для подготовки протокольных текстов, порядка старшинства, официальных формулировок и логики мероприятий.",
+        overviewTitle2:"Ответы на основе базы знаний",
+        overviewText2:"Система читает внутренние файлы знаний по протоколу и использует их в ответах.",
+        quickPromptsLabel:"Быстрые запросы",
+        myDocsLabel:"Мои документы",
+        topTitle:"Рабочее пространство протокола",
+        topSub:"Премиальная подготовка документов, планирование и поддержка протокола в одной многоязычной системе.",
+        newChatBtn:"Новый чат",
+        clearBtn:"Очистить",
+        logoutBtn:"Выйти",
+        heroCardTitle:"Что умеет ProtocolMind",
+        heroCardText:"Готовит официальные письма, предлагает дипломатические формулировки, создает программы визитов, схемы рассадки, protocol pack и отвечает на институциональном языке.",
+        welcomeMessage:"Добро пожаловать в ProtocolMind. Опишите задачу, выберите режим, и я подготовлю структурированный протокольный ответ.",
+        chipMode:"Режим",
+        chipTemplate:"Шаблон",
+        chipTier:"План",
+        promptPlaceholder:"Попросите ProtocolMind подготовить, проанализировать или создать протокольный документ...",
+        sendBtn:"Отправить",
+        accountTitle:"Аккаунт и доступ",
+        accountText:"Бесплатный тариф включает 5 запросов в день. Pro открывает безлимитный доступ и премиальные функции.",
+        statusAuthTitle:"Аутентификация",
+        statusAuthText:"Supabase magic link и OAuth готовы.",
+        statusBillingTitle:"Оплата",
+        statusBillingText:"Подготовена подписка через Lemon Squeezy.",
+        statusFreeTitle:"Дневные запросы",
+        statusFreeText:"Лимит бесплатного тарифа: 5 запросов в день.",
+        capabilitiesTitle:"Возможности",
+        capabilitiesText:"Протокольные советы, официальные письма, вербальные ноты, логика рассадки, поддержка церемоний, чек-листы мероприятий, программы визитов делегаций и многоязычная подготовка текстов.",
+        exportTitle:"Экспорт",
+        exportText:"Скопируйте последний ответ или экспортируйте беседу в TXT или DOC."
+      },
 
-const supabaseClient=window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-)
+      az: {
+        authKicker:"Premium Protokol Süni İntellekt Platforması",
+        authHeadline:"ProtocolMind dövlət, parlament, diplomatik və korporativ istifadə üçün",
+        authText:"Rəsmi məktubların hazırlanması, səfər proqramlarının qurulması, əyləşdirmə sxemləri, yoxlama siyahıları və protokol fəaliyyətinin dəstəyi üçün yaradılmış çoxdilli köməkçi.",
+        authPoint1Title:"Rəsmi Yazışmalar",
+        authPoint1Text:"Dəvət məktubları, nota verbal, brifinq qeydləri və diplomatik ifadələr.",
+        authPoint2Title:"Protokol Məntiqi",
+        authPoint2Text:"Əyləşdirmə iyerarxiyası, üstünlük sırası, mərasim planlaması və yoxlama siyahıları.",
+        authPoint3Title:"Çoxdilli AI",
+        authPoint3Text:"İngilis, rus, azərbaycan, türk və gürcü dillərində interfeys dəstəyi.",
+        signInTitle:"ProtocolMind-ə daxil olun",
+        signInSub:"Magic link, Google və ya Microsoft ilə davam edin.",
+        magicLinkBtn:"Magic Link göndər",
+        orContinue:"və ya bununla davam et",
+        guestBtn:"Demo kimi daxil ol",
+        brandSub:"İcraedici protokol intellekti",
+        languageLabel:"Dil",
+        modeLabel:"Rejim",
+        templateLabel:"Şablon",
+        overviewLabel:"Ümumi Baxış",
+        overviewTitle1:"İxtisaslaşmış protokol köməkçisi",
+        overviewText1:"Protokol mətnləri, üstünlük qaydaları, rəsmi ifadələr və tədbir məntiqi üçün yaradılıb.",
+        overviewTitle2:"Bilik bazalı cavablar",
+        overviewText2:"Sistem daxili protokol bilik fayllarını oxuyur və cavablarda istifadə edir.",
+        quickPromptsLabel:"Sürətli sorğular",
+        myDocsLabel:"Mənim sənədlərim",
+        topTitle:"Protokol iş məkanı",
+        topSub:"Bir çoxdilli sistemdə premium mətn hazırlığı, planlama və protokol dəstəyi.",
+        newChatBtn:"Yeni çat",
+        clearBtn:"Təmizlə",
+        logoutBtn:"Çıxış",
+        heroCardTitle:"ProtocolMind nə edə bilər",
+        heroCardText:"Rəsmi məktublar hazırlayır, diplomatik ifadələr təklif edir, səfər proqramları yaradır, əyləşdirmə sxemləri qurur, protocol pack hazırlayır və institusional dildə cavab verir.",
+        welcomeMessage:"ProtocolMind-ə xoş gəlmisiniz. Tapşırığı təsvir edin, rejim seçin və mən strukturlaşdırılmış protokol cavabı hazırlayım.",
+        chipMode:"Rejim",
+        chipTemplate:"Şablon",
+        chipTier:"Plan",
+        promptPlaceholder:"ProtocolMind-dən protokol sənədi hazırlamağı, təhlil etməyi və ya yaratmağı xahiş edin...",
+        sendBtn:"Göndər",
+        accountTitle:"Hesab və giriş",
+        accountText:"Pulsuz plan gündə 5 sorğu verir. Pro limitsiz istifadə və premium imkanlar açır.",
+        statusAuthTitle:"Autentifikasiya",
+        statusAuthText:"Supabase magic link və OAuth hazırdır.",
+        statusBillingTitle:"Ödəniş",
+        statusBillingText:"Lemon Squeezy abunə sistemi hazırlanıb.",
+        statusFreeTitle:"Gündəlik sorğular",
+        statusFreeText:"Pulsuz plan limiti: gündə 5 sorğu.",
+        capabilitiesTitle:"İmkanlar",
+        capabilitiesText:"Protokol məsləhəti, rəsmi məktublar, nota verbal, əyləşdirmə məntiqi, mərasim dəstəyi, tədbir yoxlama siyahıları, nümayəndə heyəti səfər proqramları və çoxdilli mətn hazırlığı.",
+        exportTitle:"İxrac",
+        exportText:"Son cavabı kopyalayın və ya söhbəti TXT və ya DOC kimi ixrac edin."
+      },
 
-let lastAnswer=""
-let userEmail=""
+      tr: {
+        authKicker:"Premium Protokol Yapay Zekâ Platformu",
+        authHeadline:"ProtocolMind devlet, parlamento, diplomatik ve kurumsal kullanım için",
+        authText:"Resmî mektuplar hazırlamak, ziyaret programları oluşturmak, oturma düzeni planlamak, kontrol listeleri üretmek ve protokol çalışmalarını desteklemek için tasarlanmış çok dilli yardımcı.",
+        authPoint1Title:"Resmî Yazışmalar",
+        authPoint1Text:"Davet mektupları, nota verbal, brifing notları ve diplomatik ifadeler.",
+        authPoint2Title:"Protokol Mantığı",
+        authPoint2Text:"Oturma hiyerarşisi, öncelik sırası, tören planlaması ve kontrol listeleri.",
+        authPoint3Title:"Çok Dilli AI",
+        authPoint3Text:"İngilizce, Rusça, Azerbaycanca, Türkçe ve Gürcüce arayüz desteği.",
+        signInTitle:"ProtocolMind’e giriş yapın",
+        signInSub:"Magic link, Google veya Microsoft ile devam edin.",
+        magicLinkBtn:"Magic Link Gönder",
+        orContinue:"veya şununla devam et",
+        guestBtn:"Demo olarak devam et",
+        brandSub:"Yönetici protokol zekâsı",
+        languageLabel:"Dil",
+        modeLabel:"Mod",
+        templateLabel:"Şablon",
+        overviewLabel:"Genel Bakış",
+        overviewTitle1:"Uzmanlaşmış protokol asistanı",
+        overviewText1:"Protokol metinleri, öncelik sırası, resmî ifade ve etkinlik mantığı için geliştirildi.",
+        overviewTitle2:"Bilgi destekli yanıtlar",
+        overviewText2:"Sistem iç protokol bilgi dosyalarını okur ve yanıtlarında kullanır.",
+        quickPromptsLabel:"Hızlı istemler",
+        myDocsLabel:"Belgelerim",
+        topTitle:"Protokol çalışma alanı",
+        topSub:"Tek çok dilli sistemde premium yazım, planlama ve protokol desteği.",
+        newChatBtn:"Yeni sohbet",
+        clearBtn:"Temizle",
+        logoutBtn:"Çıkış",
+        heroCardTitle:"ProtocolMind neler yapabilir",
+        heroCardText:"Resmî mektuplar hazırlar, diplomatik ifadeler önerir, ziyaret programları oluşturur, oturma planları kurar, protocol pack üretir ve kurumsal dilde yanıt verir.",
+        welcomeMessage:"ProtocolMind’e hoş geldiniz. Görevinizi açıklayın, bir mod seçin ve ben yapılandırılmış bir protokol yanıtı hazırlayayım.",
+        chipMode:"Mod",
+        chipTemplate:"Şablon",
+        chipTier:"Plan",
+        promptPlaceholder:"ProtocolMind’den bir protokol belgesi hazırlamasını, analiz etmesini veya üretmesini isteyin...",
+        sendBtn:"Gönder",
+        accountTitle:"Hesap ve erişim",
+        accountText:"Ücretsiz plan günde 5 istek içerir. Pro sınırsız kullanım ve premium iş akışları açar.",
+        statusAuthTitle:"Kimlik Doğrulama",
+        statusAuthText:"Supabase magic link ve OAuth hazır.",
+        statusBillingTitle:"Ödeme",
+        statusBillingText:"Lemon Squeezy abonelik akışı hazırlandı.",
+        statusFreeTitle:"Günlük İstekler",
+        statusFreeText:"Ücretsiz plan limiti: günde 5 istek.",
+        capabilitiesTitle:"Yetenekler",
+        capabilitiesText:"Protokol tavsiyesi, resmî mektuplar, nota verbal, oturma mantığı, tören desteği, etkinlik kontrol listeleri, heyet ziyaret programları ve çok dilli metin üretimi.",
+        exportTitle:"Dışa Aktar",
+        exportText:"Son yanıtı kopyalayın veya konuşmayı TXT ya da DOC olarak dışa aktarın."
+      },
 
-async function signInEmail(){
+      ka: {
+        authKicker:"პრემიუმ პროტოკოლის AI პლატფორმა",
+        authHeadline:"ProtocolMind სახელმწიფო, საპარლამენტო, დიპლომატიური და კორპორატიული გამოყენებისთვის",
+        authText:"მრავალენოვანი ასისტენტი, შექმნილი ოფიციალური წერილების, ვიზიტის პროგრამების, დასხდომის სქემების, ჩეკლისტებისა და პროტოკოლური საქმიანობის მხარდაჭერისთვის.",
+        authPoint1Title:"ოფიციალური წერა",
+        authPoint1Text:"მოსაწვევი წერილები, ნოტა ვერბალე, ბრიფინგის ჩანაწერები და დიპლომატიური ფორმულირებები.",
+        authPoint2Title:"პროტოკოლის ლოგიკა",
+        authPoint2Text:"დასხდომის იერარქია, უპირატესობის რიგი, ცერემონიული დაგეგმვა და ჩეკლისტები.",
+        authPoint3Title:"მრავალენოვანი AI",
+        authPoint3Text:"ინგლისური, რუსული, აზერბაიჯანული, თურქული და ქართული ინტერფეისის მხარდაჭერა.",
+        signInTitle:"შედით ProtocolMind-ში",
+        signInSub:"გააგრძელეთ magic link-ით, Google-ით ან Microsoft-ით.",
+        magicLinkBtn:"გაგზავნე Magic Link",
+        orContinue:"ან გააგრძელეთ",
+        guestBtn:"Demo რეჟიმში გაგრძელება",
+        brandSub:"აღმასრულებელი პროტოკოლის ინტელექტი",
+        languageLabel:"ენა",
+        modeLabel:"რეჟიმი",
+        templateLabel:"შაბლონი",
+        overviewLabel:"მიმოხილვა",
+        overviewTitle1:"სპეციალიზებული პროტოკოლის ასისტენტი",
+        overviewText1:"შექმნილია პროტოკოლური ტექსტებისთვის, უპირატესობის წესრიგისთვის, ოფიციალური ფორმულირებებისა და ღონისძიების ლოგიკისთვის.",
+        overviewTitle2:"ცოდნაზე დაფუძნებული პასუხები",
+        overviewText2:"სისტემა კითხულობს შიდა პროტოკოლის ცოდნის ფაილებს და იყენებს მათ პასუხებში.",
+        quickPromptsLabel:"სწრაფი მოთხოვნები",
+        myDocsLabel:"ჩემი დოკუმენტები",
+        topTitle:"პროტოკოლის სამუშაო სივრცე",
+        topSub:"პრემიუმ წერა, დაგეგმვა და პროტოკოლის მხარდაჭერა ერთ მრავალენოვან სისტემაში.",
+        newChatBtn:"ახალი ჩატი",
+        clearBtn:"გასუფთავება",
+        logoutBtn:"გასვლა",
+        heroCardTitle:"რისი გაკეთება შეუძლია ProtocolMind-ს",
+        heroCardText:"ამზადებს ოფიციალურ წერილებს, სთავაზობს დიპლომატიურ ფორმულირებებს, ქმნის ვიზიტის პროგრამებს, დასხდომის გეგმებს, protocol pack-ს და პასუხობს ინსტიტუციურ ენაზე.",
+        welcomeMessage:"კეთილი იყოს თქვენი მობრძანება ProtocolMind-ში. აღწერეთ თქვენი ამოცანა, აირჩიეთ რეჟიმი და მე მოვამზადებ სტრუქტურირებულ პროტოკოლურ პასუხს.",
+        chipMode:"რეჟიმი",
+        chipTemplate:"შაბლონი",
+        chipTier:"გეგმა",
+        promptPlaceholder:"სთხოვეთ ProtocolMind-ს მოამზადოს, გააანალიზოს ან შექმნას პროტოკოლური დოკუმენტი...",
+        sendBtn:"გაგზავნა",
+        accountTitle:"ანგარიში და წვდომა",
+        accountText:"უფასო გეგმა მოიცავს 5 მოთხოვნას დღეში. Pro ხსნის ულიმიტო გამოყენებას და პრემიუმ შესაძლებლობებს.",
+        statusAuthTitle:"ავთენტიფიკაცია",
+        statusAuthText:"Supabase magic link და OAuth მზადაა.",
+        statusBillingTitle:"გადახდა",
+        statusBillingText:"Lemon Squeezy გამოწერის ნაკადი მზადაა.",
+        statusFreeTitle:"დღიური მოთხოვნები",
+        statusFreeText:"უფასო გეგმის ლიმიტი: 5 მოთხოვნა დღეში.",
+        capabilitiesTitle:"შესაძლებლობები",
+        capabilitiesText:"პროტოკოლის რჩევები, ოფიციალური წერილები, ნოტა ვერბალე, დასხდომის ლოგიკა, ცერემონიების მხარდაჭერა, ღონისძიების ჩეკლისტები, დელეგაციების ვიზიტის პროგრამები და მრავალენოვანი ტექსტების მომზადება.",
+        exportTitle:"ექსპორტი",
+        exportText:"დააკოპირეთ ბოლო პასუხი ან გაიტანეთ საუბარი TXT ან DOC ფორმატში."
+      }
+    };
+        const messagesEl = document.getElementById("messages");
+    const promptInput = document.getElementById("promptInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const langSelect = document.getElementById("langSelect");
+    const modeSelect = document.getElementById("modeSelect");
+    const templateSelect = document.getElementById("templateSelect");
+    const chipModeValue = document.getElementById("chipModeValue");
+    const chipTemplateValue = document.getElementById("chipTemplateValue");
+    const chipTierValue = document.getElementById("chipTierValue");
+    const authScreen = document.getElementById("authScreen");
 
-const email=document.getElementById("emailInput").value
+    let chatMemory = JSON.parse(localStorage.getItem("protocolmind_chat_memory") || "[]");
+    let requestCount = Number(localStorage.getItem("protocolmind_daily_requests") || "0");
+    let requestDate = localStorage.getItem("protocolmind_daily_date") || "";
+    let currentTier = localStorage.getItem("protocolmind_plan") || "Free";
+    let currentLang = localStorage.getItem("protocolmind_lang") || "en";
 
-if(!email){
-alert("Enter email")
-return
-}
+    const today = new Date().toISOString().slice(0,10);
+    if(requestDate !== today){
+      requestDate = today;
+      requestCount = 0;
+      localStorage.setItem("protocolmind_daily_date", requestDate);
+      localStorage.setItem("protocolmind_daily_requests", String(requestCount));
+    }
 
-const {error}=await supabaseClient.auth.signInWithOtp({
-email:email
-})
+    chipTierValue.textContent = currentTier;
+    langSelect.value = currentLang;
 
-if(error){
-alert(error.message)
-}else{
-alert("Check your email for login link")
-}
+    function applyLanguage(lang){
+      const dict = translations[lang] || translations.en;
+      document.documentElement.lang = lang;
 
-}
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const key = el.getAttribute("data-i18n");
+        if(dict[key]) el.textContent = dict[key];
+      });
 
-async function loginGoogle(){
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+        const key = el.getAttribute("data-i18n-placeholder");
+        if(dict[key]) el.setAttribute("placeholder", dict[key]);
+      });
 
-await supabaseClient.auth.signInWithOAuth({
-provider:"google"
-})
+      localStorage.setItem("protocolmind_lang", lang);
+      currentLang = lang;
+    }
 
-}
+    function syncChips(){
+      chipModeValue.textContent = modeSelect.value;
+      chipTemplateValue.textContent = templateSelect.value;
+    }
 
-async function loginMicrosoft(){
+    function addMessage(role, text){
+      const div = document.createElement("div");
+      div.className = `msg ${role}`;
+      div.textContent = text;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
-await supabaseClient.auth.signInWithOAuth({
-provider:"azure"
-})
+    function saveMemory(){
+      localStorage.setItem("protocolmind_chat_memory", JSON.stringify(chatMemory));
+    }
 
-}
+    function loadMemoryToUI(){
+      if(!chatMemory.length) return;
+      messagesEl.innerHTML = "";
+      chatMemory.forEach(item => addMessage(item.role, item.content));
+    }
 
-async function signOutUser(){
+    function insertPrompt(text){
+      promptInput.value = text;
+      promptInput.focus();
+    }
+    window.insertPrompt = insertPrompt;
 
-await supabaseClient.auth.signOut()
-location.reload()
+    function buildSystemPrompt(){
+      const mode = modeSelect.value;
+      const template = templateSelect.value;
 
-}
-  async function ask(){
+      return `You are ProtocolMind, a premium AI assistant for protocol work.
+Mode: ${mode}
+Template: ${template}
+You help with state, parliamentary, diplomatic and corporate protocol.
+Priorities:
+1. Be formal, clear, elegant and structured.
+2. Produce usable outputs, not vague advice.
+3. Respect diplomatic tone and hierarchy.
+4. If asked what the system can do, explain capabilities clearly.
+5. If task is related to seating, precedence, letters, checklists or visit programs, give structured output.`;
+    }
 
-const q=document.getElementById("question").value.trim()
+    async function loadKnowledgeBase(){
+      const knowledgeFiles = [
+        "knowledge/diplomatic_protocol_basic.txt",
+        "knowledge/parliamentary_protocol.txt",
+        "knowledge/seating_rules.txt",
+        "knowledge/official_letters.txt",
+        "knowledge/visit_programs_and_protocol_checklists.txt"
+      ];
 
-if(!q) return
+      const chunks = [];
 
-const chat=document.getElementById("chat")
+      for(const file of knowledgeFiles){
+        try{
+          const res = await fetch(file);
+          if(res.ok){
+            const text = await res.text();
+            chunks.push(`FILE: ${file}\n${text}`);
+          }
+        }catch(e){}
+      }
 
-chat.innerHTML+=`<div class="message user">${q}</div>`
+      return chunks.join("\n\n====================\n\n");
+    }
 
-document.getElementById("question").value=""
+    async function askProtocolMind(userPrompt){
+      const systemPrompt = buildSystemPrompt();
+      const knowledgeBase = await loadKnowledgeBase();
 
-const res=await fetch("/api/ask",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-question:q,
-userEmail:userEmail
-})
-})
+      const bodyPayload = {
+        messages: [
+          {
+            role: "system",
+            content:
+`You are ProtocolMind.
+Use the following knowledge base when relevant:
 
-const data=await res.json()
+${knowledgeBase}
 
-const answer=
-data.answer||
-data.response||
-data.result||
-"Server returned no answer"
+Additional instructions:
+${systemPrompt}`
+          },
+          ...chatMemory.map(m => ({ role:m.role, content:m.content })),
+          { role: "user", content: userPrompt }
+        ],
+        language: currentLang,
+        mode: modeSelect.value,
+        template: templateSelect.value
+      };
 
-lastAnswer=answer
+      try{
+        const response = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyPayload)
+        });
 
-chat.innerHTML+=`<div class="message assistant">${answer}</div>`
+        if(!response.ok){
+          throw new Error("API request failed");
+        }
 
-chat.scrollTop=chat.scrollHeight
+        const data = await response.json();
+        return data.answer || data.content || "No response returned.";
+      }catch(error){
+        return generateLocalFallback(userPrompt);
+      }
+    }
 
-}
+    function generateLocalFallback(userPrompt){
+      const mode = modeSelect.value;
+      const template = templateSelect.value;
 
-async function saveDocument(){
+      if(/what can you do|what does this system do|capabilities/i.test(userPrompt)){
+        return `ProtocolMind can assist with:
+1. Official letters and formal invitations
+2. Note verbale and diplomatic language
+3. Seating plans and order of precedence
+4. Visit programs and delegation schedules
+5. Protocol checklists and ceremony support
+6. Parliamentary and institutional drafting
+7. Multilingual protocol writing support
 
-if(!lastAnswer){
-alert("Nothing to save")
-return
-}
+Current mode: ${mode}
+Current template: ${template}`;
+      }
 
-await fetch("/api/save-document",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-userEmail:userEmail,
-title:"AI document",
-type:"AI",
-content:lastAnswer
-})
-})
+      return `Structured Protocol Response
 
-}
+Mode: ${mode}
+Template: ${template}
 
-document.getElementById("question").addEventListener("keydown",function(e){
-if(e.key==="Enter"){
-ask()
-}
-})
+Task received:
+${userPrompt}
 
-</script>
+Suggested output:
+1. Objective
+2. Protocol considerations
+3. Recommended wording / structure
+4. Sequence of actions
+5. Final draft
 
+Note: API is not connected right now, so this is a local fallback response template.`;
+    }
+
+    async function handleSend(){
+      const text = promptInput.value.trim();
+      if(!text) return;
+
+      if(currentTier === "Free" && requestCount >= 5){
+        addMessage("assistant", "Free daily limit reached. Upgrade to Pro for unlimited access.");
+        return;
+      }
+
+      addMessage("user", text);
+      chatMemory.push({ role:"user", content:text });
+      saveMemory();
+
+      promptInput.value = "";
+      sendBtn.disabled = true;
+      sendBtn.textContent = "...";
+
+      const answer = await askProtocolMind(text);
+
+      addMessage("assistant", answer);
+      chatMemory.push({ role:"assistant", content:answer });
+      saveMemory();
+
+      requestCount += 1;
+      localStorage.setItem("protocolmind_daily_requests", String(requestCount));
+
+      sendBtn.disabled = false;
+      applyLanguage(currentLang);
+      sendBtn.textContent = (translations[currentLang] || translations.en).sendBtn;
+    }
+
+    function exportTXT(){
+      const content = chatMemory.map(m => `${m.role.toUpperCase()}:\n${m.content}\n`).join("\n");
+      const blob = new Blob([content], {type:"text/plain;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "protocolmind-chat.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportDOC(){
+      const content = `
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
+          <h1>ProtocolMind Export</h1>
+          ${chatMemory.map(m => `<h3>${m.role.toUpperCase()}</h3><p>${m.content.replace(/\n/g,"<br>")}</p>`).join("")}
+        </body>
+        </html>
+      `;
+      const blob = new Blob([content], {type:"application/msword"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "protocolmind-chat.doc";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function copyLatest(){
+      const lastAssistant = [...chatMemory].reverse().find(m => m.role === "assistant");
+      if(!lastAssistant) return;
+      navigator.clipboard.writeText(lastAssistant.content);
+    }
+
+    document.getElementById("copyBtn").addEventListener("click", copyLatest);
+    document.getElementById("txtBtn").addEventListener("click", exportTXT);
+    document.getElementById("docBtn").addEventListener("click", exportDOC);
+
+    document.getElementById("newChatBtn").addEventListener("click", ()=>{
+      messagesEl.innerHTML = "";
+      chatMemory = [];
+      saveMemory();
+      addMessage("assistant", (translations[currentLang] || translations.en).welcomeMessage);
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", ()=>{
+      promptInput.value = "";
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+      authScreen.classList.remove("hidden");
+    });
+
+    sendBtn.addEventListener("click", handleSend);
+    promptInput.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" && !e.shiftKey){
+        e.preventDefault();
+        handleSend();
+      }
+    });
+
+    langSelect.addEventListener("change", ()=>{
+      applyLanguage(langSelect.value);
+    });
+
+    modeSelect.addEventListener("change", syncChips);
+    templateSelect.addEventListener("change", syncChips);
+
+    document.getElementById("magicLinkBtn").addEventListener("click", ()=>{
+      const email = document.getElementById("emailInput").value.trim();
+      if(!email){
+        alert("Enter email first");
+        return;
+      }
+      authScreen.classList.add("hidden");
+    });
+
+    document.getElementById("googleBtn").addEventListener("click", ()=>{
+      authScreen.classList.add("hidden");
+    });
+
+    document.getElementById("microsoftBtn").addEventListener("click", ()=>{
+      authScreen.classList.add("hidden");
+    });
+
+    document.getElementById("guestBtn").addEventListener("click", ()=>{
+      authScreen.classList.add("hidden");
+    });
+
+    applyLanguage(currentLang);
+    syncChips();
+
+    if(chatMemory.length){
+      loadMemoryToUI();
+    }else{
+      messagesEl.innerHTML = "";
+      addMessage("assistant", (translations[currentLang] || translations.en).welcomeMessage);
+    }
+  </script>
 </body>
 </html>
