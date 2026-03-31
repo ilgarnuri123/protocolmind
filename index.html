@@ -1,725 +1,687 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProtocolMind — AI Diplomatic Protocol Assistant</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtocolMind</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-2: #0b1728;
+      --card: rgba(15, 25, 40, 0.72);
+      --card-strong: rgba(12, 20, 33, 0.9);
+      --line: rgba(255,255,255,0.08);
+      --text: #f8fbff;
+      --muted: #a9b8cc;
+      --gold: #d4af37;
+      --gold-soft: rgba(212, 175, 55, 0.14);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 22px;
+      --max: 1200px;
+    }
 
-<style>
-:root{
-  --bg:#07101c;
-  --bg2:#0b1220;
-  --panel:#0f172a;
-  --panel2:#111827;
-  --line:#243041;
-  --text:#eef4ff;
-  --muted:#9fb0c9;
-  --accent:#22c55e;
-  --accent2:#16a34a;
-  --accentSoft:rgba(34,197,94,.14);
-  --white:#ffffff;
-  --shadow:0 12px 40px rgba(0,0,0,.28);
-  --radius:22px;
-}
+    * { box-sizing: border-box; }
 
-*{
-  box-sizing:border-box;
-}
+    html { scroll-behavior: smooth; }
 
-html,body{
-  margin:0;
-  padding:0;
-  font-family:Inter,Arial,sans-serif;
-  background:
-    radial-gradient(circle at top, rgba(34,197,94,.10), transparent 24%),
-    linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
-  color:var(--text);
-}
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(107,114,128,0.12), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    }
 
-body{
-  min-height:100vh;
-}
+    a { color: inherit; text-decoration: none; }
 
-.page{
-  max-width:1240px;
-  margin:0 auto;
-  padding:24px;
-}
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
 
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  padding:16px 18px;
-  border:1px solid var(--line);
-  border-radius:20px;
-  background:rgba(15,23,42,.78);
-  backdrop-filter:blur(10px);
-  box-shadow:var(--shadow);
-}
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(7,17,31,0.78);
+      border-bottom: 1px solid var(--line);
+    }
 
-.brand{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+    }
 
-.brand-title{
-  font-size:28px;
-  font-weight:900;
-  letter-spacing:.02em;
-}
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
 
-.brand-subtitle{
-  color:var(--muted);
-  font-size:14px;
-}
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(212,175,55,0.35);
+      background: linear-gradient(180deg, rgba(212,175,55,0.18), rgba(212,175,55,0.05));
+      box-shadow: inset 0 0 30px rgba(212,175,55,0.08);
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 18px;
+    }
 
-.brand-credits{
-  color:var(--muted);
-  font-size:12px;
-}
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
 
-.nav-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-.btn{
-  border:none;
-  border-radius:14px;
-  padding:12px 16px;
-  cursor:pointer;
-  font-weight:700;
-  font-size:14px;
-  text-decoration:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
 
-.btn-secondary{
-  background:#162034;
-  color:var(--white);
-  border:1px solid #334155;
-}
+    .btn:hover { transform: translateY(-1px); }
 
-.btn-primary{
-  background:linear-gradient(180deg,var(--accent),var(--accent2));
-  color:var(--white);
-  box-shadow:0 8px 20px rgba(34,197,94,.25);
-}
+    .btn-primary {
+      background: linear-gradient(180deg, #e0bd55, #c79a22);
+      color: #1c1404;
+      box-shadow: 0 12px 30px rgba(212,175,55,0.18);
+    }
 
-.hero{
-  display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:24px;
-  margin-top:26px;
-  align-items:stretch;
-}
+    .btn-secondary {
+      background: rgba(255,255,255,0.03);
+      border-color: var(--line);
+      color: var(--text);
+    }
 
-.hero-left,
-.hero-right,
-.section-card{
-  background:rgba(15,23,42,.92);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-}
+    .hero {
+      padding: 72px 0 36px;
+    }
 
-.hero-left{
-  padding:40px;
-}
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+    }
 
-.hero-badge{
-  display:inline-flex;
-  padding:8px 12px;
-  border-radius:999px;
-  background:var(--accentSoft);
-  color:#dcfce7;
-  border:1px solid rgba(34,197,94,.28);
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  margin-bottom:18px;
-}
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.25);
+      background: var(--gold-soft);
+      color: #f3df9d;
+      font-size: 13px;
+      margin-bottom: 18px;
+    }
 
-.hero-title{
-  font-size:56px;
-  line-height:1.03;
-  margin:0 0 16px;
-  font-weight:900;
-  letter-spacing:-.03em;
-}
+    h1 {
+      font-size: clamp(40px, 7vw, 68px);
+      line-height: 1.02;
+      margin: 0 0 18px;
+      letter-spacing: -0.03em;
+    }
 
-.hero-text{
-  color:var(--muted);
-  font-size:18px;
-  line-height:1.75;
-  max-width:760px;
-}
+    .hero-sub {
+      font-size: 18px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 760px;
+      margin-bottom: 28px;
+    }
 
-.hero-actions{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:26px;
-}
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
 
-.hero-stats{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:28px;
-}
+    .badge {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: #d7e2f0;
+      font-size: 13px;
+    }
 
-.stat{
-  padding:14px 16px;
-  border-radius:16px;
-  background:#0c1526;
-  border:1px solid #233146;
-  min-width:150px;
-}
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-.stat-value{
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:4px;
-}
+    .preview {
+      background: linear-gradient(180deg, rgba(16,28,44,0.94), rgba(11,18,31,0.94));
+      border: 1px solid rgba(212,175,55,0.16);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
 
-.stat-label{
-  color:var(--muted);
-  font-size:13px;
-}
+    .preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
 
-.hero-right{
-  padding:22px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
+    .preview-title { font-weight: 800; }
 
-.preview-window{
-  background:#0c1526;
-  border:1px solid #233146;
-  border-radius:18px;
-  padding:18px;
-  min-height:100%;
-}
+    .preview-modes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
 
-.preview-label{
-  font-size:12px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--muted);
-  margin-bottom:12px;
-}
+    .pill {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      color: #dbe5f3;
+    }
 
-.preview-card{
-  background:#f8fafc;
-  color:#0f172a;
-  border-radius:16px;
-  padding:18px;
-  line-height:1.7;
-  box-shadow:0 8px 24px rgba(0,0,0,.18);
-}
+    .pill.active {
+      background: rgba(212,175,55,0.12);
+      border-color: rgba(212,175,55,0.28);
+      color: #f4dfa0;
+    }
 
-.preview-card-title{
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color:#475569;
-  margin-bottom:10px;
-}
+    .preview-chat {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      border-radius: 20px;
+      padding: 14px;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.section{
-  margin-top:26px;
-}
+    .bubble {
+      max-width: 88%;
+      padding: 14px 16px;
+      border-radius: 18px;
+      line-height: 1.65;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
 
-.section-card{
-  padding:28px;
-}
+    .bubble-user {
+      align-self: flex-end;
+      background: linear-gradient(180deg, #1f4e94, #173f79);
+      color: white;
+    }
 
-.section-title{
-  font-size:32px;
-  font-weight:900;
-  margin:0 0 10px;
-}
+    .bubble-ai {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--line);
+      color: #edf3fb;
+    }
 
-.section-subtitle{
-  color:var(--muted);
-  font-size:16px;
-  line-height:1.75;
-  margin-bottom:20px;
-}
+    .metrics {
+      padding: 28px 0 12px;
+    }
 
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-}
+    .metrics-grid,
+    .features-grid,
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
 
-.grid-2{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-}
+    .metric,
+    .feature,
+    .audience-card,
+    .story-card,
+    .about-card,
+    .quote-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
 
-.feature{
-  background:#0c1526;
-  border:1px solid #233146;
-  border-radius:18px;
-  padding:18px;
-}
+    .metric h3 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      color: var(--gold);
+    }
 
-.feature-title{
-  font-size:18px;
-  font-weight:800;
-  margin-bottom:8px;
-}
+    .metric p,
+    .feature p,
+    .audience-card p,
+    .story-card p,
+    .about-card p,
+    .quote-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
 
-.feature-text{
-  color:var(--muted);
-  line-height:1.7;
-  font-size:14px;
-}
+    .section {
+      padding: 48px 0;
+    }
 
-.step{
-  background:#0c1526;
-  border:1px solid #233146;
-  border-radius:18px;
-  padding:20px;
-}
+    .section-head {
+      max-width: 820px;
+      margin-bottom: 24px;
+    }
 
-.step-number{
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  background:var(--accentSoft);
-  color:#dcfce7;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  margin-bottom:12px;
-}
+    .section-kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
 
-.step-title{
-  font-size:18px;
-  font-weight:800;
-  margin-bottom:8px;
-}
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
 
-.step-text{
-  color:var(--muted);
-  line-height:1.7;
-  font-size:14px;
-}
+    .section-lead {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 17px;
+    }
 
-.pricing{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-}
+    .feature h3,
+    .audience-card h3,
+    .story-card h3,
+    .about-card h3,
+    .quote-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+    }
 
-.plan{
-  background:#0c1526;
-  border:1px solid #233146;
-  border-radius:18px;
-  padding:22px;
-}
+    .story-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
 
-.plan.featured{
-  background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.04));
-  border-color:rgba(34,197,94,.34);
-}
+    .ack-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
 
-.plan-name{
-  font-size:22px;
-  font-weight:900;
-  margin-bottom:8px;
-}
+    .ack-item {
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+    }
 
-.plan-price{
-  font-size:34px;
-  font-weight:900;
-  margin-bottom:14px;
-}
+    .ack-item strong { display: block; margin-bottom: 4px; }
 
-.plan-list{
-  color:var(--muted);
-  line-height:1.9;
-  font-size:14px;
-}
+    .story-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.18);
+      color: #f0dfaa;
+      line-height: 1.7;
+    }
 
-.plan-button{
-  display:inline-block;
-  margin-top:16px;
-  text-decoration:none;
-  background:linear-gradient(180deg,var(--accent),var(--accent2));
-  color:white;
-  padding:12px 16px;
-  border-radius:12px;
-  font-weight:700;
-}
+    .cta {
+      padding: 34px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(212,175,55,0.12), rgba(255,255,255,0.03));
+      border: 1px solid rgba(212,175,55,0.18);
+      text-align: center;
+    }
 
-.faq{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+    .footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 26px 0 40px;
+      font-size: 14px;
+    }
 
-.faq-item{
-  background:#0c1526;
-  border:1px solid #233146;
-  border-radius:18px;
-  padding:18px;
-}
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-.faq-q{
-  font-size:17px;
-  font-weight:800;
-  margin-bottom:8px;
-}
+    @media (max-width: 980px) {
+      .hero-grid,
+      .story-layout {
+        grid-template-columns: 1fr;
+      }
 
-.faq-a{
-  color:var(--muted);
-  line-height:1.75;
-  font-size:14px;
-}
+      .metrics-grid,
+      .features-grid,
+      .audience-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
-.cta{
-  text-align:center;
-  padding:36px 24px;
-}
+    @media (max-width: 640px) {
+      .nav-inner,
+      .hero-actions,
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-.cta-title{
-  font-size:36px;
-  font-weight:900;
-  margin-bottom:12px;
-}
+      .nav-links {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
 
-.cta-text{
-  color:var(--muted);
-  font-size:17px;
-  line-height:1.75;
-  max-width:760px;
-  margin:0 auto 22px;
-}
+      .metrics-grid,
+      .features-grid,
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
 
-.footer{
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
-  padding:24px 0 6px;
-}
-
-@media (max-width: 980px){
-  .hero{
-    grid-template-columns:1fr;
-  }
-
-  .grid-3,
-  .grid-2,
-  .pricing{
-    grid-template-columns:1fr;
-  }
-
-  .hero-title{
-    font-size:40px;
-  }
-
-  .topbar{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-
-  .nav-actions{
-    width:100%;
-  }
-}
-</style>
+      .hero {
+        padding-top: 44px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">
+        <div class="brand-mark">PM</div>
+        <div>ProtocolMind</div>
+      </div>
 
-<div class="page">
+      <div class="nav-links">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#audiences">Use Cases</a>
+        <a href="#story">Story</a>
+        <a href="#about">About</a>
+      </div>
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="brand-title">ProtocolMind</div>
-      <div class="brand-subtitle">AI assistant for diplomatic protocol, official visits, seating plans, and institutional drafting.</div>
-      <div class="brand-credits">Created and Launched by Ilgar Nuri and Ilkin Mammadov</div>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="app.html">Open App</a>
+        <a class="btn btn-primary" href="app.html">Start Assistant</a>
+      </div>
     </div>
-
-    <div class="nav-actions">
-      <a class="btn btn-secondary" href="app.html">Open App</a>
-      <a class="btn btn-primary" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">Upgrade to Pro</a>
-    </div>
-  </div>
+  </nav>
 
   <section class="hero">
-    <div class="hero-left">
-      <div class="hero-badge">AI Diplomatic Protocol Platform</div>
-      <h1 class="hero-title">The modern AI workspace for diplomatic protocol.</h1>
-      <div class="hero-text">
-        ProtocolMind helps protocol professionals draft official letters, generate visit programs, create protocol checklists, structure seating logic, and assemble full protocol packs in minutes.
-      </div>
-
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="app.html">Launch ProtocolMind</a>
-        <a class="btn btn-secondary" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">Get ProtocolMind Pro</a>
-      </div>
-
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="stat-value">6</div>
-          <div class="stat-label">Core workflow modes</div>
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Created in Azerbaijan · Specialized AI for protocol work</div>
+        <h1>ProtocolMind</h1>
+        <div class="hero-sub">
+          AI Assistant for <strong>Government</strong>, <strong>Parliamentary</strong>, <strong>Diplomatic</strong> and <strong>Corporate</strong> Protocol.
+          Prepare visits, meetings, seating plans, official correspondence and protocol checklists in seconds.
         </div>
-        <div class="stat">
-          <div class="stat-value">5</div>
-          <div class="stat-label">Document templates</div>
+
+        <div class="hero-badges">
+          <div class="badge">Government Protocol</div>
+          <div class="badge">Parliamentary Visits</div>
+          <div class="badge">Diplomatic Correspondence</div>
+          <div class="badge">Corporate Executive Events</div>
         </div>
-        <div class="stat">
-          <div class="stat-value">4</div>
-          <div class="stat-label">Working languages</div>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="app.html">Open ProtocolMind Assistant</a>
+          <a class="btn btn-secondary" href="#capabilities">View Capabilities</a>
         </div>
       </div>
-    </div>
 
-    <div class="hero-right">
-      <div class="preview-window">
-        <div class="preview-label">Example Output</div>
-        <div class="preview-card">
-          <div class="preview-card-title">Protocol Pack</div>
-PROTOCOL PACK
-
-1. BRIEFING NOTE  
-Purpose: Official bilateral parliamentary meeting  
-Participants: Speaker, delegation head, advisers, interpreters  
-
-2. VISIT PROGRAM  
-10:00 – Arrival  
-11:00 – Bilateral meeting  
-12:00 – Expanded delegation talks  
-13:00 – Official lunch  
-
-3. SEATING GUIDANCE  
-Principals face each other centrally  
-Senior advisers closest to principals  
-Interpreters beside principals  
-
-4. PROTOCOL CHECKLIST  
-• Flags  
-• Nameplates  
-• Motorcade timing  
-• Press coordination
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-card">
-      <div class="section-title">Everything protocol teams need in one place</div>
-      <div class="section-subtitle">
-        Built for parliamentary workflow, official visits, diplomatic drafting, and day-to-day institutional support.
-      </div>
-
-      <div class="grid-3">
-        <div class="feature">
-          <div class="feature-title">Protocol Advice</div>
-          <div class="feature-text">Get structured guidance on official ceremonies, order of precedence, diplomatic forms of address, and protocol logic.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Seating Plans</div>
-          <div class="feature-text">Generate seating logic for bilateral and multilateral formats with principal placement and interpreter-aware layouts.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Checklists</div>
-          <div class="feature-text">Create operational protocol checklists for arrivals, meetings, motorcade coordination, flags, media, and delegation flow.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Visit Programs</div>
-          <div class="feature-text">Build one-day and multi-day official visit programs with realistic schedule blocks and protocol notes.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Official Letters</div>
-          <div class="feature-text">Draft invitation letters, thank-you letters, note verbale formats, briefing notes, and formal diplomatic-style texts.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Protocol Pack</div>
-          <div class="feature-text">Generate a full working file with briefing note, visit program, seating guidance, and checklist in one workflow.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-card">
-      <div class="section-title">How ProtocolMind works</div>
-      <div class="section-subtitle">
-        Simple workflow. Professional output. Designed to save time on repeat protocol tasks.
-      </div>
-
-      <div class="grid-2">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-title">Choose a mode</div>
-          <div class="step-text">Switch between advice, seating, checklist, visit program, official letter, and protocol pack depending on the task.</div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-title">Describe the event</div>
-          <div class="step-text">Enter the key details: delegation size, roles, timing, meeting type, location, interpreters, and protocol context.</div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-title">Generate structured output</div>
-          <div class="step-text">ProtocolMind returns a clean draft or protocol structure that can be copied, refined, exported, and used in practice.</div>
-        </div>
-
-        <div class="step">
-          <div class="step-number">4</div>
-          <div class="step-title">Export and reuse</div>
-          <div class="step-text">Copy outputs instantly or export them as TXT or DOC for official circulation and document preparation.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-card">
-      <div class="section-title">Built for real institutional use</div>
-      <div class="section-subtitle">
-        ProtocolMind is useful for protocol offices, parliaments, ministries, diplomatic teams, international institutions, and official delegations.
-      </div>
-
-      <div class="grid-3">
-        <div class="feature">
-          <div class="feature-title">Multilingual workflow</div>
-          <div class="feature-text">Work in English, Azerbaijani, Russian, and Turkish inside the same interface.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Knowledge-based output</div>
-          <div class="feature-text">Use structured protocol knowledge to make answers more practical, more institutional, and more consistent.</div>
-        </div>
-
-        <div class="feature">
-          <div class="feature-title">Fast document handling</div>
-          <div class="feature-text">Copy results, export them, and adapt them quickly for internal drafting and real protocol work.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-card">
-      <div class="section-title">Pricing</div>
-      <div class="section-subtitle">
-        Start free, then unlock the full professional workflow with ProtocolMind Pro.
-      </div>
-
-      <div class="pricing">
-        <div class="plan">
-          <div class="plan-name">Free</div>
-          <div class="plan-price">$0</div>
-          <div class="plan-list">
-            • 5 requests per day<br>
-            • Protocol Advice<br>
-            • Seating Plan<br>
-            • Basic access
+      <div class="preview">
+        <div class="preview-top">
+          <div>
+            <div class="preview-title">ProtocolMind Workspace</div>
+            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">Premium AI interface for protocol professionals</div>
           </div>
+          <div class="pill active">Live Preview</div>
         </div>
 
-        <div class="plan featured">
-          <div class="plan-name">ProtocolMind Pro</div>
-          <div class="plan-price">$19 / month</div>
-          <div class="plan-list">
-            • Unlimited requests<br>
-            • Visit Program generation<br>
-            • Official Letter drafting<br>
-            • Protocol Pack workflow<br>
-            • TXT / DOC export<br>
-            • Full professional use
+        <div class="preview-modes">
+          <div class="pill active">Protocol Advice</div>
+          <div class="pill">Seating Plan</div>
+          <div class="pill">Checklist</div>
+          <div class="pill">Visit Program</div>
+          <div class="pill">Official Letter</div>
+          <div class="pill">Protocol Pack</div>
+        </div>
+
+        <div class="preview-chat">
+          <div class="bubble bubble-user">Create a bilateral seating plan for a meeting between the Speaker of the Milli Majlis and the Speaker of the Parliament of Georgia with interpreters.</div>
+          <div class="bubble bubble-ai">Recommended format: bilateral rectangular table.
+
+• Host principal and guest principal seated opposite each other at the center.
+• Most senior officials seated nearest to the principals.
+• Interpreters positioned beside the principals for direct support.
+• Delegation symmetry preserved to reflect parity and institutional dignity.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics">
+    <div class="wrap metrics-grid">
+      <div class="metric">
+        <h3>4</h3>
+        <p>Core protocol domains: government, parliamentary, diplomatic and corporate.</p>
+      </div>
+      <div class="metric">
+        <h3>6</h3>
+        <p>Operational modes for advice, seating, checklists, programs, letters and protocol packs.</p>
+      </div>
+      <div class="metric">
+        <h3>5</h3>
+        <p>Supported interface languages for broader institutional and regional use.</p>
+      </div>
+      <div class="metric">
+        <h3>1</h3>
+        <p>Specialized platform designed to simplify professional protocol preparation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="capabilities">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Capabilities</div>
+        <h2>Built for real protocol work, not generic chat.</h2>
+        <div class="section-lead">
+          ProtocolMind supports protocol officers, executive offices, international departments and corporate event teams with structured, professional and immediately usable outputs.
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature">
+          <h3>Diplomatic Protocol Guidance</h3>
+          <p>Structured answers on precedence, ceremony, meeting logic, forms of address, flags, gift exchange and official conduct.</p>
+        </div>
+        <div class="feature">
+          <h3>Parliamentary Visit Preparation</h3>
+          <p>Draft visit programs, courtesy call structures, delegation logic, reception flow and Speaker-level meeting preparation.</p>
+        </div>
+        <div class="feature">
+          <h3>Seating Plans</h3>
+          <p>Generate seating recommendations for bilateral, expanded and interpreted meetings with symmetry and hierarchy in mind.</p>
+        </div>
+        <div class="feature">
+          <h3>Official Correspondence</h3>
+          <p>Create invitation letters, thank-you letters, note verbale drafts, briefing notes and formal protocol documents.</p>
+        </div>
+        <div class="feature">
+          <h3>Protocol Checklists</h3>
+          <p>Break preparation into operational items covering rooms, vehicles, flags, interpreters, gifts, media and transitions.</p>
+        </div>
+        <div class="feature">
+          <h3>Protocol Packs</h3>
+          <p>Produce a structured package that combines visit program, checklist, seating logic and draft correspondence in one workflow.</p>
+        </div>
+        <div class="feature">
+          <h3>Corporate Executive Events</h3>
+          <p>Support executive receptions, leadership meetings, VIP events and formal corporate hosting with protocol discipline.</p>
+        </div>
+        <div class="feature">
+          <h3>Multilingual Workflow</h3>
+          <p>Operate across English, Azerbaijani, Russian, Turkish and Georgian environments with a consistent professional tone.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="audiences">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-kicker">Who it is for</div>
+        <h2>Designed for professional environments where protocol matters.</h2>
+        <div class="section-lead">
+          ProtocolMind is intended for institutions and teams that require speed, structure, accuracy and dignity in formal engagements.
+        </div>
+      </div>
+
+      <div class="audience-grid">
+        <div class="audience-card">
+          <h3>Government Institutions</h3>
+          <p>Support official receptions, working meetings, visiting delegations, protocol notes and ceremonial preparation.</p>
+        </div>
+        <div class="audience-card">
+          <h3>Parliaments</h3>
+          <p>Assist with Speaker-level visits, committee engagement, parliamentary hospitality, formal correspondence and internal preparation.</p>
+        </div>
+        <div class="audience-card">
+          <h3>Diplomatic Environments</h3>
+          <p>Provide structured logic for diplomatic courtesy, bilateral settings, correspondence and symbolic protocol elements.</p>
+        </div>
+        <div class="audience-card">
+          <h3>Corporate Leadership Teams</h3>
+          <p>Help organize executive hosting, international meetings, VIP guests and formal event sequences with confidence.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="story">
+    <div class="wrap story-layout">
+      <div class="story-card">
+        <div class="section-kicker">Story</div>
+        <h2 style="margin-top:0;">The story behind ProtocolMind</h2>
+        <p>
+          ProtocolMind was initiated and created by <strong>Ilgar Nuri</strong>, a protocol professional working within the parliamentary system of the Republic of Azerbaijan.
+          The project emerged from practical professional experience: visit programs, seating arrangements, official correspondence and protocol checklists all require time, structure and strict attention to institutional standards.
+        </p>
+        <p style="margin-top:14px;">
+          ProtocolMind was developed as an intelligent assistant to simplify these processes and help professionals prepare protocol materials faster, more consistently and with greater operational confidence.
+        </p>
+        <p style="margin-top:14px;">
+          The system was created by <strong>Ilgar Nuri using the capabilities of modern artificial intelligence tools, including ChatGPT</strong>, combining hands-on protocol expertise with advanced AI support.
+        </p>
+        <div class="story-note">
+          ProtocolMind is currently presented as <strong>one of the first known AI assistants developed in Azerbaijan specifically dedicated to government, parliamentary, diplomatic and corporate protocol work</strong>.
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="section-kicker">Acknowledgements</div>
+        <h3 style="font-size:22px; margin-top:0;">Professional gratitude</h3>
+        <div class="ack-list">
+          <div class="ack-item">
+            <strong>Ilkin Mammadov</strong>
+            Head of the Protocol Department of the Milli Majlis, whose guidance and professional example inspired the creation of this assistant.
           </div>
-          <a class="plan-button" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">Upgrade Now</a>
-        </div>
-
-        <div class="plan">
-          <div class="plan-name">Institutional</div>
-          <div class="plan-price">$99 / month</div>
-          <div class="plan-list">
-            • For offices and teams<br>
-            • Broader workflow use<br>
-            • Better fit for institutional adoption<br>
-            • Suitable for protocol departments
+          <div class="ack-item">
+            <strong>Ms. Sahiba Gafarova</strong>
+            Speaker of the Milli Majlis of the Republic of Azerbaijan, acknowledged for trust and continued support.
+          </div>
+          <div class="ack-item">
+            <strong>Mr. Farid Hajiyev</strong>
+            Chief of Staff of the Milli Majlis, acknowledged for trust, encouragement and continuous professional support.
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="section-card">
-      <div class="section-title">Frequently asked questions</div>
-      <div class="section-subtitle">
-        Short answers to the most important questions about ProtocolMind.
-      </div>
-
-      <div class="faq">
-        <div class="faq-item">
-          <div class="faq-q">Who is ProtocolMind for?</div>
-          <div class="faq-a">ProtocolMind is designed for protocol professionals, parliamentary staff, international relations teams, official delegation coordinators, and institutional users who need structured diplomatic output quickly.</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">What can it generate?</div>
-          <div class="faq-a">It can generate protocol advice, seating guidance, checklists, visit programs, official letters, briefing notes, meeting scenarios, and full protocol packs.</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Does it support multiple languages?</div>
-          <div class="faq-a">Yes. The product works in English, Azerbaijani, Russian, and Turkish.</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Can I export documents?</div>
-          <div class="faq-a">Yes. Outputs can be copied directly and exported as TXT or DOC files from the app.</div>
-        </div>
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="quote-card">
+        <div class="section-kicker">Positioning</div>
+        <h2 style="margin-top:0;">A specialized AI assistant created in Azerbaijan for serious protocol work.</h2>
+        <p>
+          ProtocolMind is designed to support protocol officers, executive offices, international departments and corporate event teams by providing fast, structured and professional assistance in preparation for visits, meetings, formal correspondence and protocol operations.
+        </p>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <div class="section-card cta">
-      <div class="cta-title">Ready to start?</div>
-      <div class="cta-text">
-        Open the app and begin working immediately, or unlock ProtocolMind Pro for unlimited usage and full drafting workflows.
-      </div>
-      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
-        <a class="btn btn-secondary" href="app.html">Open App</a>
-        <a class="btn btn-primary" href="https://protocolmind.lemonsqueezy.com/checkout/buy/199b0377-48a8-45f8-8f6e-9113caedaff5" target="_blank">Upgrade to Pro</a>
+    <div class="wrap">
+      <div class="cta">
+        <div class="section-kicker">Ready to use</div>
+        <h2 style="margin-top:0;">Open the assistant and generate protocol materials in seconds.</h2>
+        <p class="section-lead" style="max-width: 760px; margin: 0 auto 22px;">
+          Start with seating plans, official letters, visit programs, protocol checklists and complete protocol packs in a single workspace.
+        </p>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="app.html">Open ProtocolMind Assistant</a>
+          <a class="btn btn-secondary" href="#story">Read the Story</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <div class="footer">
-    ProtocolMind — AI assistant for diplomatic protocol and institutional workflow support.
-  </div>
-
-</div>
-
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div>
+        <strong style="color: var(--text);">ProtocolMind</strong><br/>
+        AI Assistant for Government, Parliamentary, Diplomatic and Corporate Protocol
+      </div>
+      <div>
+        Created by Ilgar Nuri<br/>
+        Inspired by Ilkin Mammadov
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
+```
