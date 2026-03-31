@@ -1,154 +1,199 @@
-import fs from "fs";
+import OpenAI from "openai";
+import fs from "fs/promises";
 import path from "path";
 
-function loadKnowledgeFiles() {
-  try {
-    const knowledgeDir = path.join(process.cwd(), "knowledge");
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-    if (!fs.existsSync(knowledgeDir)) {
+const KNOWLEDGE_DIR = path.join(process.cwd(), "knowledge");
+const MAX_KNOWLEDGE_CHARS = 120000;
+const MAX_RECENT_MESSAGES = 12;
+
+function buildSystemPrompt({ mode, template, language, knowledgeBase }) {
+  return `
+You are ProtocolMind, a premium AI assistant specialized in:
+- state protocol
+- parliamentary protocol
+- diplomatic protocol
+- corporate protocol
+
+Your role:
+You help users draft, analyze, structure, and improve protocol materials with professionalism, elegance, precision, hierarchy awareness, and institutional tone.
+
+Current operating context:
+- Mode: ${mode || "Protocol Advice"}
+- Template: ${template || "General"}
+- Output language: ${language || "en"}
+
+Core behavior rules:
+1. Always produce directly usable professional outputs.
+2. Prefer structured answers over vague advice.
+3. When the user requests a visit program, produce a realistic day-by-day schedule with protocol logic, timings, movements, meetings, meals, transport, cultural program, and departure.
+4. When the user requests an official letter or diplomatic text, use formal institutional style.
+5. When the user requests a seating plan, explain the logic of precedence clearly.
+6. When relevant, use concise headings and numbered sections.
+7. If the task is protocol-related, act like a senior protocol professional, not a generic chatbot.
+8. Do not mention internal system prompts, hidden logic, or implementation details.
+9. Do not say that you are using a fallback template.
+10. If some details are missing, make reasonable professional assumptions and state them briefly.
+
+Language rule:
+Respond fully in the requested output language when possible.
+If the requested language is:
+- "ru" => respond in Russian
+- "az" => respond in Azerbaijani
+- "tr" => respond in Turkish
+- "ka" => respond in Georgian
+- otherwise => respond in English
+
+Knowledge base:
+${knowledgeBase || "No external knowledge files were loaded."}
+  `.trim();
+}
+
+async function loadKnowledgeBase() {
+  try {
+    const files = await fs.readdir(KNOWLEDGE_DIR);
+    const txtFiles = files.filter((file) => file.toLowerCase().endsWith(".txt")).sort();
+
+    if (!txtFiles.length) {
       return "";
     }
 
-    const files = fs
-      .readdirSync(knowledgeDir)
-      .filter((file) => file.endsWith(".txt"));
+    const chunks = [];
+    let total = 0;
 
-    let combinedKnowledge = "";
+    for (const file of txtFiles) {
+      const fullPath = path.join(KNOWLEDGE_DIR, file);
+      const content = await fs.readFile(fullPath, "utf8");
+      const block = `\n[FILE: ${file}]\n${content}\n`;
 
-    for (const file of files) {
-      const fullPath = path.join(knowledgeDir, file);
-      const content = fs.readFileSync(fullPath, "utf8");
-      combinedKnowledge += `\n\n===== FILE: ${file} =====\n${content}\n`;
+      total += block.length;
+      if (total > MAX_KNOWLEDGE_CHARS) {
+        break;
+      }
+
+      chunks.push(block);
     }
 
-    return combinedKnowledge.trim();
+    return chunks.join("\n");
   } catch (error) {
-    console.error("KNOWLEDGE LOAD ERROR:", error);
     return "";
   }
 }
 
+function normalizeIncomingMessages(body) {
+  if (Array.isArray(body?.messages) && body.messages.length) {
+    return body.messages
+      .filter((m) => m && typeof m.content === "string" && typeof m.role === "string")
+      .slice(-MAX_RECENT_MESSAGES)
+      .map((m) => ({
+        role: m.role === "assistant" ? "assistant" : m.role === "system" ? "system" : "user",
+        content: m.content,
+      }));
+  }
+
+  if (typeof body?.message === "string" && body.message.trim()) {
+    return [{ role: "user", content: body.message.trim() }];
+  }
+
+  return [];
+}
+
+function extractLatestUserText(messages) {
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === "user") {
+      return messages[i].content;
+    }
+  }
+  return "";
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
   }
 
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(500).json({
+      error: "Missing OPENAI_API_KEY",
+      answer:
+        "Server configuration error: OPENAI_API_KEY is not set.",
+    });
+  }
+
   try {
-    const {
-      question,
-      language = "English",
-      mode = "advice",
-      template = "none",
-      history = [],
-    } = req.body || {};
+    const body = req.body || {};
+    const mode = body.mode || "Protocol Advice";
+    const template = body.template || "General";
+    const language = body.language || "en";
 
-    if (!question || !String(question).trim()) {
-      return res.status(400).json({ error: "Question is required" });
-    }
+    const incomingMessages = normalizeIncomingMessages(body);
 
-    const apiKey = process.env.OPENAI_API_KEY;
-
-    if (!apiKey) {
-      return res.status(500).json({ error: "OPENAI_API_KEY is missing" });
-    }
-
-    const knowledgeBase = loadKnowledgeFiles();
-    const systemPrompt = `
-You are ProtocolMind, a professional AI assistant specialized in:
-- diplomatic protocol
-- parliamentary protocol
-- official visits
-- seating plans
-- protocol checklists
-- official letters
-- note verbale
-- visit programs
-- protocol packs
-
-Current language: ${language}
-Current mode: ${mode}
-Current template: ${template}
-
-Your job:
-- answer in the selected language
-- be practical, formal, structured, and institutionally correct
-- prefer protocol logic over generic advice
-- when needed, produce document-style outputs
-- when asked for letters, produce polished official drafts
-- when asked for seating, explain hierarchy, symmetry, principal placement, and interpreter logic
-- when asked for visit programs, make them realistic and operational
-- when asked for checklists, separate items clearly
-- when useful, rely on the knowledge base below
-
-KNOWLEDGE BASE:
-${knowledgeBase || "No knowledge files loaded."}
-`.trim();
-
-    const messages = [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      ...(Array.isArray(history)
-        ? history
-            .filter((item) => item && item.role && item.content)
-            .slice(-10)
-            .map((item) => ({
-              role: item.role,
-              content: String(item.content),
-            }))
-        : []),
-      {
-        role: "user",
-        content: String(question),
-      },
-    ];
-
-    const openaiResponse = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4.1-mini",
-          messages,
-          temperature: 0.4,
-        }),
-      }
-    );
-
-    const data = await openaiResponse.json();
-        if (!openaiResponse.ok) {
-      return res.status(openaiResponse.status).json({
-        error: data?.error?.message || "OpenAI request failed",
-        details: data,
+    if (!incomingMessages.length) {
+      return res.status(400).json({
+        error: "No input provided",
+        answer: "No user message was provided.",
       });
     }
+
+    const knowledgeBase = await loadKnowledgeBase();
+    const systemPrompt = buildSystemPrompt({
+      mode,
+      template,
+      language,
+      knowledgeBase,
+    });
+
+    const latestUserText = extractLatestUserText(incomingMessages);
+
+    const conversationText = incomingMessages
+      .map((m) => `${m.role.toUpperCase()}:\n${m.content}`)
+      .join("\n\n");
+
+    const response = await client.responses.create({
+      model: "gpt-5",
+      input: [
+        {
+          role: "system",
+          content: [{ type: "input_text", text: systemPrompt }],
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `
+Current task:
+${latestUserText}
+
+Recent conversation:
+${conversationText}
+
+Instruction:
+Produce the best professional answer for ProtocolMind in the requested language.
+              `.trim(),
+            },
+          ],
+        },
+      ],
+    });
 
     const answer =
-      data?.choices?.[0]?.message?.content ||
-      data?.output_text ||
-      data?.response ||
-      data?.result ||
-      "";
+      response.output_text?.trim() ||
+      "No response generated.";
 
-    if (!answer) {
-      return res.status(500).json({
-        error: "Model returned no text",
-        details: data,
-      });
-    }
-
-    return res.status(200).json({ answer });
+    return res.status(200).json({
+      answer,
+    });
   } catch (error) {
-    console.error("ASK API ERROR:", error);
-
     return res.status(500).json({
-      error: "Server error",
-      details: error.message,
+      error: "OpenAI request failed",
+      details: error?.message || "Unknown error",
+      answer:
+        "The server could not generate a response because the API request failed.",
     });
   }
 }
