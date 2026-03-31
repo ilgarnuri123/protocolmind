@@ -1,217 +1,1054 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtocolMind</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-<title>ProtocolMind</title>
+  <style>
+    :root{
+      --bg:#07111d;
+      --bg2:#0b1627;
+      --panel:rgba(14,25,43,.90);
+      --panel2:rgba(255,255,255,.04);
+      --line:rgba(255,255,255,.08);
+      --gold:#d8b46a;
+      --gold2:#f2dba5;
+      --text:#f3f7fd;
+      --muted:#aebbce;
+      --shadow:0 24px 70px rgba(0,0,0,.35);
+      --radius:22px;
+      --sidebar:320px;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Inter",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(216,180,106,.10), transparent 22%),
+        radial-gradient(circle at top right, rgba(216,180,106,.08), transparent 18%),
+        linear-gradient(180deg,#050d18 0%,#08121f 40%,#0b1627 100%);
+      overflow:hidden;
+    }
 
-<style>
+    a{text-decoration:none;color:inherit}
+    button,input,select,textarea{font:inherit}
 
-body{
-font-family:Inter;
-background:#0b1220;
-color:white;
-margin:0;
-}
+    .bg-grid{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.15));
+    }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px;
-border-bottom:1px solid #1f2937;
-}
+    .app{
+      position:relative;
+      z-index:2;
+      display:grid;
+      grid-template-columns:var(--sidebar) 1fr;
+      height:100vh;
+    }
 
-.logo{
-font-size:22px;
-font-weight:600;
-}
+    .sidebar{
+      background:linear-gradient(180deg, rgba(7,14,24,.97), rgba(9,18,31,.96));
+      border-right:1px solid rgba(255,255,255,.06);
+      padding:18px;
+      overflow:auto;
+    }
 
-.container{
-max-width:1100px;
-margin:auto;
-padding:20px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:10px 8px 18px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      margin-bottom:18px;
+    }
 
-.messages{
-height:60vh;
-overflow-y:auto;
-background:#111827;
-padding:20px;
-border-radius:10px;
-}
+    .brand-mark{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));
+      color:#101010;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 10px 28px rgba(216,180,106,.25);
+      flex:0 0 46px;
+    }
 
-.message{
-margin-bottom:15px;
-}
+    .brand h1{
+      margin:0;
+      font-size:19px;
+      line-height:1.05;
+      letter-spacing:.2px;
+    }
 
-.user{
-color:#eab308;
-}
+    .brand p{
+      margin:5px 0 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
 
-.assistant{
-color:white;
-}
+    .side-card{
+      background:linear-gradient(180deg, var(--panel), rgba(10,18,32,.94));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      margin-bottom:16px;
+    }
 
-.input-area{
-display:flex;
-gap:10px;
-margin-top:15px;
-}
+    .side-label{
+      margin:0 0 10px;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--gold2);
+      font-weight:700;
+    }
 
-textarea{
-flex:1;
-padding:12px;
-background:#1f2937;
-border:none;
-border-radius:8px;
-color:white;
-resize:none;
-}
+    .select,
+    .input{
+      width:100%;
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      outline:none;
+    }
 
-button{
-background:#eab308;
-border:none;
-padding:12px 20px;
-border-radius:8px;
-cursor:pointer;
-}
+    .row{
+      display:grid;
+      gap:10px;
+    }
 
-.mode{
-margin-bottom:20px;
-}
+    .chip-wrap{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
 
-select{
-background:#111827;
-color:white;
-padding:6px;
-}
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:9px 11px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:12px;
+    }
 
-</style>
+    .quick-list{
+      display:grid;
+      gap:10px;
+    }
 
+    .quick-btn{
+      text-align:left;
+      width:100%;
+      border:none;
+      border-radius:14px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:var(--text);
+      padding:13px 14px;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .quick-btn:hover{
+      transform:translateY(-1px);
+      background:rgba(216,180,106,.09);
+      border-color:rgba(216,180,106,.25);
+    }
+
+    .quick-btn strong{
+      display:block;
+      margin-bottom:5px;
+      font-size:14px;
+    }
+
+    .quick-btn span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .docs{
+      display:grid;
+      gap:10px;
+    }
+
+    .doc{
+      padding:12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .doc strong{
+      display:block;
+      margin-bottom:4px;
+      font-size:13px;
+      word-break:break-word;
+    }
+
+    .doc small{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .main{
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      min-width:0;
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:18px 22px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      backdrop-filter:blur(14px);
+      background:linear-gradient(180deg, rgba(6,12,21,.88), rgba(6,12,21,.62));
+    }
+
+    .topbar h2{
+      margin:0;
+      font-size:24px;
+      letter-spacing:-.03em;
+    }
+
+    .topbar p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid transparent;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn:hover{transform:translateY(-1px)}
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--gold),var(--gold2));
+      color:#111;
+      box-shadow:0 10px 28px rgba(216,180,106,.23);
+    }
+
+    .btn-secondary{
+      background:rgba(255,255,255,.04);
+      border-color:rgba(216,180,106,.22);
+      color:var(--text);
+    }
+
+    .chat-wrap{
+      overflow:auto;
+      padding:22px;
+    }
+
+    .chat{
+      max-width:1060px;
+      margin:0 auto;
+      display:grid;
+      gap:16px;
+    }
+
+    .hero-card{
+      background:
+        radial-gradient(circle at top right, rgba(216,180,106,.12), transparent 28%),
+        linear-gradient(180deg, rgba(14,25,43,.96), rgba(10,19,34,.96));
+      border:1px solid rgba(216,180,106,.22);
+      border-radius:24px;
+      padding:26px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero-card h3{
+      margin:0 0 10px;
+      font-size:28px;
+      letter-spacing:-.03em;
+    }
+
+    .hero-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:15px;
+      max-width:900px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-top:18px;
+    }
+
+    .hero-mini{
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .hero-mini strong{
+      display:block;
+      margin-bottom:6px;
+      font-size:14px;
+      color:var(--gold2);
+    }
+
+    .hero-mini span{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+    }
+
+    .msg{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+    }
+
+    .msg.user{justify-content:flex-end}
+
+    .avatar{
+      width:38px;
+      height:38px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 38px;
+      font-weight:800;
+      box-shadow:var(--shadow);
+    }
+
+    .msg.assistant .avatar{
+      background:linear-gradient(135deg,var(--gold),var(--gold2));
+      color:#111;
+    }
+
+    .msg.user .avatar{
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      order:2;
+    }
+
+    .bubble{
+      max-width:min(84%, 860px);
+      padding:16px 18px;
+      border-radius:20px;
+      line-height:1.8;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .msg.assistant .bubble{
+      background:linear-gradient(180deg, rgba(14,25,43,.95), rgba(10,19,34,.95));
+    }
+
+    .msg.user .bubble{
+      background:linear-gradient(180deg, rgba(216,180,106,.14), rgba(216,180,106,.09));
+      border-color:rgba(216,180,106,.22);
+      order:1;
+    }
+        .bubble-tools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .mini-btn{
+      border:none;
+      border-radius:10px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:var(--muted);
+      padding:8px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+
+    .composer{
+      border-top:1px solid rgba(255,255,255,.06);
+      padding:16px 22px 20px;
+      background:linear-gradient(180deg, rgba(6,12,21,.60), rgba(6,12,21,.88));
+      backdrop-filter:blur(14px);
+    }
+
+    .composer-inner{
+      max-width:1060px;
+      margin:0 auto;
+      display:grid;
+      gap:12px;
+    }
+
+    .status{
+      color:var(--muted);
+      font-size:13px;
+      min-height:18px;
+    }
+
+    .composer-top{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:end;
+    }
+
+    .prompt{
+      width:100%;
+      min-height:110px;
+      max-height:240px;
+      resize:vertical;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      padding:16px;
+    }
+
+    .composer-actions{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .footer-pills{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .welcome-empty{
+      padding:18px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    @media (max-width:1100px){
+      .app{
+        grid-template-columns:290px 1fr;
+      }
+      .hero-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:860px){
+      body{overflow:auto}
+      .app{
+        grid-template-columns:1fr;
+        height:auto;
+        min-height:100vh;
+      }
+      .sidebar{
+        border-right:none;
+        border-bottom:1px solid rgba(255,255,255,.06);
+      }
+      .main{
+        min-height:calc(100vh - 40px);
+      }
+      .composer-top{
+        grid-template-columns:1fr;
+      }
+      .bubble{
+        max-width:100%;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="bg-grid"></div>
 
-<div class="header">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">PM</div>
+        <div>
+          <h1>ProtocolMind</h1>
+          <p id="brandSub">Premium Protocol Intelligence</p>
+        </div>
+      </div>
 
-<div class="logo">ProtocolMind</div>
+      <div class="side-card">
+        <p class="side-label" id="languageLabel">Language</p>
+        <div class="row">
+          <select id="langSelect" class="select">
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+            <option value="az">Azərbaycan dili</option>
+            <option value="tr">Türkçe</option>
+            <option value="ka">ქართული</option>
+          </select>
+        </div>
+      </div>
 
-<div class="mode">
+      <div class="side-card">
+        <p class="side-label" id="modeLabel">Mode</p>
+        <div class="row">
+          <select id="modeSelect" class="select"></select>
+        </div>
+      </div>
 
-<select id="modeSelect">
-<option>Protocol Advice</option>
-<option>Seating Plan</option>
-<option>Visit Program</option>
-<option>Official Letter</option>
-<option>Checklist</option>
-</select>
+      <div class="side-card">
+        <p class="side-label" id="templateLabel">Template</p>
+        <div class="row">
+          <select id="templateSelect" class="select"></select>
+        </div>
+      </div>
 
-</div>
+      <div class="side-card">
+        <p class="side-label" id="quickLabel">Quick Prompts</p>
+        <div class="quick-list" id="quickList"></div>
+      </div>
 
-</div>
+      <div class="side-card">
+        <p class="side-label" id="docsLabel">My Documents</p>
+        <div class="docs" id="docsList"></div>
+      </div>
 
-<div class="container">
+      <div class="side-card">
+        <p class="side-label" id="memoryLabel">Workspace Status</p>
+        <div class="chip-wrap">
+          <span class="chip" id="chipModeMini">Mode: Protocol Advice</span>
+          <span class="chip" id="chipTemplateMini">Template: General</span>
+          <span class="chip" id="chipMemoryMini">Chat Memory: On</span>
+        </div>
+      </div>
+    </aside>
 
-<div class="messages" id="messages"></div>
+    <section class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="topTitle">ProtocolMind Workspace</h2>
+          <p id="topText">Premium protocol drafting, visit planning, seating logic, official writing and multilingual institutional support.</p>
+        </div>
 
-<div class="input-area">
+        <div class="top-actions">
+          <a href="index.html" class="btn btn-secondary" id="homeBtn">Home</a>
+          <button class="btn btn-secondary" id="newChatBtn">New Chat</button>
+          <button class="btn btn-secondary" id="clearPromptBtn">Clear Input</button>
+        </div>
+      </div>
 
-<textarea id="userInput" rows="2" placeholder="Ask ProtocolMind..."></textarea>
+      <div class="chat-wrap">
+        <div class="chat" id="chat">
+          <div class="hero-card" id="heroCard">
+            <h3 id="heroTitle">Welcome to ProtocolMind</h3>
+            <p id="heroText">Choose a mode, select a template and ask for protocol advice, official letters, visit programs, checklists, protocol packs or seating logic.</p>
 
-<button id="sendBtn">Send</button>
+            <div class="hero-grid">
+              <div class="hero-mini">
+                <strong id="heroMini1Title">Official Drafting</strong>
+                <span id="heroMini1Text">Invitation letters, thank-you letters, note verbale, briefing notes and formal parliamentary wording.</span>
+              </div>
 
-</div>
+              <div class="hero-mini">
+                <strong id="heroMini2Title">Visit Programs</strong>
+                <span id="heroMini2Text">Arrival, hotel, protocol movement, official meetings, meals, transport and cultural agenda.</span>
+              </div>
 
-</div>
-<script>
+              <div class="hero-mini">
+                <strong id="heroMini3Title">Seating & Hierarchy</strong>
+                <span id="heroMini3Text">Structured solutions for bilateral, multilateral and parliamentary protocol arrangements.</span>
+              </div>
+            </div>
 
-const messages=document.getElementById("messages");
-const input=document.getElementById("userInput");
-const modeSelect=document.getElementById("modeSelect");
+            <div class="welcome-empty" id="welcomeHint">This presentation version opens instantly and works without login restrictions.</div>
+          </div>
+        </div>
+      </div>
 
-let chatMemory=[];
+      <div class="composer">
+        <div class="composer-inner">
+          <div class="status" id="statusText">Ready.</div>
 
-function addMessage(role,text){
+          <div class="composer-top">
+            <textarea id="promptInput" class="prompt" placeholder="Ask ProtocolMind..."></textarea>
 
-const div=document.createElement("div");
+            <div class="composer-actions">
+              <button class="btn btn-secondary" id="capabilitiesBtn">What can you do?</button>
+              <button class="btn btn-primary" id="sendBtn">Send</button>
+            </div>
+          </div>
 
-div.classList.add("message");
-div.classList.add(role);
+          <div class="footer-pills">
+            <span class="chip" id="pill1">No login required</span>
+            <span class="chip" id="pill2">No daily message limit</span>
+            <span class="chip" id="pill3">Copy / TXT / DOC export available</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+    <script>
+    const UI = {
+      en: {
+        brandSub:"Premium Protocol Intelligence",
+        languageLabel:"Language",
+        modeLabel:"Mode",
+        templateLabel:"Template",
+        quickLabel:"Quick Prompts",
+        docsLabel:"My Documents",
+        memoryLabel:"Workspace Status",
+        topTitle:"ProtocolMind Workspace",
+        topText:"Premium protocol drafting, visit planning, seating logic, official writing and multilingual institutional support.",
+        homeBtn:"Home",
+        newChatBtn:"New Chat",
+        clearPromptBtn:"Clear Input",
+        heroTitle:"Welcome to ProtocolMind",
+        heroText:"Choose a mode, select a template and ask for protocol advice, official letters, visit programs, checklists, protocol packs or seating logic.",
+        heroMini1Title:"Official Drafting",
+        heroMini1Text:"Invitation letters, thank-you letters, note verbale, briefing notes and formal parliamentary wording.",
+        heroMini2Title:"Visit Programs",
+        heroMini2Text:"Arrival, hotel, protocol movement, official meetings, meals, transport and cultural agenda.",
+        heroMini3Title:"Seating & Hierarchy",
+        heroMini3Text:"Structured solutions for bilateral, multilateral and parliamentary protocol arrangements.",
+        welcomeHint:"This presentation version opens instantly and works without login restrictions.",
+        statusReady:"Ready.",
+        statusThinking:"ProtocolMind is preparing a response...",
+        statusSaved:"Saved.",
+        statusError:"API error. Check /api/ask.",
+        sendBtn:"Send",
+        capabilitiesBtn:"What can you do?",
+        pill1:"No login required",
+        pill2:"No daily message limit",
+        pill3:"Copy / TXT / DOC export available",
+        placeholder:"Ask ProtocolMind...",
+        modePrefix:"Mode",
+        templatePrefix:"Template",
+        memoryOn:"Chat Memory: On",
+        canDo:"ProtocolMind can help with protocol advice, official letters, note verbale, parliamentary drafting, visit programs, seating plans, checklists, protocol packs and multilingual institutional writing.",
+        docs:[ 
+          ["diplomatic_protocol_basic.txt","Diplomatic fundamentals"],
+          ["parliamentary_protocol.txt","Parliamentary protocol"],
+          ["seating_rules.txt","Seating & precedence"],
+          ["official_letters.txt","Official correspondence"],
+          ["visit_programs_and_protocol_checklists.txt","Visit planning & checklists"]
+        ],
+        modes:["Protocol Advice","Seating Plan","Checklist","Visit Program","Official Letter","Protocol Pack"],
+        templates:["General","Invitation Letter","Thank You Letter","Note Verbale","Briefing Note","Meeting Scenario"],
+        quicks:[
+          ["Draft a formal invitation letter for a parliamentary delegation visit.","Invitation Letter","Formal parliamentary invitation."],
+          ["Prepare a protocol checklist for receiving a foreign parliamentary delegation.","Protocol Checklist","Arrival, meeting, flags, gifts, media."],
+          ["Create a bilateral seating plan with precedence logic for a speaker-level meeting.","Seating Plan","Protocol-aware official arrangement."],
+          ["Prepare a full three-day visit program for an official delegation, including airport protocol, meetings and cultural program.","Visit Program","Structured timings and movements."]
+        ]
+      },
+      ru: {
+        brandSub:"Премиальный интеллект протокола",
+        languageLabel:"Язык",
+        modeLabel:"Режим",
+        templateLabel:"Шаблон",
+        quickLabel:"Быстрые запросы",
+        docsLabel:"Мои документы",
+        memoryLabel:"Статус рабочего пространства",
+        topTitle:"Рабочее пространство ProtocolMind",
+        topText:"Премиальная подготовка протокольных текстов, программ визитов, логики рассадки, официального письма и многоязычной институциональной поддержки.",
+        homeBtn:"Главная",
+        newChatBtn:"Новый чат",
+        clearPromptBtn:"Очистить ввод",
+        heroTitle:"Добро пожаловать в ProtocolMind",
+        heroText:"Выбери режим, шаблон и запроси протокольный совет, официальное письмо, программу визита, чек-лист, protocol pack или схему рассадки.",
+        heroMini1Title:"Официальные тексты",
+        heroMini1Text:"Приглашения, письма благодарности, вербальные ноты, briefing notes и формальный парламентский стиль.",
+        heroMini2Title:"Программы визитов",
+        heroMini2Text:"Прилёт, гостиница, протокольные перемещения, встречи, питание, транспорт и культурная программа.",
+        heroMini3Title:"Рассадка и иерархия",
+        heroMini3Text:"Структурированные решения для двусторонних, многосторонних и парламентских форматов.",
+        welcomeHint:"Эта презентационная версия открывается сразу и работает без ограничений входа.",
+        statusReady:"Готово.",
+        statusThinking:"ProtocolMind готовит ответ...",
+        statusSaved:"Сохранено.",
+        statusError:"Ошибка API. Проверь /api/ask.",
+        sendBtn:"Отправить",
+        capabilitiesBtn:"Что ты умеешь?",
+        pill1:"Вход не требуется",
+        pill2:"Без дневного лимита сообщений",
+        pill3:"Доступен экспорт Copy / TXT / DOC",
+        placeholder:"Спроси ProtocolMind...",
+        modePrefix:"Режим",
+        templatePrefix:"Шаблон",
+        memoryOn:"Память чата: Вкл",
+        canDo:"ProtocolMind помогает с протокольными советами, официальными письмами, вербальными нотами, парламентскими текстами, программами визитов, схемами рассадки, чек-листами, protocol pack и многоязычной институциональной подготовкой текстов.",
+        docs:[
+          ["diplomatic_protocol_basic.txt","Основы дипломатического протокола"],
+          ["parliamentary_protocol.txt","Парламентский протокол"],
+          ["seating_rules.txt","Рассадка и старшинство"],
+          ["official_letters.txt","Официальная переписка"],
+          ["visit_programs_and_protocol_checklists.txt","Визиты и чек-листы"]
+        ],
+        modes:["Protocol Advice","Seating Plan","Checklist","Visit Program","Official Letter","Protocol Pack"],
+        templates:["General","Invitation Letter","Thank You Letter","Note Verbale","Briefing Note","Meeting Scenario"],
+        quicks:[
+          ["Подготовь официальное приглашение для визита парламентской делегации.","Приглашение","Формальный парламентский стиль."],
+          ["Составь протокольный чек-лист для приёма иностранной парламентской делегации.","Протокольный чек-лист","Прилёт, встреча, флаги, подарки, медиа."],
+          ["Создай схему двусторонней рассадки с учётом старшинства для встречи уровня спикера.","Схема рассадки","Протокольно выверенное официальное размещение."],
+          ["Подготовь полную трёхдневную программу официального визита делегации с аэропортовым протоколом, встречами и культурной программой.","Программа визита","Структурированный тайминг и логистика."]
+        ]
+      }
+    };
 
-div.innerText=text;
+    UI.az = UI.en;
+    UI.tr = UI.en;
+    UI.ka = UI.en;
 
-messages.appendChild(div);
+    const STORAGE = {
+      lang:"pm_demo_lang",
+      mode:"pm_demo_mode",
+      template:"pm_demo_template",
+      chat:"pm_demo_chat"
+    };
 
-messages.scrollTop=messages.scrollHeight;
+    const state = {
+      lang: localStorage.getItem(STORAGE.lang) || "en",
+      mode: localStorage.getItem(STORAGE.mode) || "Protocol Advice",
+      template: localStorage.getItem(STORAGE.template) || "General",
+      chat: JSON.parse(localStorage.getItem(STORAGE.chat) || "[]")
+    };
 
-}
-  async function askProtocolMind(prompt){
+    const chatEl = document.getElementById("chat");
+    const promptInput = document.getElementById("promptInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const statusText = document.getElementById("statusText");
+    const langSelect = document.getElementById("langSelect");
+    const modeSelect = document.getElementById("modeSelect");
+    const templateSelect = document.getElementById("templateSelect");
+    const quickList = document.getElementById("quickList");
+    const docsList = document.getElementById("docsList");
 
-const response=await fetch("/api/ask",{
+    function dict(){
+      return UI[state.lang] || UI.en;
+    }
 
-method:"POST",
+    function saveState(){
+      localStorage.setItem(STORAGE.lang, state.lang);
+      localStorage.setItem(STORAGE.mode, state.mode);
+      localStorage.setItem(STORAGE.template, state.template);
+      localStorage.setItem(STORAGE.chat, JSON.stringify(state.chat));
+    }
 
-headers:{
-"Content-Type":"application/json"
-},
+    function setStatus(text){
+      statusText.textContent = text;
+    }
 
-body:JSON.stringify({
+    function setText(id, value){
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
 
-mode:modeSelect.value,
+    function renderStaticText(){
+      const d = dict();
+      document.documentElement.lang = state.lang;
 
-messages:[
-...chatMemory,
-{role:"user",content:prompt}
-]
+      setText("brandSub", d.brandSub);
+      setText("languageLabel", d.languageLabel);
+      setText("modeLabel", d.modeLabel);
+      setText("templateLabel", d.templateLabel);
+      setText("quickLabel", d.quickLabel);
+      setText("docsLabel", d.docsLabel);
+      setText("memoryLabel", d.memoryLabel);
+      setText("topTitle", d.topTitle);
+      setText("topText", d.topText);
+      setText("homeBtn", d.homeBtn);
+      setText("newChatBtn", d.newChatBtn);
+      setText("clearPromptBtn", d.clearPromptBtn);
+      setText("heroTitle", d.heroTitle);
+      setText("heroText", d.heroText);
+      setText("heroMini1Title", d.heroMini1Title);
+      setText("heroMini1Text", d.heroMini1Text);
+      setText("heroMini2Title", d.heroMini2Title);
+      setText("heroMini2Text", d.heroMini2Text);
+      setText("heroMini3Title", d.heroMini3Title);
+      setText("heroMini3Text", d.heroMini3Text);
+      setText("welcomeHint", d.welcomeHint);
+      setText("capabilitiesBtn", d.capabilitiesBtn);
+      setText("sendBtn", d.sendBtn);
+      setText("pill1", d.pill1);
+      setText("pill2", d.pill2);
+      setText("pill3", d.pill3);
+      promptInput.placeholder = d.placeholder;
 
-})
+      document.getElementById("chipModeMini").textContent = `${d.modePrefix}: ${state.mode}`;
+      document.getElementById("chipTemplateMini").textContent = `${d.templatePrefix}: ${state.template}`;
+      document.getElementById("chipMemoryMini").textContent = d.memoryOn;
+    }
 
-});
+    function renderModesTemplates(){
+      const d = dict();
 
-const data=await response.json();
+      modeSelect.innerHTML = "";
+      d.modes.forEach(m => {
+        const o = document.createElement("option");
+        o.value = m;
+        o.textContent = m;
+        if (m === state.mode) o.selected = true;
+        modeSelect.appendChild(o);
+      });
 
-return data.answer;
+      templateSelect.innerHTML = "";
+      d.templates.forEach(t => {
+        const o = document.createElement("option");
+        o.value = t;
+        o.textContent = t;
+        if (t === state.template) o.selected = true;
+        templateSelect.appendChild(o);
+      });
+    }
+          function renderQuickPrompts(){
+      const d = dict();
+      quickList.innerHTML = "";
+      d.quicks.forEach(([prompt,title,desc]) => {
+        const btn = document.createElement("button");
+        btn.className = "quick-btn";
+        btn.innerHTML = `<strong>${title}</strong><span>${desc}</span>`;
+        btn.onclick = () => {
+          promptInput.value = prompt;
+          promptInput.focus();
+        };
+        quickList.appendChild(btn);
+      });
+    }
 
-}
-  document.getElementById("sendBtn").addEventListener("click",async()=>{
+    function renderDocs(){
+      const d = dict();
+      docsList.innerHTML = "";
+      d.docs.forEach(([name,desc]) => {
+        const item = document.createElement("div");
+        item.className = "doc";
+        item.innerHTML = `<strong>${name}</strong><small>${desc}</small>`;
+        docsList.appendChild(item);
+      });
+    }
 
-const text=input.value.trim();
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-if(!text) return;
+    function downloadFile(name, content, type){
+      const blob = new Blob([content], { type });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
 
-addMessage("user",text);
+    function downloadDoc(name, content){
+      const html = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:w="urn:schemas-microsoft-com:office:word"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="utf-8"></head>
+        <body><pre style="font-family:Arial,sans-serif;white-space:pre-wrap;">${escapeHtml(content)}</pre></body>
+        </html>
+      `;
+      downloadFile(name, html, "application/msword");
+    }
 
-chatMemory.push({role:"user",content:text});
+    function addMessage(role, text, save = true){
+      const wrap = document.createElement("div");
+      wrap.className = `msg ${role}`;
 
-input.value="";
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = role === "assistant" ? "PM" : "U";
 
-const answer=await askProtocolMind(text);
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
 
-addMessage("assistant",answer);
+      if (role === "assistant") {
+        const tools = document.createElement("div");
+        tools.className = "bubble-tools";
 
-chatMemory.push({role:"assistant",content:answer});
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "mini-btn";
+        copyBtn.textContent = "Copy";
+        copyBtn.onclick = async () => {
+          await navigator.clipboard.writeText(text);
+          setStatus(dict().statusSaved);
+        };
 
-});
+        const txtBtn = document.createElement("button");
+        txtBtn.className = "mini-btn";
+        txtBtn.textContent = "TXT";
+        txtBtn.onclick = () => downloadFile("protocolmind-answer.txt", text, "text/plain");
 
-input.addEventListener("keydown",function(e){
+        const docBtn = document.createElement("button");
+        docBtn.className = "mini-btn";
+        docBtn.textContent = "DOC";
+        docBtn.onclick = () => downloadDoc("protocolmind-answer.doc", text);
 
-if(e.key==="Enter" && !e.shiftKey){
+        tools.append(copyBtn, txtBtn, docBtn);
+        bubble.appendChild(tools);
+      }
 
-e.preventDefault();
+      wrap.appendChild(avatar);
+      wrap.appendChild(bubble);
+      chatEl.appendChild(wrap);
 
-document.getElementById("sendBtn").click();
+      if (save) {
+        state.chat.push({ role, content: text });
+        saveState();
+      }
 
-}
+      chatEl.parentElement.scrollTop = chatEl.parentElement.scrollHeight;
+    }
 
-});
+    function renderChat(){
+      document.querySelectorAll(".msg").forEach(el => el.remove());
+      state.chat.forEach(item => addMessage(item.role, item.content, false));
+    }
 
-</script>
+    async function askProtocolMind(userPrompt){
+      const response = await fetch("/api/ask", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          mode: state.mode,
+          template: state.template,
+          language: state.lang,
+          messages: [
+            ...state.chat,
+            { role:"user", content:userPrompt }
+          ]
+        })
+      });
 
+      const data = await response.json();
+      return data.answer || dict().statusError;
+    }
+
+    async function sendPrompt(customText){
+      const text = (customText ?? promptInput.value).trim();
+      if (!text) return;
+
+      addMessage("user", text);
+      promptInput.value = "";
+      setStatus(dict().statusThinking);
+
+      try {
+        const answer = await askProtocolMind(text);
+        addMessage("assistant", answer);
+        setStatus(dict().statusReady);
+      } catch (err) {
+        addMessage("assistant", dict().statusError);
+        setStatus(dict().statusError);
+      }
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", () => sendPrompt());
+
+    promptInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendPrompt();
+      }
+    });
+
+    document.getElementById("capabilitiesBtn").addEventListener("click", () => {
+      sendPrompt(dict().canDo);
+    });
+
+    document.getElementById("newChatBtn").addEventListener("click", () => {
+      state.chat = [];
+      saveState();
+      renderChat();
+      setStatus(dict().statusReady);
+    });
+
+    document.getElementById("clearPromptBtn").addEventListener("click", () => {
+      promptInput.value = "";
+      promptInput.focus();
+    });
+
+    langSelect.value = state.lang;
+    langSelect.addEventListener("change", (e) => {
+      state.lang = e.target.value;
+      saveState();
+      renderModesTemplates();
+      renderStaticText();
+      renderQuickPrompts();
+      renderDocs();
+      setStatus(dict().statusReady);
+    });
+
+    modeSelect.addEventListener("change", (e) => {
+      state.mode = e.target.value;
+      saveState();
+      renderStaticText();
+    });
+
+    templateSelect.addEventListener("change", (e) => {
+      state.template = e.target.value;
+      saveState();
+      renderStaticText();
+    });
+
+    function init(){
+      renderModesTemplates();
+      renderStaticText();
+      renderQuickPrompts();
+      renderDocs();
+      renderChat();
+      setStatus(dict().statusReady);
+    }
+
+    init();
+  </script>
 </body>
 </html>
