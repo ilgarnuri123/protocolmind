@@ -10,8 +10,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 
 body{
@@ -84,36 +82,14 @@ border-radius:8px;
 cursor:pointer;
 }
 
-.auth{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#0b1220;
-display:flex;
-align-items:center;
-justify-content:center;
+.mode{
+margin-bottom:20px;
 }
 
-.auth-box{
+select{
 background:#111827;
-padding:40px;
-border-radius:10px;
-width:300px;
-}
-
-.auth-box input{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-background:#1f2937;
-border:none;
 color:white;
-}
-
-.hidden{
-display:none;
+padding:6px;
 }
 
 </style>
@@ -122,25 +98,21 @@ display:none;
 
 <body>
 
-<div class="auth" id="authScreen">
-
-<div class="auth-box">
-
-<h2>ProtocolMind Login</h2>
-
-<input id="emailInput" placeholder="Enter email">
-
-<button id="magicLinkBtn">Send Magic Link</button>
-
-</div>
-
-</div>
-
 <div class="header">
 
 <div class="logo">ProtocolMind</div>
 
-<button id="logoutBtn">Logout</button>
+<div class="mode">
+
+<select id="modeSelect">
+<option>Protocol Advice</option>
+<option>Seating Plan</option>
+<option>Visit Program</option>
+<option>Official Letter</option>
+<option>Checklist</option>
+</select>
+
+</div>
 
 </div>
 
@@ -150,7 +122,7 @@ display:none;
 
 <div class="input-area">
 
-<textarea id="userInput" rows="2"></textarea>
+<textarea id="userInput" rows="2" placeholder="Ask ProtocolMind..."></textarea>
 
 <button id="sendBtn">Send</button>
 
@@ -159,18 +131,9 @@ display:none;
 </div>
 <script>
 
-const SUPABASE_URL="https://qzpyjgugpisphmajzrnk.supabase.co";
-
-const SUPABASE_ANON_KEY="sb_publishable_QDnJlAuWQOVa__5slH5MNg_RWE_QeeW";
-
-const supabase=window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_ANON_KEY
-);
-
-const authScreen=document.getElementById("authScreen");
 const messages=document.getElementById("messages");
 const input=document.getElementById("userInput");
+const modeSelect=document.getElementById("modeSelect");
 
 let chatMemory=[];
 
@@ -179,7 +142,6 @@ function addMessage(role,text){
 const div=document.createElement("div");
 
 div.classList.add("message");
-
 div.classList.add(role);
 
 div.innerText=text;
@@ -201,6 +163,8 @@ headers:{
 
 body:JSON.stringify({
 
+mode:modeSelect.value,
+
 messages:[
 ...chatMemory,
 {role:"user",content:prompt}
@@ -215,8 +179,7 @@ const data=await response.json();
 return data.answer;
 
 }
-
-document.getElementById("sendBtn").addEventListener("click",async()=>{
+  document.getElementById("sendBtn").addEventListener("click",async()=>{
 
 const text=input.value.trim();
 
@@ -233,59 +196,6 @@ const answer=await askProtocolMind(text);
 addMessage("assistant",answer);
 
 chatMemory.push({role:"assistant",content:answer});
-
-});
-  document.getElementById("magicLinkBtn").addEventListener("click",async()=>{
-
-const email=document.getElementById("emailInput").value.trim();
-
-if(!email){
-alert("Enter email");
-return;
-}
-
-const {error}=await supabase.auth.signInWithOtp({
-
-email:email,
-
-options:{
-emailRedirectTo:window.location.origin+"/app.html"
-}
-
-});
-
-if(error){
-alert(error.message);
-return;
-}
-
-alert("Magic link sent. Check email.");
-
-});
-
-async function checkSession(){
-
-const {data}=await supabase.auth.getSession();
-
-if(data.session){
-
-authScreen.classList.add("hidden");
-
-}else{
-
-authScreen.classList.remove("hidden");
-
-}
-
-}
-
-checkSession();
-
-document.getElementById("logoutBtn").addEventListener("click",async()=>{
-
-await supabase.auth.signOut();
-
-authScreen.classList.remove("hidden");
 
 });
 
