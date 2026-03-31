@@ -1,348 +1,1202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProtocolMind — Premium AI Protocol Platform</title>
+  <meta
+    name="description"
+    content="ProtocolMind is a premium multilingual AI assistant for state, parliamentary, diplomatic and corporate protocol."
+  />
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
-<title>ProtocolMind — AI Protocol Assistant</title>
+  <style>
+    :root{
+      --bg:#07111d;
+      --bg2:#0a1525;
+      --panel:rgba(15,26,45,.82);
+      --panel-2:rgba(255,255,255,.04);
+      --line:rgba(255,255,255,.08);
+      --gold:#d8b46a;
+      --gold-2:#f1d8a2;
+      --text:#f4f7fc;
+      --muted:#aebbd0;
+      --shadow:0 24px 70px rgba(0,0,0,.35);
+      --radius:24px;
+      --container:1240px;
+    }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Inter",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(216,180,106,.11), transparent 20%),
+        radial-gradient(circle at top right, rgba(216,180,106,.08), transparent 18%),
+        linear-gradient(180deg,#050d18 0%,#091220 45%,#0a1627 100%);
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    a{text-decoration:none;color:inherit}
+    button,select{font:inherit}
+    img{display:block;max-width:100%}
 
-<style>
+    .bg-grid{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.15));
+    }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+    .container{
+      width:min(var(--container), calc(100% - 40px));
+      margin:0 auto;
+      position:relative;
+      z-index:2;
+    }
 
-body{
-font-family:Inter, sans-serif;
-background:#0b1220;
-color:white;
-line-height:1.6;
-}
+    .header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      backdrop-filter:blur(14px);
+      background:linear-gradient(180deg, rgba(6,12,21,.88), rgba(6,12,21,.62));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
 
-.container{
-max-width:1200px;
-margin:auto;
-padding:40px 20px;
-}
+    .header-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      padding:16px 0;
+      flex-wrap:wrap;
+    }
 
-.hero{
-text-align:center;
-padding-top:120px;
-padding-bottom:120px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
 
-.badge{
-display:inline-block;
-background:#16213e;
-padding:6px 12px;
-border-radius:6px;
-font-size:13px;
-margin-bottom:20px;
-}
+    .brand-mark{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#0d1117;
+      font-weight:800;
+      box-shadow:0 10px 30px rgba(216,180,106,.25);
+    }
 
-.title{
-font-size:56px;
-font-weight:600;
-margin-bottom:10px;
-}
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.1;
+      letter-spacing:.2px;
+    }
 
-.subtitle{
-font-size:22px;
-opacity:0.8;
-margin-bottom:30px;
-}
+    .brand p{
+      margin:4px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
 
-.description{
-max-width:700px;
-margin:auto;
-opacity:0.7;
-}
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
 
-.btn{
-display:inline-block;
-padding:14px 28px;
-border-radius:8px;
-margin:20px 10px;
-text-decoration:none;
-font-weight:500;
-}
+    .lang-select{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+      outline:none;
+      min-width:170px;
+    }
 
-.btn-primary{
-background:#eab308;
-color:black;
-}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding:13px 18px;
+      border-radius:16px;
+      border:1px solid transparent;
+      font-weight:700;
+      transition:.2s ease;
+      cursor:pointer;
+    }
 
-.btn-secondary{
-border:1px solid white;
-color:white;
-}
+    .btn:hover{transform:translateY(-1px)}
 
-.section{
-padding:80px 0;
-}
+    .btn-primary{
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      color:#0e1117;
+      box-shadow:0 12px 30px rgba(216,180,106,.24);
+    }
 
-.section-title{
-text-align:center;
-font-size:34px;
-margin-bottom:50px;
-}
+    .btn-secondary{
+      background:rgba(255,255,255,.04);
+      border-color:rgba(216,180,106,.28);
+      color:var(--text);
+    }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:25px;
-}
+    .hero{
+      padding:88px 0 58px;
+    }
 
-.card{
-background:#111827;
-padding:30px;
-border-radius:10px;
-}
+    .hero-wrap{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:24px;
+      align-items:stretch;
+    }
 
-.honor-grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:30px;
-}
+    .card{
+      background:linear-gradient(180deg,var(--panel),rgba(10,19,34,.92));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+    }
 
-.honor-card{
-background:#111827;
-padding:30px;
-border-radius:10px;
-text-align:center;
-}
+    .hero-main{
+      padding:38px;
+      position:relative;
+      overflow:hidden;
+    }
 
-.order{
-font-size:30px;
-color:#eab308;
-margin-bottom:10px;
-}
+    .hero-main::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at top right, rgba(216,180,106,.12), transparent 24%),
+        linear-gradient(180deg, transparent 0%, rgba(255,255,255,.01) 100%);
+      pointer-events:none;
+    }
 
-footer{
-text-align:center;
-opacity:0.6;
-padding:40px;
-}
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(216,180,106,.10);
+      border:1px solid rgba(216,180,106,.24);
+      color:var(--gold-2);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:20px;
+    }
 
-.language-select{
-position:absolute;
-top:20px;
-right:20px;
-background:#111827;
-color:white;
-padding:6px;
-}
+    .hero-title{
+      margin:0;
+      font-size:clamp(42px,7vw,78px);
+      line-height:.95;
+      letter-spacing:-.05em;
+    }
 
-</style>
+    .hero-title span{
+      display:block;
+      background:linear-gradient(135deg,var(--gold-2),var(--gold),#fff2cc);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
 
+    .hero-subtitle{
+      margin:18px 0 0;
+      font-size:clamp(18px,2vw,24px);
+      line-height:1.5;
+      color:#dce5f4;
+      font-weight:600;
+      max-width:840px;
+    }
+
+    .hero-text{
+      margin:16px 0 0;
+      color:var(--muted);
+      line-height:1.85;
+      font-size:15px;
+      max-width:860px;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:28px;
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .metric{
+      padding:18px;
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .metric strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:18px;
+      color:var(--gold-2);
+    }
+
+    .metric span{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .hero-side{
+      display:grid;
+      gap:18px;
+    }
+
+    .side-panel{
+      padding:24px;
+    }
+
+    .side-panel h3{
+      margin:0 0 10px;
+      font-size:18px;
+    }
+
+    .side-panel p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.75;
+    }
+
+    .mini-list{
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .mini-item{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .mini-num{
+      width:28px;
+      height:28px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 28px;
+      font-size:12px;
+      font-weight:800;
+      color:#111;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+    }
+
+    .section{
+      padding:28px 0 74px;
+    }
+
+    .section-title{
+      margin:0 0 14px;
+      font-size:clamp(28px,4vw,44px);
+      letter-spacing:-.03em;
+    }
+
+    .section-intro{
+      margin:0 0 28px;
+      max-width:940px;
+      color:var(--muted);
+      line-height:1.85;
+      font-size:15px;
+    }
+
+    .grid-4{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .feature{
+      padding:24px;
+      min-height:230px;
+    }
+
+    .feature-icon{
+      width:54px;
+      height:54px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(216,180,106,.10);
+      border:1px solid rgba(216,180,106,.24);
+      color:var(--gold-2);
+      font-size:22px;
+      margin-bottom:16px;
+    }
+
+    .feature h3{
+      margin:0 0 10px;
+      font-size:20px;
+    }
+
+    .feature p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:14px;
+    }
+        .story{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:20px;
+      align-items:stretch;
+    }
+
+    .story-main{
+      padding:30px;
+    }
+
+    .story-main p{
+      margin:0 0 16px;
+      color:var(--muted);
+      line-height:1.9;
+      font-size:15px;
+    }
+
+    .story-quote{
+      padding:30px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .story-quote::before{
+      content:"“";
+      position:absolute;
+      right:22px;
+      top:-18px;
+      font-size:120px;
+      line-height:1;
+      color:rgba(216,180,106,.12);
+      font-weight:800;
+    }
+
+    .quote-text{
+      font-size:21px;
+      line-height:1.75;
+      color:#e7effb;
+      margin:0 0 18px;
+      max-width:540px;
+    }
+
+    .quote-sign{
+      color:var(--gold-2);
+      font-size:13px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .gratitude-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:18px;
+    }
+
+    .gratitude-card{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .gratitude-card::before{
+      content:"";
+      position:absolute;
+      right:-40px;
+      top:-40px;
+      width:130px;
+      height:130px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(216,180,106,.14) 0%, transparent 70%);
+      pointer-events:none;
+    }
+
+    .gratitude-order{
+      width:48px;
+      height:48px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:900;
+      color:#101010;
+      background:linear-gradient(135deg,var(--gold),var(--gold-2));
+      margin-bottom:18px;
+      box-shadow:0 12px 26px rgba(216,180,106,.18);
+    }
+
+    .gratitude-card h3{
+      margin:0 0 8px;
+      font-size:24px;
+      letter-spacing:-.02em;
+    }
+
+    .role{
+      color:var(--gold-2);
+      font-size:13px;
+      line-height:1.55;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+      margin-bottom:14px;
+      min-height:58px;
+    }
+
+    .gratitude-card p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.9;
+      font-size:14px;
+    }
+
+    .credit-card{
+      padding:30px;
+    }
+
+    .credit-card p{
+      margin:0 0 15px;
+      color:var(--muted);
+      line-height:1.9;
+      font-size:15px;
+    }
+
+    .credit-line{
+      margin-top:18px;
+      padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.08);
+      color:var(--gold-2);
+      font-weight:700;
+      line-height:1.8;
+    }
+
+    .cta{
+      padding:34px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+      background:
+        radial-gradient(circle at right top, rgba(216,180,106,.14), transparent 26%),
+        linear-gradient(180deg,rgba(14,29,50,.95),rgba(9,21,38,.95));
+      border:1px solid rgba(216,180,106,.22);
+    }
+
+    .cta h3{
+      margin:0 0 10px;
+      font-size:34px;
+      letter-spacing:-.03em;
+    }
+
+    .cta p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.8;
+      max-width:760px;
+      font-size:15px;
+    }
+
+    .footer{
+      padding:26px 0 40px;
+      border-top:1px solid rgba(255,255,255,.08);
+      color:#b7c5da;
+    }
+
+    .footer-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .footer-note{
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    .footer-links{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      font-size:14px;
+    }
+
+    @media (max-width:1100px){
+      .hero-wrap,
+      .story,
+      .grid-4,
+      .gratitude-grid{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    @media (max-width:780px){
+      .hero-wrap,
+      .story,
+      .grid-4,
+      .gratitude-grid,
+      .metrics{
+        grid-template-columns:1fr;
+      }
+
+      .hero-main,
+      .side-panel,
+      .feature,
+      .story-main,
+      .story-quote,
+      .gratitude-card,
+      .credit-card,
+      .cta{
+        padding:24px;
+      }
+
+      .cta h3{font-size:28px}
+    }
+  </style>
 </head>
-
 <body>
-  <select class="language-select" id="lang">
+  <div class="bg-grid"></div>
 
-<option value="en">EN</option>
-<option value="ru">RU</option>
-<option value="az">AZ</option>
-<option value="tr">TR</option>
-<option value="ka">KA</option>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <div class="brand-mark">PM</div>
+        <div>
+          <h1>ProtocolMind</h1>
+          <p data-i18n="brandSub">Premium Protocol Intelligence</p>
+        </div>
+      </a>
 
-</select>
+      <div class="header-actions">
+        <select id="langSwitcher" class="lang-select" aria-label="Language">
+          <option value="en">English</option>
+          <option value="ru">Русский</option>
+          <option value="az">Azərbaycan dili</option>
+          <option value="tr">Türkçe</option>
+          <option value="ka">ქართული</option>
+        </select>
 
-<section class="hero">
+        <a href="#gratitude" class="btn btn-secondary" data-i18n="navGratitude">Acknowledgements</a>
+        <a href="app.html" class="btn btn-primary" data-i18n="navOpen">Open App</a>
+      </div>
+    </div>
+  </header>
 
-<div class="container">
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-wrap">
+          <div class="card hero-main">
+            <div class="badge" data-i18n="heroBadge">AI Protocol Assistant from Azerbaijan</div>
 
-<div class="badge" data-i18n="badge">
-AI Protocol Assistant from Azerbaijan
-</div>
+            <h1 class="hero-title">
+              <span data-i18n="heroTitle">ProtocolMind</span>
+            </h1>
 
-<h1 class="title">
-ProtocolMind
-</h1>
+            <p class="hero-subtitle" data-i18n="heroSubtitle">
+              The premium multilingual AI assistant for state, parliamentary, diplomatic and corporate protocol.
+            </p>
 
-<div class="subtitle" data-i18n="subtitle">
-Premium AI assistant for protocol professionals
-</div>
+            <p class="hero-text" data-i18n="heroText">
+              Created to help institutions, protocol professionals and executive teams work faster, more elegantly and more accurately in the preparation of official texts, visit programs, seating plans, checklists and protocol-sensitive communication.
+            </p>
 
-<p class="description" data-i18n="description">
-Built for government, parliamentary, diplomatic and corporate protocol work.
-</p>
+            <div class="hero-actions">
+              <a href="app.html" class="btn btn-primary" data-i18n="heroBtn1">Enter Platform</a>
+              <a href="#creation" class="btn btn-secondary" data-i18n="heroBtn2">Explore the Story</a>
+            </div>
 
-<a href="app.html" class="btn btn-primary" data-i18n="open">
-Open Platform
-</a>
+            <div class="metrics">
+              <div class="metric">
+                <strong data-i18n="metric1Title">State-Grade</strong>
+                <span data-i18n="metric1Text">Built around formal logic, institutional tone and ceremonial discipline.</span>
+              </div>
+              <div class="metric">
+                <strong data-i18n="metric2Title">Multilingual</strong>
+                <span data-i18n="metric2Text">Designed for English, Russian, Azerbaijani, Turkish and Georgian workflows.</span>
+              </div>
+              <div class="metric">
+                <strong data-i18n="metric3Title">Protocol-Focused</strong>
+                <span data-i18n="metric3Text">Useful for protocol letters, visits, seating, hierarchy and executive communication.</span>
+              </div>
+            </div>
+          </div>
 
-<a href="#about" class="btn btn-secondary" data-i18n="learn">
-Learn More
-</a>
+          <div class="hero-side">
+            <div class="card side-panel">
+              <h3 data-i18n="sideTitle1">What ProtocolMind Helps You Do</h3>
+              <p data-i18n="sideText1">
+                Draft official letters, structure visit programs, prepare protocol checklists, support formal meetings and generate protocol-aware texts with a refined institutional tone.
+              </p>
 
-</div>
+              <div class="mini-list">
+                <div class="mini-item">
+                  <div class="mini-num">1</div>
+                  <div>
+                    <strong data-i18n="mini1Title">Official Letters</strong>
+                    <p data-i18n="mini1Text">Invitation letters, thank-you letters, note verbale, briefing notes and ceremonial wording.</p>
+                  </div>
+                </div>
 
-</section>
-<section class="section" id="about">
+                <div class="mini-item">
+                  <div class="mini-num">2</div>
+                  <div>
+                    <strong data-i18n="mini2Title">Visit Programs</strong>
+                    <p data-i18n="mini2Text">Structured movements, sequences, timings, protocol points and delegation flow.</p>
+                  </div>
+                </div>
 
-<div class="container">
+                <div class="mini-item">
+                  <div class="mini-num">3</div>
+                  <div>
+                    <strong data-i18n="mini3Title">Seating & Precedence</strong>
+                    <p data-i18n="mini3Text">Protocol logic for bilateral, multilateral, parliamentary and executive settings.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-<h2 class="section-title" data-i18n="protocolTitle">
-Protocol Fields
-</h2>
+            <div class="card side-panel">
+              <h3 data-i18n="sideTitle2">Why It Matters</h3>
+              <p data-i18n="sideText2">
+                ProtocolMind was conceived as a specialized AI environment where protocol is treated not as generic writing, but as a field of discipline, hierarchy, precision, courtesy and institutional responsibility.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+        <section class="section" id="about">
+      <div class="container">
+        <h2 class="section-title" data-i18n="fieldsTitle">Built for High-Level Protocol Work</h2>
+        <p class="section-intro" data-i18n="fieldsIntro">
+          ProtocolMind is designed around real professional protocol needs: hierarchy, timing, state etiquette, diplomatic courtesy, official drafting, event order and multilingual institutional communication.
+        </p>
 
-<div class="grid">
+        <div class="grid-4">
+          <article class="card feature">
+            <div class="feature-icon">◆</div>
+            <h3 data-i18n="field1Title">State Protocol</h3>
+            <p data-i18n="field1Text">
+              Support for official ceremonies, state visits, formal order, precedence and executive-level written communication.
+            </p>
+          </article>
 
-<div class="card">
-<h3 data-i18n="state">State Protocol</h3>
-<p data-i18n="stateDesc"></p>
-</div>
+          <article class="card feature">
+            <div class="feature-icon">◈</div>
+            <h3 data-i18n="field2Title">Parliamentary Protocol</h3>
+            <p data-i18n="field2Text">
+              Useful for interparliamentary contacts, delegation planning, formal meetings, agendas and institutional representation.
+            </p>
+          </article>
 
-<div class="card">
-<h3 data-i18n="parliament">Parliamentary Protocol</h3>
-<p data-i18n="parliamentDesc"></p>
-</div>
+          <article class="card feature">
+            <div class="feature-icon">✧</div>
+            <h3 data-i18n="field3Title">Diplomatic Protocol</h3>
+            <p data-i18n="field3Text">
+              Helps with note verbale, courtesy formulas, diplomatic invitations, formal address and international protocol language.
+            </p>
+          </article>
 
-<div class="card">
-<h3 data-i18n="diplomatic">Diplomatic Protocol</h3>
-<p data-i18n="diplomaticDesc"></p>
-</div>
+          <article class="card feature">
+            <div class="feature-icon">⬢</div>
+            <h3 data-i18n="field4Title">Corporate Protocol</h3>
+            <p data-i18n="field4Text">
+              Adapts premium protocol standards for executive events, VIP hosting, formal business meetings and refined communication.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-<div class="card">
-<h3 data-i18n="corporate">Corporate Protocol</h3>
-<p data-i18n="corporateDesc"></p>
-</div>
+    <section class="section" id="creation">
+      <div class="container">
+        <div class="story">
+          <div class="card story-main">
+            <h2 class="section-title" data-i18n="creationTitle">The Story Behind ProtocolMind</h2>
 
-</div>
+            <p data-i18n="creationP1">
+              ProtocolMind was created by Ilgar Nuri with the support of ChatGPT capabilities, as a specialized premium AI platform focused on the real professional world of protocol service.
+            </p>
 
-</div>
+            <p data-i18n="creationP2">
+              It was created to solve a practical need: to provide a modern digital instrument for drafting official letters, structuring visits, organizing seating logic, building protocol checklists and supporting high-level institutional communication in a faster and more elegant way.
+            </p>
 
-</section>
-<section class="section">
+            <p data-i18n="creationP3">
+              The project was inspired by professional protocol practice and by the vision that the standards of state, parliamentary, diplomatic and corporate protocol should have their own dedicated intelligent platform rather than be treated as ordinary text generation.
+            </p>
 
-<div class="container">
+            <p data-i18n="creationP4">
+              A special source of inspiration in the creation of ProtocolMind was Mr. Ilkin Mammadov, Head of the Protocol Division of the Milli Majlis, whose professional example, mentorship and devotion to protocol culture helped shape the spirit behind this initiative.
+            </p>
+          </div>
 
-<h2 class="section-title" data-i18n="gratitudeTitle">
-With Special Gratitude
-</h2>
+          <div class="card story-quote">
+            <p class="quote-text" data-i18n="quoteText">
+              Protocol is not simply order. It is respect made visible, hierarchy made graceful, and institutional dignity translated into action.
+            </p>
+            <div class="quote-sign" data-i18n="quoteSign">ProtocolMind Vision</div>
+          </div>
+        </div>
+      </div>
+    </section>
+        <section class="section" id="gratitude">
+      <div class="container">
+        <h2 class="section-title" data-i18n="gratitudeTitle">With Deep Gratitude and Respect</h2>
+        <p class="section-intro" data-i18n="gratitudeIntro">
+          ProtocolMind was shaped not only by professional experience and vision, but also by trust, support, encouragement and the institutional environment that made such a project meaningful and possible.
+        </p>
 
-<div class="honor-grid">
+        <div class="gratitude-grid">
+          <article class="card gratitude-card">
+            <div class="gratitude-order">01</div>
+            <h3 data-i18n="g1Name">Mrs. Sahiba Gafarova</h3>
+            <div class="role" data-i18n="g1Role">Speaker of the Milli Majlis of the Republic of Azerbaijan</div>
+            <p data-i18n="g1Text">
+              With profound respect and sincere gratitude for the trust, attention, support and confidence that made a meaningful professional path possible. Her high example of leadership, institutional dignity and commitment to parliamentary service gave this project a deeper sense of purpose and responsibility.
+            </p>
+          </article>
 
-<div class="honor-card">
+          <article class="card gratitude-card">
+            <div class="gratitude-order">02</div>
+            <h3 data-i18n="g2Name">Mr. Farid Hajiyev</h3>
+            <div class="role" data-i18n="g2Role">Head of the Apparatus of the Milli Majlis of the Republic of Azerbaijan</div>
+            <p data-i18n="g2Text">
+              With heartfelt appreciation for the trust, attention, assistance and steady support extended along the professional journey. His support for discipline, quality, responsibility and institutional professionalism helped strengthen the foundation upon which this platform was envisioned.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-<div class="order">01</div>
+    <section class="section">
+      <div class="container">
+        <div class="card credit-card">
+          <h2 class="section-title" data-i18n="creditTitle">Creation Credit</h2>
 
-<h3 data-i18n="g1">
-Mrs. Sahiba Gafarova
-</h3>
+          <p data-i18n="creditP1">
+            ProtocolMind was created by Ilgar Nuri as a premium and specialized AI assistant for protocol work, using the capabilities of ChatGPT and practical professional experience in protocol service.
+          </p>
 
-<p data-i18n="g1d"></p>
+          <p data-i18n="creditP2">
+            The platform was conceived as an intelligent assistant for institutions and professionals who require precision, elegance, multilingual support, structured outputs and a refined understanding of official protocol culture.
+          </p>
 
-</div>
+          <div class="credit-line" data-i18n="creditLine">
+            Created and Launched by Ilgar Nuri
+          </div>
+        </div>
+      </div>
+    </section>
 
-<div class="honor-card">
+    <section class="section">
+      <div class="container">
+        <div class="card cta">
+          <div>
+            <h3 data-i18n="ctaTitle">A Premium Platform for Protocol Excellence</h3>
+            <p data-i18n="ctaText">
+              Enter the application to use protocol advice, official letter drafting, note verbale support, seating logic, visit programs, checklist generation and multilingual institutional assistance.
+            </p>
+          </div>
 
-<div class="order">02</div>
+          <a href="app.html" class="btn btn-primary" data-i18n="ctaBtn">Launch ProtocolMind</a>
+        </div>
+      </div>
+    </section>
+  </main>
 
-<h3 data-i18n="g2">
-Mr. Farid Hajiyev
-</h3>
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-note" data-i18n="footerNote">
+        Created and Launched by Ilgar Nuri
+      </div>
 
-<p data-i18n="g2d"></p>
+      <div class="footer-links">
+        <a href="index.html">ProtocolMind</a>
+        <a href="app.html" data-i18n="footerApp">App</a>
+      </div>
+    </div>
+  </footer>
+    <script>
+    const translations = {
+      en: {
+        brandSub: "Premium Protocol Intelligence",
+        navGratitude: "Acknowledgements",
+        navOpen: "Open App",
+        heroBadge: "AI Protocol Assistant from Azerbaijan",
+        heroTitle: "ProtocolMind",
+        heroSubtitle: "The premium multilingual AI assistant for state, parliamentary, diplomatic and corporate protocol.",
+        heroText: "Created to help institutions, protocol professionals and executive teams work faster, more elegantly and more accurately in the preparation of official texts, visit programs, seating plans, checklists and protocol-sensitive communication.",
+        heroBtn1: "Enter Platform",
+        heroBtn2: "Explore the Story",
+        metric1Title: "State-Grade",
+        metric1Text: "Built around formal logic, institutional tone and ceremonial discipline.",
+        metric2Title: "Multilingual",
+        metric2Text: "Designed for English, Russian, Azerbaijani, Turkish and Georgian workflows.",
+        metric3Title: "Protocol-Focused",
+        metric3Text: "Useful for protocol letters, visits, seating, hierarchy and executive communication.",
+        sideTitle1: "What ProtocolMind Helps You Do",
+        sideText1: "Draft official letters, structure visit programs, prepare protocol checklists, support formal meetings and generate protocol-aware texts with a refined institutional tone.",
+        mini1Title: "Official Letters",
+        mini1Text: "Invitation letters, thank-you letters, note verbale, briefing notes and ceremonial wording.",
+        mini2Title: "Visit Programs",
+        mini2Text: "Structured movements, sequences, timings, protocol points and delegation flow.",
+        mini3Title: "Seating & Precedence",
+        mini3Text: "Protocol logic for bilateral, multilateral, parliamentary and executive settings.",
+        sideTitle2: "Why It Matters",
+        sideText2: "ProtocolMind was conceived as a specialized AI environment where protocol is treated not as generic writing, but as a field of discipline, hierarchy, precision, courtesy and institutional responsibility.",
+        fieldsTitle: "Built for High-Level Protocol Work",
+        fieldsIntro: "ProtocolMind is designed around real professional protocol needs: hierarchy, timing, state etiquette, diplomatic courtesy, official drafting, event order and multilingual institutional communication.",
+        field1Title: "State Protocol",
+        field1Text: "Support for official ceremonies, state visits, formal order, precedence and executive-level written communication.",
+        field2Title: "Parliamentary Protocol",
+        field2Text: "Useful for interparliamentary contacts, delegation planning, formal meetings, agendas and institutional representation.",
+        field3Title: "Diplomatic Protocol",
+        field3Text: "Helps with note verbale, courtesy formulas, diplomatic invitations, formal address and international protocol language.",
+        field4Title: "Corporate Protocol",
+        field4Text: "Adapts premium protocol standards for executive events, VIP hosting, formal business meetings and refined communication.",
+        creationTitle: "The Story Behind ProtocolMind",
+        creationP1: "ProtocolMind was created by Ilgar Nuri with the support of ChatGPT capabilities, as a specialized premium AI platform focused on the real professional world of protocol service.",
+        creationP2: "It was created to solve a practical need: to provide a modern digital instrument for drafting official letters, structuring visits, organizing seating logic, building protocol checklists and supporting high-level institutional communication in a faster and more elegant way.",
+        creationP3: "The project was inspired by professional protocol practice and by the vision that the standards of state, parliamentary, diplomatic and corporate protocol should have their own dedicated intelligent platform rather than be treated as ordinary text generation.",
+        creationP4: "A special source of inspiration in the creation of ProtocolMind was Mr. Ilkin Mammadov, Head of the Protocol Division of the Milli Majlis, whose professional example, mentorship and devotion to protocol culture helped shape the spirit behind this initiative.",
+        quoteText: "Protocol is not simply order. It is respect made visible, hierarchy made graceful, and institutional dignity translated into action.",
+        quoteSign: "ProtocolMind Vision",
+        gratitudeTitle: "With Deep Gratitude and Respect",
+        gratitudeIntro: "ProtocolMind was shaped not only by professional experience and vision, but also by trust, support, encouragement and the institutional environment that made such a project meaningful and possible.",
+        g1Name: "Mrs. Sahiba Gafarova",
+        g1Role: "Speaker of the Milli Majlis of the Republic of Azerbaijan",
+        g1Text: "With profound respect and sincere gratitude for the trust, attention, support and confidence that made a meaningful professional path possible. Her high example of leadership, institutional dignity and commitment to parliamentary service gave this project a deeper sense of purpose and responsibility.",
+        g2Name: "Mr. Farid Hajiyev",
+        g2Role: "Head of the Apparatus of the Milli Majlis of the Republic of Azerbaijan",
+        g2Text: "With heartfelt appreciation for the trust, attention, assistance and steady support extended along the professional journey. His support for discipline, quality, responsibility and institutional professionalism helped strengthen the foundation upon which this platform was envisioned.",
+        creditTitle: "Creation Credit",
+        creditP1: "ProtocolMind was created by Ilgar Nuri as a premium and specialized AI assistant for protocol work, using the capabilities of ChatGPT and practical professional experience in protocol service.",
+        creditP2: "The platform was conceived as an intelligent assistant for institutions and professionals who require precision, elegance, multilingual support, structured outputs and a refined understanding of official protocol culture.",
+        creditLine: "Created and Launched by Ilgar Nuri",
+        ctaTitle: "A Premium Platform for Protocol Excellence",
+        ctaText: "Enter the application to use protocol advice, official letter drafting, note verbale support, seating logic, visit programs, checklist generation and multilingual institutional assistance.",
+        ctaBtn: "Launch ProtocolMind",
+        footerNote: "Created and Launched by Ilgar Nuri",
+        footerApp: "App"
+      },
 
-</div>
+      ru: {
+        brandSub: "Премиальный интеллект протокола",
+        navGratitude: "Благодарности",
+        navOpen: "Открыть приложение",
+        heroBadge: "ИИ-помощник по протоколу из Азербайджана",
+        heroTitle: "ProtocolMind",
+        heroSubtitle: "Премиальный многоязычный ИИ-помощник для государственного, парламентского, дипломатического и корпоративного протокола.",
+        heroText: "Создан, чтобы помогать учреждениям, специалистам по протоколу и управленческим командам работать быстрее, элегантнее и точнее при подготовке официальных текстов, программ визитов, схем рассадки, чек-листов и протокольно-чувствительной коммуникации.",
+        heroBtn1: "Войти в платформу",
+        heroBtn2: "Посмотреть историю",
+        metric1Title: "Государственный уровень",
+        metric1Text: "Построен вокруг формальной логики, институционального стиля и церемониальной дисциплины.",
+        metric2Title: "Многоязычность",
+        metric2Text: "Разработан для работы на английском, русском, азербайджанском, турецком и грузинском языках.",
+        metric3Title: "Фокус на протоколе",
+        metric3Text: "Подходит для протокольных писем, визитов, рассадки, иерархии и исполнительной коммуникации.",
+        sideTitle1: "Чем помогает ProtocolMind",
+        sideText1: "Готовит официальные письма, структурирует программы визитов, создает протокольные чек-листы, поддерживает формальные встречи и генерирует тексты с выверенным институциональным стилем.",
+        mini1Title: "Официальные письма",
+        mini1Text: "Приглашения, письма благодарности, вербальные ноты, briefing notes и церемониальные формулировки.",
+        mini2Title: "Программы визитов",
+        mini2Text: "Структурированные перемещения, последовательности, тайминг, протокольные точки и логика движения делегаций.",
+        mini3Title: "Рассадка и старшинство",
+        mini3Text: "Протокольная логика для двусторонних, многосторонних, парламентских и исполнительных форматов.",
+        sideTitle2: "Почему это важно",
+        sideText2: "ProtocolMind был задуман как специализированная ИИ-среда, в которой протокол рассматривается не как обычный текст, а как сфера дисциплины, иерархии, точности, вежливости и институциональной ответственности.",
+        fieldsTitle: "Создан для протокольной работы высокого уровня",
+        fieldsIntro: "ProtocolMind строится вокруг реальных профессиональных потребностей протокола: иерархия, тайминг, государственный этикет, дипломатическая вежливость, официальное письмо, порядок мероприятий и многоязычная институциональная коммуникация.",
+        field1Title: "Государственный протокол",
+        field1Text: "Поддержка официальных церемоний, государственных визитов, формального порядка, старшинства и письменной коммуникации высокого уровня.",
+        field2Title: "Парламентский протокол",
+        field2Text: "Полезен для межпарламентских контактов, планирования делегаций, официальных встреч, повесток и институционального представительства.",
+        field3Title: "Дипломатический протокол",
+        field3Text: "Помогает с вербальными нотами, формулами вежливости, дипломатическими приглашениями, официальным обращением и международным протокольным языком.",
+        field4Title: "Корпоративный протокол",
+        field4Text: "Адаптирует премиальные стандарты протокола для executive events, VIP-hosting, формальных деловых встреч и изысканной коммуникации.",
+        creationTitle: "История создания ProtocolMind",
+        creationP1: "ProtocolMind был создан Ilgar Nuri с использованием возможностей ChatGPT как специализированная премиальная ИИ-платформа, ориентированная на реальный профессиональный мир протокольной службы.",
+        creationP2: "Он был создан для решения практической задачи: дать современный цифровой инструмент для подготовки официальных писем, структурирования визитов, построения логики рассадки, создания протокольных чек-листов и поддержки институциональной коммуникации высокого уровня быстрее и элегантнее.",
+        creationP3: "Проект был вдохновлен практикой протокольной работы и видением того, что стандарты государственного, парламентского, дипломатического и корпоративного протокола должны иметь собственную интеллектуальную специализированную платформу, а не восприниматься как обычная генерация текста.",
+        creationP4: "Особым источником вдохновения при создании ProtocolMind стал господин Ilkin Mammadov, начальник Отдела протокола Milli Majlis, чей профессиональный пример, наставничество и преданность культуре протокола помогли сформировать дух этой инициативы.",
+        quoteText: "Протокол — это не просто порядок. Это уважение, сделанное видимым, иерархия, сделанная изящной, и институциональное достоинство, переведенное в действие.",
+        quoteSign: "Видение ProtocolMind",
+        gratitudeTitle: "С глубокой благодарностью и уважением",
+        gratitudeIntro: "ProtocolMind формировался не только профессиональным опытом и видением, но и доверием, поддержкой, вниманием и той институциональной средой, которая сделала такой проект осмысленным и возможным.",
+        g1Name: "Госпожа Sahiba Gafarova",
+        g1Role: "Председатель Milli Majlis Азербайджанской Республики",
+        g1Text: "С глубоким уважением и искренней благодарностью за оказанное доверие, внимание, поддержку и уверенность, которые сделали возможным значимый профессиональный путь. Ее высокий пример лидерства, институционального достоинства и преданности парламентской службе придал этому проекту более глубокий смысл и чувство ответственности.",
+        g2Name: "Господин Farid Hajiyev",
+        g2Role: "Руководитель Аппарата Milli Majlis Азербайджанской Республики",
+        g2Text: "С сердечной признательностью за доверие, внимание, помощь и постоянную поддержку, оказанные на профессиональном пути. Его поддержка дисциплины, качества, ответственности и институционального профессионализма помогла укрепить основу, на которой была задумана эта платформа.",
+        creditTitle: "Авторство проекта",
+        creditP1: "ProtocolMind был создан Ilgar Nuri как премиальный и специализированный ИИ-помощник для протокольной работы на основе возможностей ChatGPT и практического профессионального опыта в сфере протокола.",
+        creditP2: "Платформа была задумана как интеллектуальный помощник для учреждений и специалистов, которым необходимы точность, элегантность, многоязычная поддержка, структурированные результаты и тонкое понимание культуры официального протокола.",
+        creditLine: "Создано и запущено Ilgar Nuri",
+        ctaTitle: "Премиальная платформа для протокольного совершенства",
+        ctaText: "Войдите в приложение, чтобы использовать протокольные советы, подготовку официальных писем, поддержку вербальных нот, логику рассадки, программы визитов, создание чек-листов и многоязычную институциональную помощь.",
+        ctaBtn: "Запустить ProtocolMind",
+        footerNote: "Создано и запущено Ilgar Nuri",
+        footerApp: "Приложение"
+      },
 
-<div class="honor-card">
+      az: {
+        brandSub: "Premium Protokol İntellekti",
+        navGratitude: "Minnətdarlıq",
+        navOpen: "Tətbiqi Aç",
+        heroBadge: "Azərbaycandan Protokol üzrə Süni İntellekt Köməkçisi",
+        heroTitle: "ProtocolMind",
+        heroSubtitle: "Dövlət, parlament, diplomatik və korporativ protokol üçün premium çoxdilli süni intellekt köməkçisi.",
+        heroText: "Rəsmi mətnlərin, səfər proqramlarının, əyləşdirmə sxemlərinin, yoxlama siyahılarının və protokola həssas kommunikasiyanın hazırlanmasında qurumlara, protokol mütəxəssislərinə və rəhbər komandalarına daha sürətli, daha zərif və daha dəqiq işləmək üçün yaradılmışdır.",
+        heroBtn1: "Platformaya Daxil Ol",
+        heroBtn2: "Yaranma Tarixinə Bax",
+        metric1Title: "Dövlət Səviyyəsi",
+        metric1Text: "Formal məntiq, institusional üslub və mərasim intizamı üzərində qurulub.",
+        metric2Title: "Çoxdilli",
+        metric2Text: "İngilis, rus, azərbaycan, türk və gürcü dillərində iş axını üçün hazırlanıb.",
+        metric3Title: "Protokol Fokuslu",
+        metric3Text: "Protokol məktubları, səfərlər, əyləşdirmə, iyerarxiya və rəhbər kommunikasiya üçün uyğundur.",
+        sideTitle1: "ProtocolMind Sizə Nə Etməyə Kömək Edir",
+        sideText1: "Rəsmi məktublar hazırlayır, səfər proqramlarını strukturlaşdırır, protokol yoxlama siyahıları yaradır, formal görüşləri dəstəkləyir və dəqiq institusional üslubda mətnlər formalaşdırır.",
+        mini1Title: "Rəsmi Məktublar",
+        mini1Text: "Dəvət məktubları, təşəkkür məktubları, nota verbal, briefing note və mərasim formulları.",
+        mini2Title: "Səfər Proqramları",
+        mini2Text: "Strukturlaşdırılmış hərəkətlər, ardıcıllıq, vaxt planı, protokol nöqtələri və nümayəndə heyəti axını.",
+        mini3Title: "Əyləşdirmə və Üstünlük",
+        mini3Text: "İkitərəfli, çoxtərəfli, parlament və rəhbər formatlar üçün protokol məntiqi.",
+        sideTitle2: "Niyə Bu Vacibdir",
+        sideText2: "ProtocolMind protokolu sadə mətn kimi deyil, intizam, iyerarxiya, dəqiqlik, nəzakət və institusional məsuliyyət sahəsi kimi qəbul edən ixtisaslaşmış AI mühiti kimi düşünülüb.",
+        fieldsTitle: "Yüksək Səviyyəli Protokol İşi üçün Qurulub",
+        fieldsIntro: "ProtocolMind real peşəkar protokol ehtiyacları ətrafında formalaşıb: iyerarxiya, zamanlama, dövlət etiketi, diplomatik nəzakət, rəsmi yazışma, tədbir ardıcıllığı və çoxdilli institusional kommunikasiya.",
+        field1Title: "Dövlət Protokolu",
+        field1Text: "Rəsmi mərasimlər, dövlət səfərləri, formal ardıcıllıq, üstünlük qaydası və yüksək səviyyəli yazılı kommunikasiya üçün dəstək.",
+        field2Title: "Parlament Protokolu",
+        field2Text: "Parlamentlərarası əlaqələr, nümayəndə heyətlərinin planlaşdırılması, rəsmi görüşlər, gündəliklər və institusional təmsilçilik üçün faydalıdır.",
+        field3Title: "Diplomatik Protokol",
+        field3Text: "Nota verbal, nəzakət formulları, diplomatik dəvətlər, rəsmi müraciət formaları və beynəlxalq protokol dili ilə bağlı kömək edir.",
+        field4Title: "Korporativ Protokol",
+        field4Text: "Premium protokol standartlarını rəhbər tədbirləri, VIP qəbulu, rəsmi iş görüşləri və zərif kommunikasiya üçün uyğunlaşdırır.",
+        creationTitle: "ProtocolMind-in Yaradılma Hekayəsi",
+        creationP1: "ProtocolMind Ilgar Nuri tərəfindən ChatGPT imkanlarından istifadə olunaraq protokol xidmətinin real peşəkar dünyasına yönəlmiş ixtisaslaşmış premium AI platforması kimi yaradılmışdır.",
+        creationP2: "Bu platforma praktik ehtiyacı həll etmək üçün yaradılmışdır: rəsmi məktubların hazırlanması, səfərlərin strukturlaşdırılması, əyləşdirmə məntiqinin qurulması, protokol yoxlama siyahılarının formalaşdırılması və yüksək səviyyəli institusional kommunikasiyanın daha sürətli və daha zərif dəstəklənməsi üçün müasir rəqəmsal alət təqdim etmək.",
+        creationP3: "Layihə protokol təcrübəsindən və dövlət, parlament, diplomatik və korporativ protokol standartlarının adi mətn generasiyası deyil, məhz özünəməxsus ağıllı platformaya layiq olması baxışından ilham almışdır.",
+        creationP4: "ProtocolMind-in yaradılmasında xüsusi ilham mənbəyi Milli Məclisin Protokol şöbəsinin müdiri cənab Ilkin Mammadov olmuşdur; onun peşəkar nümunəsi, mentorluğu və protokol mədəniyyətinə bağlılığı bu təşəbbüsün ruhunu formalaşdırmışdır.",
+        quoteText: "Protokol sadəcə qayda deyil. O, görünən hörmət, zərifləşdirilmiş iyerarxiya və hərəkətə çevrilmiş institusional ləyaqətdir.",
+        quoteSign: "ProtocolMind Baxışı",
+        gratitudeTitle: "Dərin Minnətdarlıq və Hörmətlə",
+        gratitudeIntro: "ProtocolMind yalnız peşəkar təcrübə və baxışla deyil, həm də etimad, dəstək, diqqət və belə bir layihəni mənalı və mümkün edən institusional mühitlə formalaşıb.",
+        g1Name: "Xanım Sahiba Qafarova",
+        g1Role: "Azərbaycan Respublikasının Milli Məclisinin Sədri",
+        g1Text: "Göstərilən etimada, diqqətə, dəstəyə və inama görə dərin hörmət və səmimi minnətdarlıq ifadə olunur. Onun liderlik nümunəsi, institusional ləyaqəti və parlament xidmətinə sədaqəti bu layihəyə daha dərin məqsəd və məsuliyyət hissi vermişdir.",
+        g2Name: "Cənab Farid Hajiyev",
+        g2Role: "Azərbaycan Respublikası Milli Məclisi Aparatının Rəhbəri",
+        g2Text: "Peşəkar yol boyunca göstərilən etimada, diqqətə, köməyə və davamlı dəstəyə görə ürəkdən təşəkkür ifadə olunur. Onun intizamı, keyfiyyəti, məsuliyyəti və institusional peşəkarlığı dəstəkləməsi bu platformanın ideya əsasını möhkəmləndirmişdir.",
+        creditTitle: "Layihənin Müəllifliyi",
+        creditP1: "ProtocolMind Ilgar Nuri tərəfindən ChatGPT imkanları və protokol sahəsindəki praktiki peşəkar təcrübə əsasında yaradılmış premium və ixtisaslaşmış AI köməkçisidir.",
+        creditP2: "Platforma dəqiqlik, zəriflik, çoxdilli dəstək, strukturlaşdırılmış nəticələr və rəsmi protokol mədəniyyətinin incə anlaşılmasına ehtiyacı olan qurum və peşəkarlar üçün ağıllı köməkçi kimi düşünülmüşdür.",
+        creditLine: "Ilgar Nuri tərəfindən yaradılmış və istifadəyə verilmişdir",
+        ctaTitle: "Protokol Mükəmməlliyi üçün Premium Platforma",
+        ctaText: "Protokol məsləhətləri, rəsmi məktubların hazırlanması, nota verbal dəstəyi, əyləşdirmə məntiqi, səfər proqramları, yoxlama siyahılarının yaradılması və çoxdilli institusional yardım üçün tətbiqə daxil olun.",
+        ctaBtn: "ProtocolMind-i Başlat",
+        footerNote: "Ilgar Nuri tərəfindən yaradılmış və istifadəyə verilmişdir",
+        footerApp: "Tətbiq"
+      },
 
-<div class="order">03</div>
+      tr: {
+        brandSub: "Premium Protokol Zekâsı",
+        navGratitude: "Teşekkür",
+        navOpen: "Uygulamayı Aç",
+        heroBadge: "Azerbaycan’dan Protokol Yapay Zekâ Asistanı",
+        heroTitle: "ProtocolMind",
+        heroSubtitle: "Devlet, parlamento, diplomatik ve kurumsal protokol için premium çok dilli yapay zekâ asistanı.",
+        heroText: "Kurumların, protokol profesyonellerinin ve yönetici ekiplerin resmî metinler, ziyaret programları, oturma planları, kontrol listeleri ve protokole duyarlı iletişim hazırlığında daha hızlı, daha zarif ve daha doğru çalışmasına yardımcı olmak için oluşturuldu.",
+        heroBtn1: "Platforma Gir",
+        heroBtn2: "Hikâyeyi İncele",
+        metric1Title: "Devlet Düzeyi",
+        metric1Text: "Resmî mantık, kurumsal ton ve törensel disiplin üzerine kuruldu.",
+        metric2Title: "Çok Dilli",
+        metric2Text: "İngilizce, Rusça, Azerbaycanca, Türkçe ve Gürcüce iş akışları için tasarlandı.",
+        metric3Title: "Protokol Odaklı",
+        metric3Text: "Protokol mektupları, ziyaretler, oturma düzeni, hiyerarşi ve yönetici iletişimi için uygundur.",
+        sideTitle1: "ProtocolMind Size Nasıl Yardımcı Olur",
+        sideText1: "Resmî mektuplar hazırlar, ziyaret programlarını yapılandırır, protokol kontrol listeleri oluşturur, resmî toplantıları destekler ve kurumsal tonda metinler üretir.",
+        mini1Title: "Resmî Mektuplar",
+        mini1Text: "Davet mektupları, teşekkür mektupları, nota verbale, briefing note ve törensel ifadeler.",
+        mini2Title: "Ziyaret Programları",
+        mini2Text: "Yapılandırılmış hareketler, sıralamalar, zamanlama, protokol noktaları ve heyet akışı.",
+        mini3Title: "Oturma ve Öncelik",
+        mini3Text: "İkili, çok taraflı, parlamenter ve yönetici formatlar için protokol mantığı.",
+        sideTitle2: "Neden Önemli",
+        sideText2: "ProtocolMind, protokolü sıradan yazım değil; disiplin, hiyerarşi, hassasiyet, nezaket ve kurumsal sorumluluk alanı olarak ele alan özel bir AI ortamı olarak tasarlandı.",
+        fieldsTitle: "Üst Düzey Protokol Çalışmaları İçin Kuruldu",
+        fieldsIntro: "ProtocolMind, gerçek profesyonel protokol ihtiyaçları etrafında tasarlandı: hiyerarşi, zamanlama, devlet nezaketi, diplomatik zarafet, resmî yazım, etkinlik sırası ve çok dilli kurumsal iletişim.",
+        field1Title: "Devlet Protokolü",
+        field1Text: "Resmî törenler, devlet ziyaretleri, biçimsel düzen, öncelik sırası ve üst düzey yazılı iletişim için destek.",
+        field2Title: "Parlamento Protokolü",
+        field2Text: "Parlamentolar arası temaslar, heyet planlaması, resmî toplantılar, gündemler ve kurumsal temsil için faydalıdır.",
+        field3Title: "Diplomatik Protokol",
+        field3Text: "Nota verbale, nezaket kalıpları, diplomatik davetler, resmî hitap ve uluslararası protokol dili konusunda yardımcı olur.",
+        field4Title: "Kurumsal Protokol",
+        field4Text: "Premium protokol standartlarını yönetici etkinlikleri, VIP ağırlama, resmî iş toplantıları ve zarif iletişim için uyarlar.",
+        creationTitle: "ProtocolMind’in Doğuş Hikâyesi",
+        creationP1: "ProtocolMind, Ilgar Nuri tarafından ChatGPT imkânları kullanılarak protokol hizmetinin gerçek profesyonel dünyasına odaklanan özel premium bir AI platformu olarak oluşturuldu.",
+        creationP2: "Pratik bir ihtiyacı çözmek için geliştirildi: resmî mektupların hazırlanması, ziyaretlerin yapılandırılması, oturma mantığının kurulması, protokol kontrol listelerinin oluşturulması ve üst düzey kurumsal iletişimin daha hızlı ve daha zarif şekilde desteklenmesi için modern bir dijital araç sunmak.",
+        creationP3: "Proje, protokol pratiğinden ve devlet, parlamento, diplomatik ve kurumsal protokol standartlarının sıradan metin üretimi değil, kendine ait akıllı bir platformu hak ettiği düşüncesinden ilham aldı.",
+        creationP4: "ProtocolMind’in oluşturulmasında özel bir ilham kaynağı, Milli Majlis Protokol Bölümü Başkanı Sayın Ilkin Mammadov oldu; onun profesyonel örneği, rehberliği ve protokol kültürüne bağlılığı bu girişimin ruhunu şekillendirdi.",
+        quoteText: "Protokol yalnızca düzen değildir. Görünür hâle gelen saygı, zarafet kazanmış hiyerarşi ve eyleme dönüşmüş kurumsal itibardır.",
+        quoteSign: "ProtocolMind Vizyonu",
+        gratitudeTitle: "Derin Teşekkür ve Saygıyla",
+        gratitudeIntro: "ProtocolMind yalnızca profesyonel deneyim ve vizyonla değil, aynı zamanda güven, destek, ilgi ve böyle bir projeyi anlamlı ve mümkün kılan kurumsal ortamla şekillendi.",
+        g1Name: "Sayın Sahiba Gafarova",
+        g1Role: "Azerbaycan Cumhuriyeti Milli Meclisi Başkanı",
+        g1Text: "Gösterilen güven, ilgi, destek ve inanç için derin saygı ve içten teşekkür sunulur. Onun liderlik örneği, kurumsal itibarı ve parlamenter hizmete bağlılığı bu projeye daha derin bir amaç ve sorumluluk hissi kazandırdı.",
+        g2Name: "Sayın Farid Hajiyev",
+        g2Role: "Azerbaycan Cumhuriyeti Milli Meclisi İdare Başkanı",
+        g2Text: "Meslek yolculuğu boyunca sunulan güven, ilgi, yardım ve sürekli destek için yürekten minnettarlık ifade edilir. Onun disiplin, kalite, sorumluluk ve kurumsal profesyonelliğe verdiği destek bu platformun temelini güçlendirdi.",
+        creditTitle: "Proje Kredisi",
+        creditP1: "ProtocolMind, Ilgar Nuri tarafından ChatGPT imkânları ve protokol alanındaki pratik profesyonel deneyim temelinde oluşturulmuş premium ve uzmanlaşmış bir AI asistanıdır.",
+        creditP2: "Platform, hassasiyet, zarafet, çok dilli destek, yapılandırılmış çıktılar ve resmî protokol kültürünün incelikli anlaşılmasına ihtiyaç duyan kurumlar ve profesyoneller için akıllı bir yardımcı olarak tasarlandı.",
+        creditLine: "Ilgar Nuri tarafından oluşturuldu ve hayata geçirildi",
+        ctaTitle: "Protokol Mükemmelliği İçin Premium Platform",
+        ctaText: "Protokol tavsiyesi, resmî mektup hazırlama, nota verbale desteği, oturma mantığı, ziyaret programları, kontrol listesi üretimi ve çok dilli kurumsal yardım için uygulamaya girin.",
+        ctaBtn: "ProtocolMind’i Başlat",
+        footerNote: "Ilgar Nuri tarafından oluşturuldu ve hayata geçirildi",
+        footerApp: "Uygulama"
+      },
 
-<h3 data-i18n="g3">
-Mr. Ilkin Mammadov
-</h3>
+      ka: {
+        brandSub: "პრემიუმ პროტოკოლური ინტელექტი",
+        navGratitude: "მადლიერება",
+        navOpen: "აპის გახსნა",
+        heroBadge: "აზერბაიჯანიდან პროტოკოლის AI ასისტენტი",
+        heroTitle: "ProtocolMind",
+        heroSubtitle: "პრემიუმ მრავალენოვანი AI ასისტენტი სახელმწიფო, საპარლამენტო, დიპლომატიური და კორპორატიული პროტოკოლისთვის.",
+        heroText: "შექმნილია იმისთვის, რომ ინსტიტუციებს, პროტოკოლის პროფესიონალებსა და მმართველ გუნდებს დაეხმაროს ოფიციალური ტექსტების, ვიზიტის პროგრამების, დასხდომის გეგმების, ჩეკლისტებისა და პროტოკოლზე ორიენტირებული კომუნიკაციის მომზადებაში უფრო სწრაფად, უფრო ზუსტად და უფრო ელეგანტურად.",
+        heroBtn1: "პლატფორმაში შესვლა",
+        heroBtn2: "ისტორიის ნახვა",
+        metric1Title: "სახელმწიფო დონე",
+        metric1Text: "აგებულია ფორმალურ ლოგიკაზე, ინსტიტუციურ ტონზე და ცერემონიულ დისციპლინაზე.",
+        metric2Title: "მრავალენოვანი",
+        metric2Text: "შექმნილია ინგლისურ, რუსულ, აზერბაიჯანულ, თურქულ და ქართულ სამუშაო პროცესებისთვის.",
+        metric3Title: "პროტოკოლზე ორიენტირებული",
+        metric3Text: "სასარგებლოა პროტოკოლური წერილებისთვის, ვიზიტებისთვის, დასხდომისთვის, იერარქიისა და აღმასრულებელი კომუნიკაციისთვის.",
+        sideTitle1: "რაში გეხმარებათ ProtocolMind",
+        sideText1: "ამზადებს ოფიციალურ წერილებს, აწყობს ვიზიტის პროგრამებს, ქმნის პროტოკოლის ჩეკლისტებს, მხარს უჭერს ფორმალურ შეხვედრებს და წარმოქმნის ტექსტებს დახვეწილი ინსტიტუციური ტონით.",
+        mini1Title: "ოფიციალური წერილები",
+        mini1Text: "მოსაწვევები, მადლობის წერილები, nota verbale, briefing note და ცერემონიული ფორმულირებები.",
+        mini2Title: "ვიზიტის პროგრამები",
+        mini2Text: "სტრუქტურირებული გადაადგილება, თანმიმდევრობა, დროითი დაგეგმვა, პროტოკოლის წერტილები და დელეგაციის დინამიკა.",
+        mini3Title: "დასხდომა და უპირატესობა",
+        mini3Text: "პროტოკოლის ლოგიკა ორმხრივი, მრავალმხრივი, საპარლამენტო და აღმასრულებელი ფორმატებისთვის.",
+        sideTitle2: "რატომ არის ეს მნიშვნელოვანი",
+        sideText2: "ProtocolMind ჩაიფიქრა როგორც სპეციალიზებული AI გარემო, სადაც პროტოკოლი განიხილება არა როგორც ჩვეულებრივი ტექსტი, არამედ როგორც დისციპლინის, იერარქიის, სიზუსტის, თავაზიანობისა და ინსტიტუციური პასუხისმგებლობის სფერო.",
+        fieldsTitle: "აგებულია მაღალი დონის პროტოკოლური მუშაობისთვის",
+        fieldsIntro: "ProtocolMind შექმნილია რეალური პროფესიული პროტოკოლური საჭიროებების ირგვლივ: იერარქია, დროის მართვა, სახელმწიფო ეტიკეტი, დიპლომატიური თავაზიანობა, ოფიციალური წერა, ღონისძიებების რიგი და მრავალენოვანი ინსტიტუციური კომუნიკაცია.",
+        field1Title: "სახელმწიფო პროტოკოლი",
+        field1Text: "მხარდაჭერა ოფიციალური ცერემონიებისთვის, სახელმწიფო ვიზიტებისთვის, ფორმალური წესრიგისთვის, უპირატესობის რიგისა და მაღალი დონის წერილობითი კომუნიკაციისთვის.",
+        field2Title: "საპარლამენტო პროტოკოლი",
+        field2Text: "სასარგებლოა საპარლამენტთაშორისო კონტაქტებისთვის, დელეგაციების დაგეგმვისთვის, ოფიციალური შეხვედრებისთვის, დღის წესრიგებისა და ინსტიტუციური წარმომადგენლობისთვის.",
+        field3Title: "დიპლომატიური პროტოკოლი",
+        field3Text: "ეხმარება nota verbale-ში, თავაზიანობის ფორმულებში, დიპლომატიურ მოსაწვევებში, ოფიციალურ მიმართვასა და საერთაშორისო პროტოკოლის ენაში.",
+        field4Title: "კორპორატიული პროტოკოლი",
+        field4Text: "პრემიუმ პროტოკოლის სტანდარტებს ადაპტირებს აღმასრულებელი ღონისძიებებისთვის, VIP მასპინძლობისთვის, ოფიციალური ბიზნეს შეხვედრებისა და დახვეწილი კომუნიკაციისთვის.",
+        creationTitle: "ProtocolMind-ის შექმნის ისტორია",
+        creationP1: "ProtocolMind შეიქმნა Ilgar Nuri-ის მიერ ChatGPT-ის შესაძლებლობების გამოყენებით, როგორც სპეციალიზებული პრემიუმ AI პლატფორმა, რომელიც ორიენტირებულია პროტოკოლის სამსახურის რეალურ პროფესიულ სამყაროზე.",
+        creationP2: "ის შეიქმნა პრაქტიკული საჭიროების გადასაჭრელად: თანამედროვე ციფრული ინსტრუმენტის მისაცემად ოფიციალური წერილების მომზადების, ვიზიტების სტრუქტურირების, დასხდომის ლოგიკის აგების, პროტოკოლის ჩეკლისტების შედგენისა და მაღალი დონის ინსტიტუციური კომუნიკაციის უფრო სწრაფი და უფრო ელეგანტური მხარდაჭერისთვის.",
+        creationP3: "პროექტი შთაგონებულია პროტოკოლის პრაქტიკით და იმ ხედვით, რომ სახელმწიფო, საპარლამენტო, დიპლომატიური და კორპორატიული პროტოკოლის სტანდარტებს საკუთარი ინტელექტუალური პლატფორმა სჭირდება და არ უნდა დარჩეს ჩვეულებრივი ტექსტის გენერაციის დონეზე.",
+        creationP4: "ProtocolMind-ის შექმნისას განსაკუთრებული შთაგონების წყარო იყო Milli Majlis-ის პროტოკოლის განყოფილების უფროსი, ბატონი Ilkin Mammadov, რომლის პროფესიულმა მაგალითმა, მენტორობამ და პროტოკოლის კულტურისადმი ერთგულებამ ამ ინიციატივის სული ჩამოაყალიბა.",
+        quoteText: "პროტოკოლი უბრალოდ წესრიგი არ არის. ეს არის ხილული პატივისცემა, დახვეწილი იერარქია და მოქმედებად ქცეული ინსტიტუციური ღირსება.",
+        quoteSign: "ProtocolMind-ის ხედვა",
+        gratitudeTitle: "ღრმა მადლიერებითა და პატივისცემით",
+        gratitudeIntro: "ProtocolMind ჩამოყალიბდა არა მხოლოდ პროფესიული გამოცდილებითა და ხედვით, არამედ ნდობით, მხარდაჭერით, ყურადღებით და იმ ინსტიტუციური გარემოთი, რომელმაც ასეთი პროექტი მნიშვნელოვანი და შესაძლებელი გახადა.",
+        g1Name: "ქალბატონი Sahiba Gafarova",
+        g1Role: "აზერბაიჯანის რესპუბლიკის Milli Majlis-ის თავმჯდომარე",
+        g1Text: "ღრმა პატივისცემით და გულწრფელი მადლიერებით გამოხატულია ნდობისთვის, ყურადღებისთვის, მხარდაჭერისთვის და რწმენისთვის, რომლებმაც მნიშვნელოვანი პროფესიული გზა შესაძლებელი გახადა. მისმა ლიდერობის მაგალითმა, ინსტიტუციურმა ღირსებამ და საპარლამენტო სამსახურისადმი ერთგულებამ ამ პროექტს უფრო ღრმა მიზანი და პასუხისმგებლობის გრძნობა შესძინა.",
+        g2Name: "ბატონი Farid Hajiyev",
+        g2Role: "აზერბაიჯანის რესპუბლიკის Milli Majlis-ის აპარატის ხელმძღვანელი",
+        g2Text: "გულისხმიერი მადლიერება გამოიხატება პროფესიულ გზაზე გაწეული ნდობისთვის, ყურადღებისთვის, დახმარებისთვის და მუდმივი მხარდაჭერისთვის. მისმა მხარდაჭერამ დისციპლინის, ხარისხის, პასუხისმგებლობისა და ინსტიტუციური პროფესიონალიზმის მიმართ ამ პლატფორმის საფუძველი გააძლიერა.",
+        creditTitle: "პროექტის ავტორი",
+        creditP1: "ProtocolMind არის Ilgar Nuri-ის მიერ შექმნილი პრემიუმ და სპეციალიზებული AI ასისტენტი პროტოკოლური მუშაობისთვის, რომელიც დაფუძნებულია ChatGPT-ის შესაძლებლობებსა და პრაქტიკულ პროფესიულ გამოცდილებაზე.",
+        creditP2: "პლატფორმა ჩაიფიქრა როგორც ინტელექტუალური ასისტენტი იმ ინსტიტუციებისა და პროფესიონალებისთვის, რომლებსაც სჭირდებათ სიზუსტე, ელეგანტურობა, მრავალენოვანი მხარდაჭერა, სტრუქტურირებული შედეგები და ოფიციალური პროტოკოლის კულტურის ღრმა გაგება.",
+        creditLine: "შექმნილია და გაშვებულია Ilgar Nuri-ის მიერ",
+        ctaTitle: "პრემიუმ პლატფორმა პროტოკოლური სრულყოფისთვის",
+        ctaText: "შედით აპლიკაციაში, რათა გამოიყენოთ პროტოკოლის რჩევები, ოფიციალური წერილების მომზადება, nota verbale-ის მხარდაჭერა, დასხდომის ლოგიკა, ვიზიტის პროგრამები, ჩეკლისტების გენერაცია და მრავალენოვანი ინსტიტუციური დახმარება.",
+        ctaBtn: "ProtocolMind-ის გაშვება",
+        footerNote: "შექმნილია და გაშვებულია Ilgar Nuri-ის მიერ",
+        footerApp: "აპი"
+      }
+    };
 
-<p data-i18n="g3d"></p>
+    const langSwitcher = document.getElementById("langSwitcher");
+    const savedLang = localStorage.getItem("pm_landing_lang") || "en";
+    langSwitcher.value = savedLang;
 
-</div>
+    function applyLang(lang){
+      const dict = translations[lang] || translations.en;
+      document.documentElement.lang = lang;
 
-</div>
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
 
-</div>
+      localStorage.setItem("pm_landing_lang", lang);
+    }
 
-</section>
-<footer>
-
-<div data-i18n="footer">
-Created and launched by Ilgar Nuri and Ilkin Mammadov
-</div>
-
-</footer>
-
-<script>
-
-const translations = {
-
-en:{
-badge:"AI Protocol Assistant from Azerbaijan",
-subtitle:"Premium AI assistant for protocol professionals",
-description:"Built for government, parliamentary, diplomatic and corporate protocol work.",
-open:"Open Platform",
-learn:"Learn More",
-protocolTitle:"Protocol Fields",
-state:"State Protocol",
-parliament:"Parliamentary Protocol",
-diplomatic:"Diplomatic Protocol",
-corporate:"Corporate Protocol",
-gratitudeTitle:"With Special Gratitude",
-g1:"Mrs. Sahiba Gafarova",
-g2:"Mr. Farid Hajiyev",
-g3:"Mr. Ilkin Mammadov",
-footer:"Created and launched by Ilgar Nuri and Ilkin Mammadov"
-},
-
-ru:{
-badge:"ИИ помощник протокола из Азербайджана",
-subtitle:"Премиальный ИИ помощник протокола",
-description:"Создан для государственного, парламентского, дипломатического и корпоративного протокола.",
-open:"Открыть платформу",
-learn:"Подробнее",
-protocolTitle:"Сферы протокола",
-state:"Государственный протокол",
-parliament:"Парламентский протокол",
-diplomatic:"Дипломатический протокол",
-corporate:"Корпоративный протокол",
-gratitudeTitle:"С особой благодарностью",
-g1:"Госпожа Сагиба Гафарова",
-g2:"Господин Фарид Гаджиев",
-g3:"Господин Илькин Мамедов",
-footer:"Создано Ильгаром Нури и Илькином Мамедовым"
-}
-
-};
-
-const langSelect=document.getElementById("lang");
-
-langSelect.onchange=()=>{
-applyLang(langSelect.value);
-}
-
-function applyLang(lang){
-
-const dict=translations[lang]||translations.en;
-
-document.querySelectorAll("[data-i18n]").forEach(el=>{
-const key=el.getAttribute("data-i18n");
-if(dict[key]) el.innerText=dict[key];
-});
-
-}
-
-applyLang("en");
-
-</script>
-
+    langSwitcher.addEventListener("change", e => applyLang(e.target.value));
+    applyLang(savedLang);
+  </script>
 </body>
 </html>
